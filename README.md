@@ -1,9 +1,11 @@
-# lynicon CMS
+# lynicon CMS for ASP.Net Core
 
-Lynicon is a modern, highly flexible, hypermodular CMS built on the ASP.Net MVC web framework.  While this repository allows you to inspect the code, it is available as a NuGet library (https://www.nuget.org/packages/lynicon.identity/0.0.1).  In 5 minutes you can have the powerful core CMS functions of Lynicon added to your project.
+Lynicon is a modern, highly flexible, hypermodular CMS built on the ASP.Net Core web framework.
 
-The main site for the project is http://www.lynicon.com, and Lynicon is documented in detail at https://lynicon.atlassian.net/wiki/display/DOC/Lynicon+CMS+Documentation.  Installation instructions are at https://lynicon.atlassian.net/wiki/pages/viewpage.action?pageId=6291463.
+The main site for the project is http://www.lynicon.com, and Lynicon is documented in detail at https://lynicon.atlassian.net/wiki/display/DOC/Lynicon+CMS+Documentation.  (there is no independent ASP.Net Core documentation as yet we are working on this and it should be available within a month)
 
 Lynicon is issued under the Fair Source 10 license, it is open source and free up to a maximum of 10 users in any one organisation: https://fair.io/#license
+
+To run the tests in this project you will need to install the NUnit 3 Test Adaptor extension for Visual Studio.
 
 
