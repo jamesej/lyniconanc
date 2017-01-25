@@ -1,0 +1,1206 @@
+IFRAME
+{
+	border: 0;
+}
+BODY
+{
+	font-family: Arial, Sans-Serif;
+	margin: 0px;
+	padding: 0px;
+}
+input, textarea {
+	border: 1px solid #b8b8b8;
+}
+
+.clearfix {
+	overflow: auto;
+}
+
+#opener {
+	background-color: #747474;
+	margin: 0;
+	padding: 2px 8px 1px 8px;
+	border: 0;
+	color:#fff;
+	font-size:1.77em;
+	float:right;
+}
+
+#opener img {
+	cursor: pointer;
+}
+
+#opener-out {
+	margin-right:2px;
+}
+
+#opener i:hover {
+	color: #909090
+}
+
+.edit-0 #view {
+	width: 100%;
+}
+.edit-20 #view {
+	width: 80%;
+}
+.edit-40 #view {
+	width: 60%;
+}
+.edit-60 #view {
+	width: 40%;
+}
+.edit-80 #view {
+	width: 20%;
+}
+.edit-100 #view {
+	width: 0%;
+}
+
+.edit-0 #edit {
+	width: 0%;
+	border: none;
+	padding: 0;
+}
+
+
+.parent-unit.level-0 {
+	padding:4px;
+	box-sizing:border-box;
+}
+
+
+.edit-20 #edit {
+	width: 20%;
+}
+.edit-20 .parent-unit.level-0 {
+	width: 100%;
+}
+.edit-40 #edit {
+	width: 40%;
+}
+.edit-40 .parent-unit.level-0 {
+	width: 50%;
+}
+.edit-40 .parent-unit.level-0.wide {
+	width: 100%;
+}
+.edit-60 #edit {
+	width: 60%;
+}
+.edit-60 .parent-unit.level-0 {
+	width: 33.3333%;
+}
+.edit-60 .parent-unit.level-0.wide {
+	width: 66.6666%;
+}
+.edit-80 #edit {
+	width: 80%;
+}
+.edit-80 .parent-unit.level-0 {
+	width: 25%;
+}
+.edit-80 .parent-unit.level-0.wide {
+	width: 50%;
+}
+.edit-100 #edit {
+	width: 100%;
+}
+.edit-100 .parent-unit.level-0 {
+	width: 20%;
+}
+.edit-100 .parent-unit.level-0.wide {
+	width: 40%;
+}
+
+.wide .editor-unit.level-1 {
+	width: 50%;
+	float: left;
+}
+.wide .editor-unit.level-1.extends {
+	width: 100%;
+	float: left;
+}
+
+#opener {
+	right: 0%;
+}
+.edit-0 #opener-in {
+	visibility: hidden;
+}
+.edit-100 #opener-out {
+	visibility: hidden;
+}
+
+
+#edit {
+	float: right;
+	border-left: 4px solid #747474;
+	box-sizing: border-box;
+	padding: 0 4px;
+	background-color: #fff;
+	min-height: 100%;
+	overflow: hidden;
+	position:relative;
+}
+#view-container
+{
+	position: fixed;
+	top: 0px;
+	bottom: 32px;
+	width: 100%;
+}
+#view {
+	height: 100%;
+    box-sizing: border-box;
+}
+
+.editor-label
+{
+	background-color: #8abcbc;
+color: #FFFFFF;
+padding: 4px 2px 6px 0px;
+font-size: 14px;
+	height: auto;
+	font-weight: bold;
+}
+.field-validation-valid {
+	display:none;
+}
+.editor-label.parent
+{
+	background-repeat: no-repeat;
+	padding-left: 21px;
+	background-position: 6px 4px;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.editor-label.child-closed
+{
+	background-image: url(/images/lynicon/right-arrow-white.png);
+	background-position-y: 6px;
+}
+.editor-label.child-open
+{
+	background-image: url(/images/lynicon/down-arrow-white.png);
+	background-position-y: 6px;
+}
+#editPanelContainer {
+	position: relative;
+	bottom: 0px;
+}
+#editPanel
+{
+	font-size: 13px;
+	position: relative;
+	color:#3a7777;
+	padding-top: 5px;
+	padding-bottom: 50px;
+}
+
+#editPanel a
+{
+	color: #4f4f4f;
+	display: inline-block;
+    padding: 3px 0 3px 4px;
+}
+#editPanel .jqte a, #editPanel .chosen-container a
+{
+    padding: 0;
+}
+#editPanel .editor-field.indent-0 {
+	background-color: #cbdfdf;
+}
+#editPanel .editor-field.indent-0:after {
+	content: "";
+    display: table;
+    clear: both;
+}
+#editPanel INPUT[type="text"]
+{
+	font-size: 13px;
+	padding: 2px;
+    margin-top: -3px;
+    margin-left: -3px;
+}
+#editPanel .text-box
+{
+	display: none;
+}
+#editPanel .text-display
+{
+	cursor: pointer;
+}
+#editPanel .lyn-text-area
+{
+	width: 95%;
+}
+#editPanel .collection-item-bar
+{
+	overflow:auto;
+	padding: 3px;
+}
+#editPanel .collection-item-bar .reorder,  #editPanel .collection-item-bar .delete
+{
+	float: right;
+    margin-top: 1px;
+    height: 17px;
+}
+#editPanel .reorder .action-button
+{
+	float: right;
+}
+#edit .action-button
+{
+	font-size: 1.25em;
+	width: 18px;
+	text-align: center;
+	cursor: pointer;
+	height: 18px;
+	color: #5ca39f;
+}
+#edit .action-button:hover
+{
+	color: #777 !important;
+}
+#edit .add-button, #edit .add-button-style
+{
+	color: #fff;
+	font-size: 24px;
+	cursor: pointer;
+	font-weight: bold;
+	text-align: center;
+}
+#edit .add-button-top
+{
+	position: absolute;
+	top: -28px;
+	right: 6px;
+	width: 24px;
+	height: 28px;
+}
+#edit .add-button-bottom
+{
+	border-top: 1px solid #cbdfdf;
+	background-color: #8abcbc;
+	height: 23px;
+	line-height: 21px;
+}
+#edit .add-button:hover
+{
+	color: #ddd;
+}
+#edit .func-link
+{
+	text-decoration: none;
+	background-color: #3C3763;
+	color: #FFF;
+	padding: 2px;
+	margin-bottom: 2px;
+	display: inline-block;
+}
+#edit .func-link:hover
+{
+	background-color: black;
+}
+#edit .field-process-button {
+	background-color: #3C3763;
+	color: #FFF;
+	padding: 2px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	display: inline-block;
+	cursor: pointer;
+}
+#edit .field-process-button:hover {
+	background-color: black;
+}
+#editPanel .editor-field
+{
+	margin-bottom: 2px;
+	position: relative;
+}
+#editPanel .editor-field .editor-label
+{
+	background-color: transparent;
+	color: #254e4e;
+}
+#editPanel .editor-field .editor-label.parent,
+#editPanel .editor-field .editor-field .add-button-bottom {
+	background-color: #A1D0D0;
+	color: #fff;
+}
+#editPanel .editor-field .editor-field .action-button {
+color: #87C1C1;
+}
+.object.level-1
+{
+	padding-bottom: 6px;
+}
+.collection > .editor-field, .collection > .editor-label, .object > .editor-field, .object > .editor-label
+{
+	margin-left: 10px;
+}
+FORM > .object > .editor-field, FORM > .object > .editor-label, .collection > .editor-field > .object > .editor-field, .collection > .editor-field > .object > .editor-label
+{
+	margin-left: 0px;
+}
+.editor-label.indent-1, .editor-field.indent-1
+{
+	margin-left: 10px;
+}
+.editor-label.indent-2, .editor-field.indent-2
+{
+	margin-left: 10px;
+}
+#editPanel .closed
+{
+	display: none;
+}
+#editPanel .editor-field .text-box
+{
+	width: 95%;
+}
+.ui-datepicker
+{
+	font-size: 60%;
+}
+.ui-datepicker-header
+{
+	background-color: #8abcbc;
+	border-color: #fff;
+}
+#outer
+{
+	width: 600px;
+	height: 300px;
+	z-index: 0;
+}
+#outer .ui-draggable-dragging span {
+	font-size: 10px;
+}
+#listContainer, #treeContainer
+{
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+.jstreelist-folder-active
+{
+	border: 1px solid #3030FF;
+	background-color: #98c5f1 !important;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+#simplemodal-overlay
+{
+	background-color: #000;
+}
+#simplemodal-container
+{
+	padding: 20px;
+	background-color: #E0E0FF;
+	border-radius: 8px;
+	-moz-border-radius: 10px;
+}
+#filename
+{
+	width: 320px;
+}
+#fileDetails
+{
+	float: right;
+}
+.file-image-thumb
+{
+	cursor: pointer;
+	width: 110px;
+	height: 56px;
+	border: solid 2px #fff;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-size: cover;
+}
+video.thumb-vid
+{
+	cursor: pointer;
+	width: 75%;
+	border: solid 2px #fff;
+}
+#editPanel .l24-link-url
+{
+	width: 277px;
+	display: inline-block;
+}
+#editPanel .lyn-image
+{
+	cursor: pointer;
+	padding-left: 15px;
+}
+#editPanel .lyn-image input
+{
+	cursor: auto;
+}
+#editPanel .lyn-image-load, #editPanel .lyn-video-load, #editPanel .lyn-media-load {
+	cursor: pointer;
+	text-transform: capitalize;
+	padding: 2px;
+	background-color: #8abcbc;
+	color: #fff;
+	margin: 3px 4px 0 0;
+	border: none;
+}
+#editPanel .lyn-image-load:hover, #editPanel .lyn-video-load:hover, #editPanel .lyn-media-load:hover {
+	color: #aaa;
+}
+#editPanel .lyn-image-url, #editPanel .lyn-video-url
+{
+	box-sizing: border-box;
+}
+#editPanel .lyn-image-url span, #editPanel .lyn-video-url span, #editPanel .lyn-media-url span
+{
+	width: 235px;
+	height: 17px;
+	overflow: hidden;
+	display: block;
+	text-overflow: ellipsis;
+}
+#editPanel .lyn-image-alt
+{
+	box-sizing: border-box;
+	overflow:auto;
+}
+#editPanel .lyn-image-alt span.text-display
+{
+	width: 165px;
+	height: 18px;
+	overflow: hidden;
+	display: inline-block;
+	text-overflow: ellipsis;
+	margin-top: 4px;
+	padding-left: 3px;
+	float:left;
+}
+#editPanel .lyn-image-alt span.number-display
+{
+	width: 25px;
+}
+#editPanel .lyn-image-alt span.editor-label
+{
+	float:left;
+}
+#editPanel .lyn-image-alt input.text-box
+{
+	width: 165px;
+	margin-top: 4px;
+	margin-left: 3px;
+	float:left;
+}
+#editPanel .lyn-image-alt input.number-box
+{
+	width: 25px;
+}
+#editPanel .lyn-image-load, #editPanel .lyn-video-load
+{
+	float: left;
+}
+.l24-link-url INPUT
+{
+	width: 130px;
+	margin-left: 24px;
+}
+#editPanel .l24-link-content
+{
+	width: 156px;
+	display: inline-block;
+}
+.l24-link-content INPUT
+{
+	width: 95px;
+}
+
+#editPanel .l24-link-isinternal
+{
+	width: 68px;
+	display: inline-block;
+}
+
+#editPanel .lyn-datetime-now
+{
+    background-color: #eee;
+    border: 1px solid #bbb;
+    padding: 3px;
+    cursor: pointer;
+}
+#editPanel .lyn-datetime-now:hover
+{
+    background-color: #aaa;
+}
+
+#editPanel .lyn-file-url
+{
+	width: 100%;
+}
+#editPanel select.lyn-reference-id {
+	margin-top:3px;
+	width: 230px;
+}
+#editPanel .jqte {
+	border-radius: 0px;
+	-webkit-border-radius: 0px;
+	margin: 10px 8px 10px 0px;
+	border: none;
+	height: auto !important;
+}
+#editPanel .jqte_editor {
+	max-height: 150px;
+}
+#editPanel .lyn-html-popout {
+	cursor: pointer;
+	display: inline-block;
+}
+#editPanel .lyn-html-popout:hover {
+	color: #aaa;
+}
+
+#editPanel .switchable-icon {
+	height: 22px;
+	width: 22px;
+	float:left;
+	margin-left: 5px;
+	margin-top: 5px;
+}
+#editPanel .switchable-icon:hover, #editPanel .switchable-icon.selected {
+	background-color: #fff;
+	border: 1px solid #444;
+	margin-left:3px;
+	margin-top:3px;
+}
+
+
+#editPanel .reorder-up IMG
+{
+	margin-top: 3px;
+}
+#editPanel .reorder-down IMG
+{
+	margin-top: 5px;
+}
+#editPanel .first .reorder-up, #editPanel .last .reorder-down
+{
+	display: none;
+}
+#editPanel .collection-item-heading.editor-label {
+padding: 0;
+display: inline-block;
+margin-left: 16px;
+}
+#editPanel .moving .reorder-up, #editPanel .moving .reorder-down {
+	color: rgb(144, 0, 0);
+}
+
+/* FUNC PANEL */
+
+#funcPanel {
+	font-size: 10pt;
+	background-color: #747474;
+	right: 0px;
+	left: 0px;
+	position: fixed;
+	bottom: 0px;
+	border: solid 1px #4f4f4f;
+}
+#funcPanel #lyn-logo {
+	float:left;
+	margin: 6px 10px 2px 8px;
+}
+#funcPanel .sep {
+	float: left;
+	margin: 1px 5px 0px 6px;
+	color: #a5a5a5;
+	font-size: 21px;
+	font-weight: bold;
+}
+#edit .func-button, #funcPanel .func-button {
+	display: inline-block;
+	color: #FFF;
+	padding: 1px 4px;
+	margin: 5px 2px 2px 2px;
+	cursor: pointer;
+	float: left;
+	font-size: 16px;
+	font-weight: bold;
+}
+#funcPanel #reveal-button {
+	float: right;
+	height: 22px;
+	width: 20px;
+	padding-left: 4px;
+	cursor: pointer;
+}
+#funcPanel #reveal-arrow {
+	height: 16px;
+	width: 16px;
+}
+
+#edit .func-button:hover, #funcPanel .func-button:hover {
+	color: #bababa;
+}
+
+#funcPanel A.func-button, #funcPanel A.func-button:visited
+{
+	text-decoration:none;
+}
+
+#funcPanel #reveal {
+	clear: both;
+	width: 100%;
+}
+
+#funcPanel .reveal-panel-view {
+	float:left;
+}
+
+#funcPanel .reveal-panel-view div {
+	float: left;
+}
+
+#funcPanel .Record {
+	float: right;
+	padding: 6px 15px 6px 15px;
+	margin: 0px;
+	border-left: solid 1px #4f4f4f;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+#funcPanel #version-unit {
+	float: right;
+	margin: 0 7px;
+}
+
+#funcPanel .lyn-version-display {
+	font-size: 16px;
+	font-weight: bold;
+	color: #505050;
+	background-color: #CAD0D6;
+	padding: 8px 7px 6px 7px;
+	border-radius: 12px;
+	float: right;
+	margin-right: 1px;
+	position: relative;
+}
+
+#funcPanel .lyn-version-next {
+	position: absolute;
+  top: -5px;
+  left: 8px;
+}
+
+#funcPanel .lyn-version-prev {
+	position: absolute;
+  bottom: -5px;
+  left: 8px;
+}
+
+#funcPanel .lyn-version-arrow {
+  color: #909090;
+  cursor: pointer;
+}
+
+#funcPanel .lyn-version-arrow:hover {
+  color: #000;
+}
+
+#funcPanel .lyn-version-go {
+	float: right;
+  width: 4px;
+  height: 19px;
+  padding: 6px 4px;
+}
+
+#funcPanel .lyn-version-go-button {
+	color: white;
+	font-size: 17px;
+	cursor: pointer;
+}
+
+#funcPanel .overridden .lyn-version-display {
+  background-color: #ce5858;
+  color: white;
+}
+
+#funcPanel .overridden .lyn-version-arrow {
+  color: #f99393;
+}
+
+#funcPanel .overridden .lyn-version-arrow:hover {
+  color: #fff;
+}
+
+#funcPanel #fpbPublish.needs-pub {
+    background-color: #cea758 !important;
+}
+
+#funcPanel #fpbPublish.unpub {
+    background-color: #ce5858 !important;
+}
+
+/* LIST EDITOR */
+.lynicon-list-detail #view {
+    padding: 8px;
+}
+table.list-table {
+	border-collapse: collapse;
+	width:100%;
+	color: #3a7777;
+}
+.list-table th, .list-table td {
+	padding: 5px;
+	border-left: 4px solid #fff;
+    background-color: #cbdfdf;
+}
+.list-table th {
+	background-color: #8abcbc;
+    color: white;
+}
+.list-table th:first-child, .list-table td:first-child {
+	border-left: none;
+}
+.list-table tr.selected td {
+	background-color: #ccc
+}
+
+.lynicon-number-pager > span {
+	background-color: #888;
+	border-radius: 12px;
+	display: inline-block;
+	min-width: 25px;
+	height: 25px;
+	text-align: center;
+}
+.lynicon-number-pager a {
+	color: #FFF;
+	text-decoration: none;
+	font-size: 17px;
+	font-family: Arial,sans-serif;
+	position: relative;
+	top: 3px;
+    padding: 0 4px;
+}
+.lynicon-number-pager .current a {
+	padding-bottom: 5px;
+	border-bottom: 4px solid grey;
+}
+.lynicon-number-pager a .fa-caret-right {
+    padding: 1px 0px 0px 2px;
+}
+.lynicon-number-pager a .fa-caret-left {
+    padding: 1px 0px 0px 0px;
+    margin-left: -1px;
+}
+.lynicon-number-pager-total {
+    color: #777;
+}
+
+.lynicon-ctl-button {
+	display: inline-block;
+padding: 2px 4px;
+border-radius: 10px;
+color: #FFF;
+float: left;
+margin-right: 5px;
+}
+
+.lynicon-list-detail .lynicon-filter-textbox {
+    margin: 8px 0;
+}
+.lynicon-filter-textbox input {
+	float: left;
+    margin-right: 5px;
+}
+.lynicon-filter-textbox a {
+	background-color: #8abcbc;
+	cursor:pointer;
+    padding: 2px 6px;
+    font-weight: bold;
+}
+#lynicon-list-add-button {
+    background-color: #808080;
+    cursor: pointer;
+    padding: 3px 6px;
+}
+/* ITEM SELECTOR */
+
+#lyn-item-selector h2 {
+	font-size: 19px;
+    font-family: Arial, sans-serif;
+    border-bottom: 1px solid #888;
+    padding: 4px 5px;
+}
+
+/*
+#lyn-item-selector .new-item {
+	display: inline-block;
+	background-color: #FFF;
+	color: #888;
+	padding: 0px 5px;
+	height: 18px;
+	border-radius: 9px;
+}
+	*/
+
+#lyn-item-selector .new-item-url-patterns {
+	display: none;
+position: absolute;
+background-color: #bddddd;
+z-index: 99;
+list-style: none;
+padding: 3px;
+top: -18px;
+right: 0px;
+border: solid 2px #f4f4f4;
+}
+
+#lyn-item-selector .new-item-url-patterns li:hover {
+	background-color: #fff;
+	color: #000;
+}
+
+#lyn-item-selector div {
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+}
+
+#lyn-item-selector a.item-selected {
+	background-color: #c4c4ee
+}
+
+#lyn-item-selector .cmd-link {
+color: #fff;
+padding: 3px 5px 1px;
+height: 16px;
+border-radius: 9px;
+text-decoration: none;
+cursor: pointer;
+display: inline-block;
+margin-right: 5px;
+background-color: #8abcbc;
+}
+#lyn-item-selector .cmd-link:hover {
+	color: #ddd;
+}
+#lyn-item-selector #edit .add-button
+{
+	position: absolute;
+	top: -31px;
+	right: 6px;
+	color: #fff;
+	font-size: 24px;
+	cursor: pointer;
+	width: 24px;
+	height: 28px;
+	text-align: center;
+	font-weight: bold;
+}
+#lyn-item-selector .add-link .cmd-link,
+#lyn-item-selector .edit-link .cmd-link {
+margin-top: 5px;
+float: right;
+margin-right: 12px;
+margin-left: 0px;
+padding: 0px;
+}
+#lyn-item-selector .save-url-link {
+	margin-top: 5px;
+	margin-left: 10px;
+}
+
+#lyn-item-selector .pattern {
+float: left;
+margin: 3px 5px 3px 9px;
+font-weight: bold;
+}
+
+#lyn-item-selector .object.level-1 {
+	padding-bottom:0;
+}
+
+#lyn-item-selector .lynicon-number-pager-total {
+    padding-bottom: 4px;
+    color: #fff;
+}
+
+.lynicon-number-pager
+{
+	margin: 0px 0px 12px 0px;
+}
+
+.lyn-type-items .lynicon-number-pager
+{
+	margin-top: 10px;
+}
+
+/* Alternate Chosen select styling */
+
+/* dark color overrides */
+ 
+#editPanel .chosen-container .chosen-results li {
+  color: #3a7777;   
+}
+#editPanel .chosen-container .chosen-drop, .chosen-container-single .chosen-single {
+  background-color: #e2f5f5;
+  color: #3a7777;
+  line-height: 20px;
+}
+/* Some IE 7-9 fun with this next one - filter likes to override background */
+#editPanel .chosen-container-single .chosen-single {
+  background-color: #e2f5f5;
+  background-image: none;
+  background: #e2f5f5 none top left no-repeat;
+  filter: none;
+  border: none;
+  display: block;
+  height: 21px;
+}
+#editPanel .chosen-container .chosen-drop {
+  border: 1px solid #121212;    
+}
+#editPanel .chosen-container-single .chosen-single div {
+  background-image: -webkit-gradient(linear, left bottom, left top, 
+    color-stop(0, #fff), color-stop(0.6, #e2f5f5));
+  background-image: -webkit-linear-gradient(center bottom, #fff 0%, #e2f5f5 60%);
+  background-image: -moz-linear-gradient(center bottom, #fff 0%, #e2f5f5 60%);
+  background-image: -o-linear-gradient(bottom, #fff 0%, #e2f5f5 60%);
+  background-image: -ms-linear-gradient(top, #fff 0%,#e2f5f5 60%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fff', 
+    endColorstr='#e2f5f5',GradientType=0 );
+  background-image: linear-gradient(top, #fff 0%,#e2f5f5 60%);
+  border-left: 1px solid #8abcbc;
+  padding-left: 6px;
+}
+#editPanel .chosen-container-active .chosen-single-with-drop {
+  box-shadow: none; 
+}
+#editPanel .chosen-container .chosen-results .highlighted {
+  background: #e2f5f5;
+  color: #3a7777;
+}
+#editPanel .chosen-container .chosen-results .no-results {
+  background: #e2f5f5;
+}
+#editPanel .chosen-container .chosen-results li em {
+  background: none;
+}
+
+.spinner {
+  float: right;
+  margin-right: 10px;
+  margin-top: 3px;
+}
+
+/* Jquery UI overrides */
+
+.ui-widget-header {
+	background: #8abcbc;
+	border-radius: 0;
+	border: none;
+}
+
+/* Items page specific */
+
+#lyn-item-selector .object.level-0
+{
+}
+
+#lyn-item-selector .editor-label {
+padding: 7px 0px 7px 24px;
+font-size: 16px;
+}
+
+#lyn-item-selector .editor-label.child-closed,
+#lyn-item-selector .editor-label.child-open {
+background-position-y: 10px;
+}
+
+
+#lyn-item-selector #editPanel .editor-field.indent-0 {
+padding-bottom: 0px;
+}
+
+.lyn-item-entry {
+padding: 3px;
+border-top: 1px solid #fff;
+color: #254e4e;
+font-weight: bold;
+overflow:auto;
+}
+
+
+.lyn-item-entry .item-link {
+	text-decoration: none;
+}
+.lyn-item-entry .edit-link
+{
+	margin-top: 10px;
+}
+
+.lyn-item-entry .reveal-funcs {
+	display: none;
+	float:right;
+}
+
+.lyn-item-paging-container{
+	text-align: center;
+	background-color: #8abcbc;
+	border-top: 1px solid #fff;
+	padding-top: 2px;
+}
+
+.lyn-item-paging-container .total {
+	color: white;
+    padding-bottom: 3px;
+}
+
+.lyn-item-paging-container .lynicon-number-pager{
+	display: inline-block;
+	margin: 5px 0px;
+}
+
+.lyn-item-paging-container .lynicon-number-pager span {
+background-color: transparent;
+}
+
+.lyn-item-paging-container .lynicon-number-pager a {
+color: #fff !important;
+}
+
+.lyn-item-paging-container .lynicon-number-pager a:hover {
+	color: #ddd !important;
+}
+
+.lyn-item-paging-container .lynicon-number-pager .current a {
+font-weight:bold;
+border-bottom:none;
+padding:0;
+}
+
+#lyn-item-selector .search {
+position: absolute;
+top: 13px;
+right: 15px;
+cursor:pointer;
+}
+
+#lyn-item-selector .search:hover {
+color: #ddd;
+}
+
+#lyn-item-selector .add-link,
+#lyn-item-selector .edit-link {
+	background-color: #8abcbc;
+	border-top: 1px solid #fff;
+	color: #fff;
+	overflow: auto;
+	padding: 3px 0px;
+}
+
+
+#lyn-item-selector .pattern input {
+border-radius: 12px;
+width: 90px;
+padding: 1px 7px;
+}
+
+.lyn-item-filter-bar{
+	background-color: #8abcbc;
+	border-top: 1px solid #fff;
+}
+
+#editPanel .lyn-item-filter-bar .lynicon-filter-textbox input {
+border-radius: 14px;
+margin: 6px 6px 6px 10px;
+height: 22px;
+width: 176px;
+padding: 0px 8px;
+}
+
+.lyn-item-filter-bar .lynicon-filter-textbox a {
+background-color: transparent;
+margin: 9px 12px 0px 0px;
+padding: 0;
+float: right;
+}
+
+.lyn-item-filter-bar i.fa {
+color: #fff;
+}
+
+#lister-bottom-spacer {
+	height: 60px;
+}
+
+/* LOGIN */
+
+#lyn-login {
+	background-color: #f6f6f6;
+	height: 100%;
+	width: 100%;
+}
+
+#lyn-login-box {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	height: 300px;
+	width: 200px;
+	margin-top: -150px;
+	margin-left: -100px;
+	text-align: center;
+}
+
+#lyn-login-box form {
+background-color: #cbdfdf;
+overflow: auto;
+}
+
+#lyn-login input {
+border: none;
+text-align: center;
+border-radius: 10px;
+margin-top: 10px;
+height: 19px;
+}
+
+#lyn-login #lyn-logo {
+padding-left: 50%;
+margin-left: -33px;
+}
+
+#lyn-login #login-button {
+background-color: #5ca39f;
+margin-top: 10px;
+padding: 3px;
+color: #fff;
+width: 145px;
+margin: 10px auto 12px auto;
+border-radius: 12px;
+font-size: 15px;
+cursor: pointer;
+}
+
+#lyn-login .editor-label {
+background-color: #5ca39f;
+font-size: 19px;
+}
+
+
+

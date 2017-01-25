@@ -1,0 +1,170 @@
+﻿$orange: #ffd000;
+$ltgrey: #b4b3b7;
+$dkgrey: #596668;
+$vltgrey: #c8c7ca;
+$textwhite: #fff;
+
+/* image frame positioning */
+.pane
+{
+    position: absolute;
+    height: 96%;
+}
+
+@mixin orient($dir) {
+    @if ($dir == t) { transform: scale(0.39) scaleY(0.6) rotate(45deg); }
+    @if ($dir == r) { transform: rotate(-60deg) scale(0.39) scaleY(0.6) rotate(45deg); }
+    @if ($dir == l) { transform: rotate(60deg) scale(0.39) scaleY(0.6) rotate(-45deg); }
+}
+
+$dv: 15.75%;
+$dh: 18.5%;
+$tbv: 3%;
+$tbh: 9.5%;
+$lbv: 26%;
+$lbh: 18.5%;
+$rbv: 26%;
+$rbh: 0%;
+
+@mixin pos($coord) {
+    @if ($coord == 0t) { top: $tbv - $dv; right: $tbh - $dh; @include orient(t); }
+    @if ($coord == 0r) { top: $rbv - $dv; right: $rbh - $dh; @include orient(r); }
+    @if ($coord == 0l) { top: $lbv - $dv; right: $lbh - $dh; @include orient(l); }
+    @if ($coord == 1t) { top: $tbv; right: $tbh; @include orient(t); z-index: 5; }
+    @if ($coord == 1r) { top: $rbv; right: $rbh; @include orient(r); z-index: 5; }
+    @if ($coord == 1l) { top: $lbv; right: $lbh; @include orient(l); z-index: 5; }
+    @if ($coord == 1b) { top: $tbv + 2 * $dv; right: $tbh; @include orient(t); z-index: -3; }
+    @if ($coord == 2t) { top: $tbv - $dv; right: $tbh + $dh; @include orient(t); z-index: 3; }
+    @if ($coord == 2r) { top: $rbv - $dv; right: $rbh + $dh; @include orient(r); z-index: -1; }
+    @if ($coord == 2l) { top: $lbv - $dv; right: $lbh + $dh; @include orient(l); z-index: 3; }
+    @if ($coord == 2b) { top: $tbv + $dv; right: $tbh + $dh; @include orient(t); z-index: -3; }
+    @if ($coord == 3t) { top: $tbv - 2 * $dv; right: $tbh + 2 * $dh; @include orient(t); z-index: 1; }
+    @if ($coord == 3r) { top: $rbv - 2 * $dv; right: $rbh + 2 * $dh; @include orient(r); z-index: -1; }
+    @if ($coord == 3l) { top: $lbv - 2 * $dv; right: $lbh + 2 * $dh; @include orient(l); z-index: 1; }
+    @if ($coord == 3b) { top: $tbv; right: $tbh + 2 * $dh; @include orient(t); z-index: -3; }
+    @if ($coord == 4r) { top: $rbv - 3 * $dv; right: $rbh + 3 * $dh; @include orient(r); z-index: -1; }
+    @if ($coord == 5l) { top: $lbv - 3 * $dv; right: $lbh + $dh; @include orient(l); z-index: -1; }
+}
+
+@mixin posClass($coord) {
+    .pos#{$coord} {
+        @include pos($coord);
+    }
+}
+
+@include posClass(0t);
+@include posClass(0r);
+@include posClass(0l);
+@include posClass(1t);
+@include posClass(1r);
+@include posClass(1l);
+@include posClass(1b);
+@include posClass(2t);
+@include posClass(2r);
+@include posClass(2l);
+@include posClass(2b);
+@include posClass(3t);
+@include posClass(3r);
+@include posClass(3l);
+@include posClass(3b);
+
+
+@mixin anim1($coord0, $coord1) {
+    .anim#{$coord0}-#{$coord1} {
+        animation: 1s key#{$coord0}-#{$coord1} forwards;
+        animation-delay: 2s;
+    }
+    @keyframes key#{$coord0}-#{$coord1} {
+        from {
+            @include pos($coord0);
+        }
+        to {
+            @include pos($coord1);
+        }
+    }
+}
+
+@mixin anim2($coord0, $coord1, $coord2) {
+    .anim#{$coord0}-#{$coord2} {
+        animation: 1s key#{$coord0}-#{$coord2} forwards;
+        animation-delay: 2s;
+    }
+    @keyframes key#{$coord0}-#{$coord2} {
+        0% {
+            @include pos($coord0);
+        }
+        50% {
+            @include pos($coord1);
+            animation-timing-function: ease-out;
+        }
+        100% {
+            @include pos($coord2);
+            animation-timing-function: ease-in;
+        }
+    }
+}
+
+@mixin orangeFade($finalpc) {
+    .orange-fill-#{$finalpc} {
+        background-color: $orange;
+        animation: key-pulse-fill-#{$finalpc} 1s ease-in;
+        opacity: $finalpc / 100;
+    }
+    @keyframes key-pulse-fill-#{$finalpc} {
+        0% { opacity: 0; }
+        80% { opacity: $finalpc / 80; }
+        100% { opacity: $finalpc / 100; }
+    }
+}
+
+@include anim1(0r, 1r); // anim0r-1r
+
+@include anim1(0l, 2r);
+
+@include anim2(0t, 1t, 1l);
+
+@include anim2(1l, 2l, 3l);
+
+@include anim2(1r, 1l, 2l);
+
+@include anim2(0t, 1t, 1r);
+
+@include anim2(2r, 3r, 4r);
+
+@include anim2(1r, 2r, 3r);
+
+@include anim2(0t, 0l, 1b);
+
+@include anim2(0r, 1r, 1t);
+
+@include anim2(1b, 3b, 3l);
+
+@include anim2(1t, 2t, 2l);
+
+@include anim2(0t, 1t, 2t);
+
+@include anim2(0r, 0l, 2r);
+
+@include anim2(2t, 3t, 3l);
+
+@include anim2(2r, 2t, 3t);
+
+@include anim2(0l, 2r, 2l);
+
+@include anim2(2l, 3l, 4r);
+
+@include anim2(1b, 2b, 3b);
+
+@include anim2(1l, 2l, 3r);
+
+@include anim2(1r, 1t, 2r);
+
+@include orangeFade(80);
+
+@include orangeFade(60);
+
+@include orangeFade(40);
+
+@include orangeFade(20);
+
+

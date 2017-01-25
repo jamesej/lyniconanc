@@ -1,0 +1,7 @@
+﻿@model Lynicon.Models.BbText
+@using Lynicon.Models
+@{ var text = (Model ?? BbText.Empty).Text; }
+<span class="text-display">@(string.IsNullOrEmpty(text) ? "---" : text )</span>
+@Html.TextBox("", text, new { @class = "text-box single-line bb-text " + ViewData["classes"] })
+
+

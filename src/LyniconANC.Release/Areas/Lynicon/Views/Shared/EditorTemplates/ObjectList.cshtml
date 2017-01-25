@@ -1,0 +1,30 @@
+﻿@model System.Collections.IEnumerable
+@using Lynicon.Utility
+@{
+    int index = (int)ViewData["ItemIndex"];
+}
+<table class="list-table object-list-table">
+    <tr>
+    @foreach (var fld in (List<string>)ViewBag.ListFields) {
+        <th>@Html.Label(fld.Contains("|") ? fld.After("|") : fld)</th>
+    }
+    </tr>
+    @{ int i = 0; }
+    @foreach (object o in Model)
+    {
+    <tr id="o-@(i++)" class="@(i - 1 == index ? " selected" : "")">
+        @foreach (var fld in (List<string>)ViewBag.ListFields)
+        {
+            <td>@ReflectionX.GetPropertyValueByPath(o, fld.UpTo("|"))</td>
+        }
+    </tr>
+    }
+</table>
+@{
+    var filterFieldsString = (string)ViewContext.RouteData.DataTokens["filterFields"];
+    var filterFields = filterFieldsString == null ? null : filterFieldsString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+}
+@if (filterFields != null)
+{
+    @Html.Partial("FilterPanel", new Dictionary<string, List<string>> { { "Filter", filterFields } }, new ViewDataDictionary { { "caseSensitive", true } })
+}

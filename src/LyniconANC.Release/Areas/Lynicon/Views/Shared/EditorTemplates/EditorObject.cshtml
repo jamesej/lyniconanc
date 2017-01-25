@@ -1,0 +1,141 @@
+﻿@model object
+@using Lynicon.Utility
+@using Lynicon.Attributes
+@using Lynicon.Collation
+@using Lynicon.Extensibility
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+
+@{
+    Func<ModelMetadata, bool> ShouldShow = (ModelMetadata metadata) =>
+    {
+        bool shouldShowType = true;
+        PropertyInfo pi = metadata.ModelType.GetProperty("ShouldShow", BindingFlags.Public | BindingFlags.Static);
+        if (pi != null)
+            shouldShowType = (bool)pi.GetValue(null);
+
+        return metadata.ShowForEdit
+            //&& !metadata.IsComplexType
+            //&& !ViewData.TemplateInfo.Visited(metadata)
+            && shouldShowType;
+    };
+}
+
+<script type="text/javascript">
+    @LyniconUi.Instance.GetVariableSetScript(Model);
+</script>
+
+<div class='object level-0'>
+    @{
+    var dispProps = ViewData.ModelMetadata.Properties
+    .Where(pm => ShouldShow(pm))
+    .Select(pm => new {
+        pm,
+        title = pm.AdditionalValues.GetSelectOrDefault<DisplayBlockAttribute, string>("DisplayBlock", dba => dba.Title),
+        order = pm.AdditionalValues.GetSelectOrDefault<DisplayBlockAttribute, int>("DisplayBlock", dba => dba.Order)
+        })
+    .ToList();
+
+    var propGroups = dispProps
+    .Where(pmi => pmi.title != null)
+    .GroupBy(pmi => (string)pmi.title)
+    .Select(pmig => new {
+        title = pmig.Key,
+        order = pmig.Max(pmi => pmi.order),
+        display = (object)pmig.Select(pmi => pmi.pm).ToList()
+        });
+
+    var singleProps = dispProps
+    .Where(pmi => pmi.title == null)
+    .Select(pmi => new
+        {
+        title = (string)null,
+        order = pmi.order == default(int) ? int.MaxValue : pmi.order,
+        display = (object)pmi.pm
+        });
+
+    var uiBlocks = LyniconUi.Instance.CurrentEditorPanels(ViewData.ModelMetadata.ModelType)
+    .Select(ep => new
+        {
+        title = ep.Title,
+        order = ep.Order,
+        display = (object)ep
+        });
+
+    var allBlocks = propGroups.Concat(singleProps).Concat(uiBlocks).OrderBy(bi => bi.order);
+    }
+    @foreach (var block in allBlocks)
+    {
+        var blockProperties = block.display as List<ModelMetadata>;
+        var blockSingleProp = block.display as ModelMetadata;
+        var editorPanel = block.display as EditorPanel;
+        if (blockProperties != null) {
+            ViewData["addDepth"] = 1;
+
+            <div class="editor-unit parent-unit level-0">
+                <div class="editor-label indent-0 parent child-closed">@Html.Label(block.title)</div>
+                <div class="editor-field indent-0">
+                    <div class="object level-1">
+                        @foreach (var prop in blockProperties) {
+                        <div class="editor-unit level-1">
+                            @if (prop.HideSurroundingHtml) {
+                                <div class="editor-field indent-1">@Html.Editor(prop.PropertyName.ExpandCamelCase())</div>
+                            } else {
+                                if (!String.IsNullOrEmpty(Html.Label(prop.PropertyName).ToString())) {
+                                    <div class="editor-label indent-1">@Html.Label(prop.PropertyName.ExpandCamelCase())</div>
+                                }
+                                <div class="editor-field indent-1">
+                                    @Html.Editor(prop.PropertyName)
+                                    @Html.ValidationMessage(prop.PropertyName, "*")
+                                </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            ViewData["addDepth"] = 0;
+        } else if (blockSingleProp != null) {
+
+            <div class="editor-unit level-0">
+                @if (blockSingleProp.HideSurroundingHtml) {
+                    <div class="editor-field indent-0">@Html.Editor(blockSingleProp.PropertyName.ExpandCamelCase())</div>
+                } else {
+                    if (!String.IsNullOrEmpty(Html.Label(blockSingleProp.PropertyName).ToString())) {
+                    <div class="editor-label indent-0">@Html.Label(blockSingleProp.PropertyName.ExpandCamelCase())</div>
+                    }
+                    <div class="editor-field indent-0">
+                        @Html.Editor(blockSingleProp.PropertyName)
+                        @Html.ValidationMessage(blockSingleProp.PropertyName, "*")
+                    </div>
+                }
+            </div>
+
+        } else if (editorPanel != null) {
+
+            <div class="editor-unit parent-unit level-0">
+                <div class="editor-label indent-0 parent child-closed">@Html.Label(editorPanel.Title)</div>
+                <div class="editor-field indent-0">
+                    <div class="object level-1">
+                        @Html.Partial(editorPanel.ViewName, Model)
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@foreach (var script in LyniconUi.Instance.EditorScripts)
+{
+    if (script.Value.StartsWith("javascript:"))
+    {
+        <script type="text/javascript">
+            @Html.Raw(script.Value.After("javascript:"))
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript" src="@script.Value"></script>
+    }
+}

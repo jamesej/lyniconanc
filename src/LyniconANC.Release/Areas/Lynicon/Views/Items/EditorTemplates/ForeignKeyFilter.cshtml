@@ -1,0 +1,12 @@
+﻿@model Lynicon.Extensions.ForeignKeyFilter
+<div class="field-filter">
+    <label class="filter-name">@Model.Name</label>
+    @if (Model.Showable)
+    {
+        <label>Show</label>
+        @Html.CheckBoxFor(m => m.Show)
+    }
+    @Html.TextBoxFor(m => m.Search)
+    @Html.HiddenFor(m => m.ModelType)
+    @Html.HiddenFor(m => m.Idx)
+</div>

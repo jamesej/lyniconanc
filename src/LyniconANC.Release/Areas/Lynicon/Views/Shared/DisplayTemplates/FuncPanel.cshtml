@@ -1,0 +1,164 @@
+﻿@model object
+@inject IAuthorizationService AuthorizationService
+@using System.Collections
+@using Lynicon.Extensibility
+@using Lynicon.Collation
+@using Lynicon.Membership
+@using Lynicon.Models
+@using Lynicon.Utility
+@using Microsoft.AspNetCore.Authorization;
+@{
+    LyniconUi ui = LyniconUi.Instance;
+    string sections = (string)ViewData["Sections"] ?? "";
+    IUser user = SecurityManager.Current.User;
+}
+@if (ui.ShowProblemAlert)
+{
+    Html.RegisterLocalStyles("problem-alert", "#fpbAdmin { background-color: red }");
+}
+<div id='funcPanel'>
+    <div id="reveal" style="display:none">
+        @{ bool isAlt = false; }
+        @foreach (var viewKvp in ui.RevealPanelViews)
+        {
+            <div class="reveal-panel-view @(isAlt ? " alt" : "")">
+                @Html.Partial(viewKvp.Value)
+                <div style="clear:both"></div>
+            </div>
+            isAlt = !isAlt;
+        }
+
+        <div style="clear:both"></div>
+    </div>
+    <img id="lyn-logo" src="~/images/lynicon/lynicon-cmsbar.png" />
+    <div id="reveal-button"><img id="reveal-arrow" src="~/images/lynicon/up-arrow-white.png" /></div>
+    @if (sections.Contains("Opener"))
+    {
+        <div id="opener">
+            <i id="opener-out" class="fa fa-caret-left"></i>
+            <i id="opener-in" class="fa fa-caret-right"></i>
+        </div>
+    }
+    @{
+        var vers = Model == null || Model is IList || !ContentTypeHierarchy.AllContentTypes.Contains(Model.GetType().ContentType())
+            ? VersionManager.Instance.CurrentVersion
+            : VersionManager.Instance.GetVersion(Collator.Instance.GetContainer(Model));
+        bool overridden = VersionManager.Instance.CurrentVersionIsOverridden;
+    }
+    @if (vers != null && vers.Count > 0 && (bool)(ViewData["ShowVersions"] ?? true))
+    {
+        <div id="version-unit" class="@(overridden ? "overridden" : "")">
+            <div class="lyn-version-go">
+                <i class="lyn-version-go-button fa fa-arrow-right fa-1g" style="display:none"></i>
+            </div>
+
+            @foreach (var vsvm in VersionManager.Instance.SelectionViewModel(user, vers, true))
+            {
+                var curr = vsvm.SelectList.FirstOrDefault(sli => sli.Selected).Text.Split('|');
+                var currVal = vsvm.SelectList.FirstOrDefault(sli => sli.Selected).Value;
+                var first = vsvm.SelectList.First().Selected;
+                var last = vsvm.SelectList.Last().Selected;
+                <div class='lyn-version-display @vsvm.CssClass' title="@curr[1]">
+                    <i class="lyn-version-next lyn-version-arrow fa fa-caret-up" style="@(last ? "display:none" : "")"></i>
+                    <span class="lyn-version-txt">@curr[0]</span>
+                    <i class="lyn-version-prev lyn-version-arrow fa fa-caret-down" style="@(first ? "display:none" : "")"></i>
+
+                    <input type="hidden" class="lyn-vd-original" value="@currVal" />
+                    <input type="hidden" class="lyn-vd-val" data-vsn-key="@vsvm.VersionKey" value="@currVal" />
+                    <input type="hidden" class="lyn-vd-items" value="@vsvm.SelectList.Select(sli => sli.Text + "|" + sli.Value).Join(";")" />
+                </div>
+            }
+            <input type="hidden" id="lyn-item-version" value="@vers.ToString()" />
+        </div>
+    }
+    @foreach (var btn in ui.FuncPanelButtons)
+    {
+        if ((btn.Section != "Global" && !sections.Contains(btn.Section)) || !(await btn.CanDisplay(AuthorizationService, User, Model)))
+        {
+            continue;
+        }
+        if (btn.Section == "Global")
+        {
+            <div class="sep">|</div>
+        }
+
+        if (btn.ViewName == null)
+        {
+            string url = ui.ApplySubstitutions(btn.Url, ViewContext, ViewBag);
+            <a href="@(string.IsNullOrEmpty(url) ? "javascript:void(0)" : url)" id="@btn.Id" class="func-button @btn.Section" style="@(string.IsNullOrEmpty(btn.BackgroundColor) ? "" : "background-color: " + btn.BackgroundColor + ";")">
+                @btn.Caption
+            </a>
+        }
+        else
+        {
+            @Html.Partial(btn.ViewName)
+        }
+    }
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        @foreach (var btn in ui.FuncPanelButtons.Where(fpb => !string.IsNullOrEmpty(fpb.ClientClickScript)))
+        {
+            if (!(await btn.CanDisplay(AuthorizationService, User, Model)))
+            {
+                continue;
+            }
+
+        @:$('#@btn.Id').click(function (ev) {
+                                    @:ev.preventDefault();
+                                    @Html.Raw(ui.ApplySubstitutions(btn.ClientClickScript, ViewContext, ViewBag))
+        @:});
+        }
+        $('#reveal-button').click(function () {
+            if ($('#reveal').length == 0) {
+                $("<div id='reveal'></div>")
+                    .hide()
+                    .insertBefore($('#save'))
+                    .load('/lynicon/ui/functionreveal', function () {
+                        $('#reveal').show('slow');
+                    });
+                $('#reveal-arrow').attr('src', '/areas/lynicon/content/down-arrow-white.png');
+            } else if ($('#reveal').is(':visible')) {
+                $('#reveal').hide('slow');
+                $('#reveal-arrow').attr('src', '/areas/lynicon/content/up-arrow-white.png');
+            } else {
+                $('#reveal').show('slow');
+                $('#reveal-arrow').attr('src', '/areas/lynicon/content/down-arrow-white.png');
+            }
+
+        });
+        $('#funcPanel').on('click', '.lyn-version-arrow', function () {
+            var dirn = $(this).hasClass('lyn-version-next') ? 1 : -1;
+            var opts = $(this).siblings('.lyn-vd-items').val().split(';');
+            var $currV = $(this).siblings('.lyn-vd-val');
+            var curr = $currV.val();
+            for (var i = 0; i < opts.length; i++) {
+                if (opts[i].split('|')[2] == curr) {
+                    var next = opts[i + dirn].split('|');
+                    $(this).siblings('.lyn-version-txt').text(next[0]);
+                    $(this).closest('.lyn-version-display').prop('title', next[1]);
+                    $currV.val(next[2]);
+                    $(this).parent().children('.lyn-version-next').toggle(i + dirn + 1 < opts.length);
+                    $(this).parent().children('.lyn-version-prev').toggle(i + dirn > 0);
+                }
+            }
+
+            var hasChange = false;
+            $('.lyn-version-display').each(function () {
+                var curr = $(this).find('.lyn-vd-val').val();
+                var original = $(this).find('.lyn-vd-original').val();
+                if (curr != original)
+                    hasChange = true;
+            });
+            $('.lyn-version-go-button').toggle(hasChange);
+        }).on('click', '.lyn-version-go-button', function () {
+            var versions = {};
+            $('#version-unit .lyn-vd-val').each(function () {
+                versions[$(this).data('vsn-key')] = $(this).val();
+            });
+            $.post('/lynicon/version/changeversion', { version: versions }, function () {
+                location.replace(location.href);
+            });
+        });
+    });
+</script>

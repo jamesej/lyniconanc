@@ -1,0 +1,34 @@
+﻿@model Lynicon.Models.LoginForm
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Lynicon - Login</title>
+    <link type="text/css" href="~/css/lynicon/font-awesome.css" rel="stylesheet" />
+    <link href="~/css/lynicon/LyniconMain.css" rel="stylesheet" type="text/css" />
+</head>
+<body id="lyn-login">
+    <div id="lyn-login-box">
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")
+            <div class="editor-label"><label>Lynicon Login</label></div>
+            <div class="editor-field">
+                @Html.TextBoxFor(m => m.UserName, new { placeholder = "User Name" })
+            </div>
+            <div class="editor-field">
+                @Html.PasswordFor(m => m.Password, new { placeholder = "Password", onkeyup = "if (event.keyCode == 13) { document.getElementsByTagName('form')[0].submit(); }" })
+            </div>
+            <div id="login-button" onclick="document.getElementsByTagName('form')[0].submit()">LOG IN</div>
+        }
+    </div>
+    <div id="funcPanel">
+        <img id="lyn-logo" src="~/images/lynicon/lynicon-cmsbar.png" />
+    </div>
+</body>
+</html>

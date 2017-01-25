@@ -1,0 +1,24 @@
+﻿@model object
+@using Lynicon.Utility
+
+<div id='editPanel'>
+    <form method="post" action="@ViewBag.Url">
+        @Html.Partial("~/Areas/Lynicon/Views/Shared/EditorTemplates/EditorObject.cshtml")
+        @Html.Hidden("formState")
+        @if (ViewBag.UpdatedCheck != null && (long)ViewBag.UpdatedCheck != long.MaxValue)
+        {
+            <input type="hidden" id="updatedCheck" name="updatedCheck" value="@((long)ViewBag.UpdatedCheck)" />
+        }
+        @if (ViewData.ContainsKey("ItemIndex"))
+        {
+            @Html.Hidden("lynicon_itemIndex", ViewData["ItemIndex"])
+        }
+    </form>
+    @Html.Hidden("modelId", (string)ViewBag.Id)
+    @Html.Hidden("modelType", (string)Model.GetType().FullName)
+
+    <div style="clear:both; height: 44px;"></div>
+</div>
+
+
+

@@ -1,0 +1,292 @@
+﻿@using Lynicon.Utility
+@*
+@Html.RegisterCss("/css/lynicon/jquery.jstreelist.css")
+@Html.RegisterCss("/css/lynicon/jquery.contextMenu.css")
+    *@
+@Html.RegisterLocalStyles("jstreelist", @"
+.listContainer { font-family: Arial; font-size: 12px; position: relative; overflow-x: auto; }
+.treeContainer { font-family: Arial; font-size: 12px; }
+
+.listContainer table { width: 400px; border-collapse: collapse; }
+.listContainer table th { text-align: left; }
+.listContainer td.ext { width: 20px; }
+ins.ext_dir { width:16px; height:16px; display:inline-block; background-position: -56px -19px; }
+
+.qq-uploader { position:relative; width: 100%;}
+
+.qq-upload-button {
+    display:block; /* or inline-block */
+    padding: 7px 0; text-align:center;    
+    background:#c0c0f0;
+}
+.qq-upload-button-hover {background:#808080;}
+.qq-upload-button-focus {outline:1px dotted black;}
+
+.qq-upload-drop-area {
+    position:absolute; top:0; left:0; width:100%; height:100%; min-height: 70px; z-index:2;
+    background-color: #d0d0ff; opacity:0.3; filter:alpha(opacity=30);
+}
+.qq-upload-drop-area span {
+    display:block; position:absolute; top: 50%; width:100%; margin-top:-8px; font-size:16px;
+}
+
+.qq-upload-drop-area-active { background-color: #7bafc6; }
+
+.qq-upload-list {margin:15px 35px; padding:0; list-style:disc;}
+.qq-upload-list li { margin:0; padding:0; line-height:15px; font-size:12px;}
+.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-failed-text {
+    margin-right: 7px;
+}
+
+.qq-upload-file {}
+.qq-upload-spinner {display:inline-block; background: url(/css/lynicon/images/loading.gif); width:15px; height:15px; vertical-align:text-bottom;}
+.qq-upload-size,.qq-upload-cancel {font-size:11px;}
+
+.qq-upload-failed-text {display:none;}
+.qq-upload-fail .qq-upload-failed-text {display:inline;}
+
+.selected td { background-color: #e0e0ff; }
+
+
+/* Core Styles */
+.directory { background: url(/css/lynicon/images/directory.png) left top no-repeat; }
+.expanded { background: url(/css/lynicon/images/folder_open.png) left top no-repeat; }
+.file { background: url(/css/lynicon/images/file.png) left top no-repeat; }
+.wait {
+	background: url(/css/lynicon/images/spinner.gif) left top no-repeat;
+}
+/* File Extensions*/
+.ext { background: url(/css/lynicon/images/file.png) left top no-repeat; }
+.ext_3gp { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_afp { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_afpa { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_asp { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_aspx { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_avi { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_bat { background: url(/css/lynicon/images/application.png) left top no-repeat; }
+.ext_bmp { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_c { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_cfm { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_cgi { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_com { background: url(/css/lynicon/images/application.png) left top no-repeat; }
+.ext_cpp { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_css { background: url(/css/lynicon/images/css.png) left top no-repeat; }
+.ext_doc { background: url(/css/lynicon/images/doc.png) left top no-repeat; }
+.ext_exe { background: url(/css/lynicon/images/application.png) left top no-repeat; }
+.ext_gif { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_fla { background: url(/css/lynicon/images/flash.png) left top no-repeat; }
+.ext_h { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_htm { background: url(/css/lynicon/images/html.png) left top no-repeat; }
+.ext_html { background: url(/css/lynicon/images/html.png) left top no-repeat; }
+.ext_jar { background: url(/css/lynicon/images/java.png) left top no-repeat; }
+.ext_jpg { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_jpeg { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_js { background: url(/css/lynicon/images/script.png) left top no-repeat; }
+.ext_lasso { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_log { background: url(/css/lynicon/images/txt.png) left top no-repeat; }
+.ext_m4p { background: url(/css/lynicon/images/music.png) left top no-repeat; }
+.ext_mov { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_mp3 { background: url(/css/lynicon/images/music.png) left top no-repeat; }
+.ext_mp4 { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_mpg { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_mpeg { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_ogg { background: url(/css/lynicon/images/music.png) left top no-repeat; }
+.ext_pcx { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_pdf { background: url(/css/lynicon/images/pdf.png) left top no-repeat; }
+.ext_php { background: url(/css/lynicon/images/php.png) left top no-repeat; }
+.ext_png { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_ppt { background: url(/css/lynicon/images/ppt.png) left top no-repeat; }
+.ext_psd { background: url(/css/lynicon/images/psd.png) left top no-repeat; }
+.ext_pl { background: url(/css/lynicon/images/script.png) left top no-repeat; }
+.ext_py { background: url(/css/lynicon/images/script.png) left top no-repeat; }
+.ext_rb { background: url(/css/lynicon/images/ruby.png) left top no-repeat; }
+.ext_rbx { background: url(/css/lynicon/images/ruby.png) left top no-repeat; }
+.ext_rhtml { background: url(/css/lynicon/images/ruby.png) left top no-repeat; }
+.ext_rpm { background: url(/css/lynicon/images/linux.png) left top no-repeat; }
+.ext_ruby { background: url(/css/lynicon/images/ruby.png) left top no-repeat; }
+.ext_sql { background: url(/css/lynicon/images/db.png) left top no-repeat; }
+.ext_swf { background: url(/css/lynicon/images/flash.png) left top no-repeat; }
+.ext_tif { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_tiff { background: url(/css/lynicon/images/picture.png) left top no-repeat; }
+.ext_txt { background: url(/css/lynicon/images/txt.png) left top no-repeat; }
+.ext_vb { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_wav { background: url(/css/lynicon/images/music.png) left top no-repeat; }
+.ext_wmv { background: url(/css/lynicon/images/film.png) left top no-repeat; }
+.ext_xls { background: url(/css/lynicon/images/xls.png) left top no-repeat; }
+.ext_xml { background: url(/css/lynicon/images/code.png) left top no-repeat; }
+.ext_zip { background: url(/css/lynicon/images/zip.png) left top no-repeat; }
+")
+@Html.RegisterLocalStyles("contextmenu", @"
+.context-menu-list {
+    margin:0; 
+    padding:0;
+    
+    min-width: 120px;
+    max-width: 250px;
+    display: inline-block;
+    position: absolute;
+    list-style-type: none;
+    
+    border: 1px solid #DDD;
+    background: #EEE;
+    
+    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+       -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        -ms-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+}
+
+.context-menu-item {
+    padding: 2px 2px 2px 24px;
+    background-color: #EEE;
+    position: relative;
+    -moz-user-select: -moz-none;
+}
+
+.context-menu-separator {
+    padding-bottom:0;
+    border-bottom: 1px solid #DDD;
+}
+
+.context-menu-item > label {
+    -moz-user-select: text;
+}
+
+.context-menu-item.hover {
+    cursor: pointer;
+    background-color: #39F;
+}
+
+.context-menu-item.disabled {
+    color: #666;
+}
+
+.context-menu-input.hover,
+.context-menu-item.disabled.hover {
+    cursor: default;
+    background-color: #EEE;
+}
+
+/* icons
+    #protip:
+    In case you want to use sprites for icons (which I would suggest you do) have a look at
+    http://css-tricks.com/13224-pseudo-spriting/ to get an idea of how to implement 
+    .context-menu-item.icon:before {}
+ */
+.context-menu-item.icon { height: 18px; background-repeat: no-repeat; background-position: 4px 2px; }
+.context-menu-item.icon-edit { background-image: url(/css/lynicon/images/page_white_edit.png); }
+.context-menu-item.icon-cut { background-image: url(/css/lynicon/images/cut.png); }
+.context-menu-item.icon-copy { background-image: url(/css/lynicon/images/page_white_copy.png); }
+.context-menu-item.icon-paste { background-image: url(/css/lynicon/images/page_white_paste.png); }
+.context-menu-item.icon-delete { background-image: url(/css/lynicon/images/page_white_delete.png); }
+.context-menu-item.icon-quit { background-image: url(/css/lynicon/images/door.png); }
+
+/* vertically align inside labels */
+.context-menu-input > label > * { vertical-align: top; }
+
+/* position checkboxes and radios as icons */
+.context-menu-input > label > input[type='checkbox'],
+.context-menu-input > label > input[type='radio'] {
+    margin-left: -17px;
+}
+.context-menu-input > label > span {
+    margin-left: 5px;
+}
+
+.context-menu-input > label,
+.context-menu-input > label > input[type='text'],
+.context-menu-input > label > textarea,
+.context-menu-input > label > select {
+    display: block;
+    width: 100%;
+    
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+         -o-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.context-menu-input > label > textarea {
+    height: 100px;
+}
+.context-menu-item > .context-menu-list {
+    display: none;
+    /* re-positioned by js */
+    right: -5px;
+    top: 5px;
+}
+
+.context-menu-item.hover > .context-menu-list {
+    display: block;
+}
+")
+@Html.RegisterHtmlBlock("lyn_fileeditor",
+@"<div id='_L24FileMgrContainer' style='display:none'>
+    <div id='outer'>
+        <div id='treeContainer' class='treeContainer ui-layout-west'></div>
+        <div id='listContainer' class='listContainer ui-layout-center'></div>
+    </div>
+    <div id='filenameBox'>
+        <input id='filename' class='filename' type='text' />
+        <div id='fileDetails' class='fileDetails'></div>
+    </div>
+</div>
+<script id='fileListTemplate' type='text/x-jquery-tmpl'>
+    <table style='width:300px'>
+        <tr><th></th><th>Name</th><th>Size</th></tr>
+        {{each dirs}}
+        <tr title='${dir}${name}/'><td class='dir jstree-default'><ins style='width:16px;height:16px;display:inline-block' class='ext ext_dir' /></td><td><span>${name}</span></td><td></td></tr>{{/each}}
+        {{each files}}
+        <tr title='${dir}${name}'><td><ins style='width:16px;height:16px;display:inline-block' class='ext ext_${ext}' /></td><td><span>${name}</span></td><td>${size}</td></tr>{{/each}}
+    </table>
+</script>")
+@Html.RegisterScript("jstree", "/js/lynicon/jquery.jstree.js", new List<string>
+    { "jquery" })
+@Html.RegisterScript("contextMenu", "/js/lynicon/jquery.contextMenu.js", new List<string>
+    { "jquery" })
+@Html.RegisterScript("fileuploader", "/js/lynicon/fileuploader.js", new List<string>
+    { "jquery" })
+@Html.RegisterScript("layout", "/js/lynicon/jquery.layout.js", new List<string>
+    { "jquery" })
+@Html.RegisterScript("jstreelist", "/js/lynicon/jquery.jstreelist.js", new List<string>
+    { "jstree", "contextMenu", "fileuploader" })
+@Html.RegisterScript("lyn_fileeditor_script",
+    @"javascript:
+    $(document).ready(function() {
+        $('#_L24FileMgrContainer').jstreelist({ rootPath: '" + (ViewBag.FileManagerRoot as string) + @"' });
+    });
+    function getFile(current, info, updateFile) {
+        var $fm = $('#_L24FileMgrContainer').css('display', 'block');
+        $fm.find('#outer').layout();
+        $fm.css({ 'z-index': '1010', position: 'fixed' });
+        $(""<div id='modalPlaceholder' style='background-color: White;'></div>"")
+            .width($fm.width()).height($fm.height())
+            .modal({
+                overlayClose: true,
+                onClose: function(dialog) {
+                    var msg = updateFile($('#filename').val());
+                    if (msg) {
+                        alert(msg);
+                        this.bindEvents();
+                        this.occb = false;
+                    } else {
+                        $('#_L24FileMgrContainer').css('display', 'none');
+                        $.modal.getContainer().unbind('move.modal');
+                        $.modal.close();
+                    }
+                }
+             });
+
+        $('.simplemodal-close').css({
+            'z-index': '1003', position: 'fixed', display: 'block',
+            'background-image': 'url(/css/lynicon/images/close-white.png)',
+            width: '16px', height: '16px'
+        });
+        positionTool('#_L24FileMgrContainer');
+        $.modal.getContainer().bind('move.modal', function() { positionTool('#_L24FileMgrContainer'); });
+
+    }", new List<string> { "jstreelist" })

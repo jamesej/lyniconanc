@@ -1,0 +1,8 @@
+﻿@using System.Collections
+<div id="container">
+    @{
+        IList list = (IList)ViewData["list"];
+    }
+    @Html.EditorFor(m => list, null, ViewData["propertyPath"] as string,
+        new { CollectionAdditionalValues = ViewData["CollectionAdditionalValues"] })
+</div>

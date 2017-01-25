@@ -1,0 +1,95 @@
+﻿@model string
+@using Lynicon.Membership
+
+@{
+    var user = SecurityManager.Current.User;
+}
+
+<script type="text/javascript">
+
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    @if (user != null)
+    {
+        @:ga('create', '@Model', { 'userId': '@user.IdAsString' });
+        //@:ga('set', '&uid', {{'@user.Id'}});
+    }
+    else
+    {
+        @:ga('create', '@Model');
+        }
+
+    ga('send', 'pageview');
+
+    window.anlFired = true;
+
+    $(document).ready(function () {
+        $('body').on('click', 'a', function (ev) {
+            var $trackContext;
+            var link = $(this).attr('href') || 'no link';
+
+            //MM August 2015 Events Layout
+            if ($(this).hasClass('track-link'))
+                $trackContext = $(this);
+            else {
+                $trackContext = $(this).closest('.track-link');
+            }
+            if ($trackContext.length && $trackContext.data('track-link')) {
+                sendEvent($trackContext, 'track-link', link);
+            }
+
+        });
+        $('body').on('click', '.track-click', function (ev) {
+            $trackContext = $(this);
+            sendEvent($trackContext, 'track-click');
+        });
+        $('body').on('change', '.track-change', function (ev) {
+            $trackContext = $(this);
+            sendEvent($trackContext, 'track-change');
+        });
+        $('video').on('play stop pause error ended volumechange', function (ev) {
+            $trackContext = $(this);
+            if ($trackContext.length) {
+                var link = ev.type;
+                var linkType = 'Video';
+                var linkTrackData = 'Video';
+                ga('send', 'event', linkType, linkTrackData, link);
+                console.log(linkType + "|" + linkTrackData + "|" + link);
+            }
+        });
+    });
+
+    function getCamelCaseTrackTag(tracktag) {
+        var split = tracktag.split("-");
+        var result = split[0];
+        for (var i = 1; i < split.length; i++) {
+            result += split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+        return result;
+    }
+
+    function sendEventData(category, action, label, value, noninteraction) {
+        //alert('send ' + 'event' + " " + category + " " + action + " " + label + " " + (value || 0 ));
+        ga('send', 'event', category, action, label, (value || 0), noninteraction);
+        console.log(category + "|" + action + "|" + label + "|" + value + "|" + noninteraction);
+    }
+
+    function sendEvent(eventinfo, tracktag, eventlink) {
+        var str = eventinfo[0].dataset[getCamelCaseTrackTag(tracktag)];
+        var substr = str.split('|');
+
+        if (substr.length > 1) {
+            var category = substr[0] || "no category";
+            var action = substr[1] || "no action";
+            var label = substr[2] || eventlink || "no label (" + eventinfo.data(tracktag) + ",  Additional Info - " + eventinfo.attr('class') + ")";
+            var value = eventinfo.data('track-value') || 0;
+            //TODO : Convert '/' to Home
+            sendEventData(category, action, label, value, false);
+        }
+    }
+</script>

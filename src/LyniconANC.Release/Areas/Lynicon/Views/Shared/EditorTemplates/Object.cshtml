@@ -1,0 +1,53 @@
+﻿@using Lynicon.Attributes
+@using Lynicon.Utility
+@using Lynicon.Models
+@using System.Linq
+@using System.Collections
+@using System.Reflection
+@using Microsoft.AspNetCore.Mvc.ModelBinding
+@{
+    Func<ModelMetadata, bool> ShouldShow = (ModelMetadata metadata) =>
+    {
+        bool shouldShowType = true;
+        PropertyInfo pi = metadata.ModelType.GetProperty("ShouldShow", BindingFlags.Public | BindingFlags.Static);
+        if (pi != null)
+            shouldShowType = (bool)pi.GetValue(null);
+        
+        return metadata.ShowForEdit
+            //&& !metadata.IsComplexType
+            //&& !ViewData.TemplateInfo.Visited(metadata)
+            && shouldShowType;
+    };
+}
+@if (ViewData.TemplateInfo.TemplateDepth > 9) {
+    if (Model == null) {
+        @ViewData.ModelMetadata.NullDisplayText
+    } else {
+        @(Model.GetType().GetProperty(ViewData.ModelMetadata.SimpleDisplayProperty).GetValue(Model))
+    }
+} else {
+                    int useDepth = ViewData.TemplateInfo.TemplateDepth + ((ViewData["addDepth"] as int?) ?? 0) - 1;
+                    int oldInd = (ViewData["indent"] as int?) ?? 0;
+                    int collDepth = (ViewData["collectionDepth"] as int?) ?? -100;
+                    bool isInCollection = collDepth == ViewData.TemplateInfo.TemplateDepth - 1;
+                    int ind = oldInd + (isInCollection ? 0 : 1);
+                    ViewData["indent"] = ind;
+<div class='object level-@useDepth'>
+    @foreach (var prop in ViewData.ModelMetadata.Properties.Where(pm => ShouldShow(pm))) {
+    <div class="editor-unit level-@useDepth">
+        @if (prop.HideSurroundingHtml) {
+        <div class="editor-field indent-@ind">@Html.Editor(prop.PropertyName.ExpandCamelCase())</div>
+        } else {
+        if (!String.IsNullOrEmpty(Html.Label(prop.PropertyName).ToString())) {
+        <div class="editor-label indent-@ind">@Html.Label(prop.PropertyName.ExpandCamelCase())</div>
+        }
+        <div class="editor-field indent-@ind">
+            @Html.Editor(prop.PropertyName)
+            @Html.ValidationMessage(prop.PropertyName, "*")
+        </div>
+        }
+    </div>
+    }
+</div>
+ViewData["indent"] = oldInd;
+}

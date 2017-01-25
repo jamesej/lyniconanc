@@ -1,0 +1,17 @@
+﻿@model Lynicon.Models.MediaFileLink
+@using Lynicon.Models
+@using Lynicon.Utility
+<div class='lyn-media'>
+    <div class='lyn-media-url'>
+        <button class='lyn-media-load'>Find Media</button>
+        <div class="lyn-image-url">
+            @Html.EditorFor(m => m.Url)
+        </div>
+    </div>
+    <div class='lyn-media-content'>
+        <span>Content</span>
+        <input type="text" class="bb-text" name="@(ViewData.TemplateInfo.HtmlFieldPrefix).Content" value="@((Model.Content ?? BbText.Empty).Text)" />
+    </div>
+</div>
+@Html.Partial("EnsureFileEditor", "MediaFile")
+@Html.RegisterScript("lyn_image_control", "/Areas/Lynicon/Scripts/LyniconImageEditor.js", new List<string> { "jquery" })

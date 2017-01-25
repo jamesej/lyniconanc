@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/Areas/Lynicon/Views/Shared/EditorLayout.cshtml";
+}
+
+<div id='container' style="height: 100%; width: 100%; position:relative;">
+    <div id="view-container">
+        <iframe id="view" src="@(ViewContext.HttpContext.Request.Path.ToString())?$mode=view@(ViewBag.OriginalQuery as string)"></iframe>
+    </div>
+    <script type="text/javascript">
+        function ensureQueryKvp(url, key, val) {
+            var parts = url.split('?');
+            var queryKvps = (parts.length > 1 ? parts[1].split('&') : []);
+            var queryKvpsDone = [];
+            for (var i = 0; i < queryKvps.length; i++)
+                if (queryKvps[i].split('=')[0] != key)
+                    queryKvpsDone.push(queryKvps[i]);
+            queryKvpsDone.push(key + "=" + val);
+            return parts[0] + '?' + queryKvpsDone.join('&');
+        }
+        @* in editor, rig all link hrefs in the view to go have $mode=view to avoid diversion to editor *@
+        $('#view').on('load', function () {
+            $('#view').contents().find('a').each(function () {
+                var href = $(this).attr('href');
+                if (href && (href.split('://').length == 1 || href.split('://')[1].split('/')[0] == location.href.split('://')[1].split('/')[0]))
+                    $(this).attr('target', '_top');
+            });
+        });
+    </script>
+    <div id="edit">
+        <div id="editPanelContainer">
+            @Html.EditorForModel("LyniconEditPanel")
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div id="error-panel">
+                    @Html.ValidationSummary(false)
+                </div>
+                <script type="text/javascript">
+                    $('#error-panel').dialog({ modal: true, title: "Errors" });
+                </script>
+            }
+        </div>
+        @Html.DisplayForModel("FuncPanel", new { Sections = "Record,Opener" })
+        <div style="clear:both; height: 44px;"></div>
+    </div>
+</div>
+

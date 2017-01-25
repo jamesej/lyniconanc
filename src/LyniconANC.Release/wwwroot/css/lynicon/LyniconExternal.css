@@ -1,0 +1,7 @@
+﻿
+.l24-bimodal-autocomplete-container { display: inline-block; }
+.l24-bimodal-autocomplete-button
+{
+	width: 20px; height: 20px; display: inline-block; position: relative; top: 5px;
+	background-color: Red;
+}

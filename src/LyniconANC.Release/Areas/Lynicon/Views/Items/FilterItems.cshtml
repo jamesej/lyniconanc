@@ -1,0 +1,50 @@
+﻿@model List<Tuple<object, Summary>>
+@using System.Reflection
+@using Lynicon.Utility
+@using Lynicon.Models
+@using Lynicon.Extensibility
+
+@{
+    var showFilts = (List<ListFilter>)ViewData["ShowFilts"];
+}
+<table id="results">
+    <thead>
+        <tr>
+            <td></td>
+            <td>Type</td>
+            <td>Link</td>
+            @foreach (var filt in showFilts)
+            {
+                foreach (string hdr in filt.Headers())
+                {
+                    <td>@hdr</td>
+                }
+            }
+        </tr>
+    </thead>
+    @foreach (var dataLine in Model)
+    {
+        <tr>
+            <td><input data-id="@dataLine.Item2.ItemId" type="checkbox" class="item-check" /></td>
+            <td>@BaseContent.ContentClassDisplayName(dataLine.Item2.Type)</td>
+            <td><a href="@dataLine.Item2.Url" target="_blank">@dataLine.Item2.DisplayTitle()</a></td>
+            @foreach (var filt in showFilts)
+            {
+                var showText = filt.GetShowText(dataLine);
+                if (!string.IsNullOrEmpty(showText) && showText.Contains("|"))
+                {
+                    foreach (string show in showText.Split('|'))
+                    {
+                        <td>@show</td>
+                    }
+                }
+                else
+                {
+                    <td>@showText</td>
+                }
+
+            }
+        </tr>
+    }
+</table>
+@Html.ListPager("navigate")

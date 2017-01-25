@@ -1,0 +1,91 @@
+﻿@model Lynicon.Relations.Reference
+@using Lynicon.Utility;
+@using Lynicon.Relations;
+@Html.RegisterLocalStyles("serverSelCss", @"
+.lyn-server-select { width: 90%; }
+.lyn-ss-input { width: 90%; }
+.lyn-ss-drop-pane { width: 90%; position: absolute; z-index: 999; background-color: #e2f5f5; padding: 1%; box-sizing: border-box; border: 1px solid #3a7777; max-height: 170px; overflow-x: auto; }
+.lyn-ss-drop-item, .lyn-ref-sel-clear { cursor: pointer; }
+.lyn-ss-drop-item { padding: 2px 1px 3px 1px; background-color: #e2f5f5; }
+.lyn-ss-drop-item:nth-child(2n) { background-color: #c8eded; }
+.lyn-ss-drop-item:hover { background-color: #c0c0c0; color: white; }
+.lyn-ss-drop-item em { color: #000; }
+.lyn-ss-drop-item.xvsn { background-color: #fff6da; }
+.lyn-ss-drop-item.xvsn:nth-child(2n) { background-color: #f9e193; }
+.lyn-ss-drop-item.xvsn:hover { background-color: #c0c0c0; color: white; }
+")
+@{
+    string vsn = null;
+    if (Model is ICrossVersionReference)
+    {
+        vsn = ((ICrossVersionReference)Model).AllowedVersionsOverlay.ToString();
+    }  
+}
+<div class="lyn-reference lyn-server-select">
+    @Html.HiddenFor(m => m.SerializedValue, new { @class = "lyn-ss-hidden-value" })
+    <input type="hidden" class="lyn-ss-hidden-text" value="@(Model.IsEmpty ? "" : Model.Summary.Title)" />
+    <input class="lyn-ss-input" value="@(Model.IsEmpty ? "" : Model.Summary.Title)" data-list-id="@Model.SelectListId()" data-allowed-vsn="@vsn" />
+    <i class="fa fa-times lyn-ref-sel-clear"></i>
+    <div class="lyn-ss-drop-pane" style="display:none"></div>
+</div>
+@Html.RegisterScript("initServerSel", @"javascript:
+$(document).ready(function () {
+    var ssMouseOverPane = false, loadReq = null;
+    $('.lyn-ss-drop-pane').hover(function () { ssMouseOverPane = true; }, function () { ssMouseOverPane = false; });
+
+    var setTextVal = function (text, val, $loc) {
+        $ss = $loc.closest('.lyn-server-select');
+        $ss.children('.lyn-ss-input').val(text);
+        $ss.children('.lyn-ss-hidden-value').val(val);
+        $ss.children('.lyn-ss-hidden-text').val(text);
+    };
+
+    $('body').on('click', '.lyn-server-select .lyn-ref-sel-clear', function () {
+        setTextVal('', null, $(this));
+    }).on('click', '.lyn-ss-drop-item', function () {
+        setTextVal($(this).text(), $(this).data('val'), $(this));
+        ssMouseOverPane = false;
+        $(this).closest('.lyn-ss-drop-pane').hide();
+    }).on('keyup', '.lyn-ss-input', function (ev) {
+        var $this = $(this);
+        var $dd = $this.siblings('.lyn-ss-drop-pane');
+        if (ev.keyCode == 13) {
+            ssMouseOverPane = false;
+            ev.preventDefault();
+        } else if (!$this.val()) {
+            $dd.hide();
+            ssMouseOverPane = false;
+        } else {
+            if (loadReq)
+                clearTimeout(loadReq);
+
+            loadReq = setTimeout(function () {
+                $.get('/lynicon/ajax/refquery', { query: $this.val(), listId: $this.data('list-id'), allowedVsn: $this.attr('data-allowed-vsn') }, function (d) {
+                    var htmls = [];
+                    var words = $this.val().split(' ');
+                    $.each(d.items, function (i, v) {
+                        var regexp = new RegExp('(' + words.join('|') + ')', 'gi');
+                        v.label = v.label.replace(regexp, '<em>$1</em>');
+                        var xvsnClass = v.label.slice(-1) == ']' ? ' xvsn' : '';
+                        htmls.push(""<div class='lyn-ss-drop-item"" + xvsnClass + ""' data-val='"" + v.value + ""'>"" + v.label + ""</div>"");
+                    });
+
+                    $dd.html(htmls.join(' ')).show();
+                    loadReq = null;
+                });
+            }, 600);
+        }
+    }).on('click', '.lyn-ss-input', function () {
+        $(this).select();
+    });
+    $('.lyn-ss-input').blur(function () {
+        if (!ssMouseOverPane) {
+            $(this).val($(this).siblings('.lyn-ss-hidden-text').val());
+            $(this).siblings('.lyn-ss-drop-pane').hide();
+            ssMouseOverPane = false;
+        }
+    });
+});
+", new List<string> { "jquery" })
+
+

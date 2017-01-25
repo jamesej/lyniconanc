@@ -1,0 +1,46 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html style="height: 100%; width: 100%">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Editor</title>
+
+    <script id="jquery" src="~/js/lynicon/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/lynicon/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/masonry.js"></script>
+    <link href="~/css/lynicon/chosen.css" rel="Stylesheet" type="text/css" />
+    <link href="~/css/lynicon/jquery.jstreelist.css" rel="stylesheet" type="text/css" />
+    <link href="~/css/lynicon/jquery.contextMenu.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" href="~/css/lynicon/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/lynicon/LyniconMain.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="~/js/lynicon/jquery-ui.js"></script>
+    <script src="~/js/lynicon/jquery.tmpl.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconMain.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/chosen.jquery.js"></script>
+    <script type="text/javascript" id="simplemodal-script" src="~/js/lynicon/jquery.simplemodal.js"></script>
+    <script src="~/js/lynicon/fileuploader.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/lynicon/jquery.contextMenu.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/jquery.jstree.js"></script>
+    <script type="text/javascript" id="jstreelist-script" src="~/js/lynicon/jquery.jstreelist.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconEditPanel.js"></script>
+
+    <script id="fileListTemplate" type="text/x-jquery-tmpl">
+        <table style='width:300px'>
+            <tr><th></th><th>Name</th><th>Size</th></tr>
+            {{each dirs}}
+            <tr title='${dir}${name}/'><td class='dir jstree-default'><ins style='width:16px;height:16px;display:inline-block' class='ext ext_dir' /></td><td><span>${name}</span></td><td></td></tr>{{/each}}
+            {{each files}}
+            <tr title='${dir}${name}'><td><ins style='width:16px;height:16px;display:inline-block' class='ext ext_${ext}' /></td><td><span>${name}</span></td><td>${size}</td></tr>{{/each}}
+        </table>
+    </script>
+</head>
+<body style="height: 100%; width: 100%">
+    <div>
+    </div>
+</body>
+</html>

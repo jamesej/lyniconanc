@@ -1,0 +1,53 @@
+﻿@model Lynicon.Models.Summary[]
+@using Lynicon.Utility
+@using Lynicon.Models
+@using Microsoft.AspNetCore.Http.Extensions;
+
+@{
+    var req = ViewContext.HttpContext.Request;
+    string currentUrl = req.GetEncodedUrl();
+    PagingSpec paging = ViewContext.RouteData.DataTokens.ContainsKey("@Paging") ? ViewContext.RouteData.DataTokens["@Paging"] as PagingSpec : null;
+}
+
+@if (req.Query.ContainsKey("search-value") || (paging != null && paging.NeedsPager))
+{
+    <div class="lyn-item-filter-bar">
+        @Html.Raw(
+        Html.Partial("FilterPanel", new Dictionary<string, List<string>> { { "Title", new List<string> { "Title" } } })
+        .ToString()
+        .Replace(">Title", "><i class='fa fa-search'></i>")
+        .Replace("Clear", "<i class='fa fa-times'></i>")
+        )
+    </div>
+}
+
+@foreach (var summ in Model)
+{
+    @*This markup also exists in ItemPage.cshtml for efficiency*@
+    <div class="lyn-item-entry">
+        @if (ViewData.ContainsKey("UrlPermission") && (bool)ViewData["UrlPermission"])
+        {
+            <div class="reveal-funcs">
+                <a class="move-link cmd-link" href="@summ.Url?$urlget=true" title="Move Url">Url</a>
+                @if (ViewData.ContainsKey("DelPermission") && (bool)ViewData["DelPermission"])
+                {
+                    <a class="del-link cmd-link" title="Delete Url"><i class="fa fa-times"></i></a>
+                }
+            </div>
+        }
+        <a class="item-link" href="@summ.Url" target="_blank" title="@summ.Id">@summ.DisplayTitle()</a>
+    </div>
+}
+@if (paging != null)
+{
+    <div class="lyn-item-paging-container">@Html.Partial("PagingSpec", this.ViewContext.RouteData.DataTokens["@Paging"])</div>
+}
+@Html.RegisterScript("override-filter-action", @"javascript:
+            function navigate($button, url) {
+            var $panel = $button.closest('.object.level-1');
+            $panel.load(url, notifyLayout);
+            }
+            function thisUrl($this) {
+            var datatype = $this.closest('.editor-unit').find('.type-name').val();
+            return """ + currentUrl + @""".replace(/datatype=.*$/, 'datatype=' + datatype);
+            }", new List<string> { "lynicon-filter-textbox" })

@@ -1,0 +1,20 @@
+﻿@model Lynicon.Models.Link
+@using Lynicon.Models
+@using Lynicon.Utility
+@Html.RegisterLocalStyles("link-local-styles", @"
+#editPanel .lyn-link .text-display, #editPanel .lyn-link .text-box { width: 70%; }
+.lyn-link-url, .lyn-link-content { margin-top: 3px; }
+.lyn-link { margin-bottom: 5px; }
+")
+@if (Model != null)
+{
+<div class='lyn-link'>
+    <div class='lyn-link-url'>
+        <span class="editor-label">Url:</span>@Html.EditorFor(l => l.Url)
+    </div>
+    <div class='lyn-link-content'>
+        <span class="editor-label">Content:</span>@Html.EditorFor(l => l.Content)
+    </div>
+</div>
+}
+

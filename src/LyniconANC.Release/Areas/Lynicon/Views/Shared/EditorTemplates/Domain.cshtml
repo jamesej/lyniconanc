@@ -1,0 +1,22 @@
+﻿@model int?
+@using Lynicon.Extensibility
+@using Lynicon.Sites.Modules;
+
+@{
+    var domainModule = LyniconModuleManager.Instance.GetModule<DomainPartition>();
+    List<SelectListItem> slis = null;
+    if (domainModule != null)
+    {
+        slis = domainModule.GetDomainSelector(Model);
+        if ((bool?)ViewData["showBlank"] ?? false)
+        {
+            slis.Insert(0, new SelectListItem { Text = "Any", Value = null });
+        }
+            
+    }
+}
+
+@if (domainModule != null)
+{
+ @Html.DropDownList("", slis, ViewData)
+}

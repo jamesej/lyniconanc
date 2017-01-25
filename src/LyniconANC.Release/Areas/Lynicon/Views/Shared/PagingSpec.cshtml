@@ -1,0 +1,35 @@
+﻿@model Lynicon.Models.PagingSpec
+@using Microsoft.AspNetCore.Http.Extensions;
+@{
+    string currentUrl = ViewContext.HttpContext.Request.GetEncodedUrl();
+    string id = "pager" + Guid.NewGuid().ToString();
+    string href = null;
+    }
+@if (Model.NeedsPager) {
+<div id="@id" class="lynicon-number-pager">
+    @foreach (int p in Model.PageRange(6)) {
+        if (string.IsNullOrEmpty(Model.ClientReload))
+        {
+            href = Model.GetUrl(currentUrl, p);
+        }
+        else
+        {
+            href = string.Format("javascript:{0}('{1}');", Model.ClientReload, Model.GetUrl(currentUrl, p));
+        }
+    <span class="@(Model.Page == p ? " current" : "")">
+        <a class="paging-link" href="@href">
+            @if (Model.IsEndPage(6, p) && p > 0) {
+                <i class='fa fa-caret-right'></i>
+            } else if (Model.IsEndPage(6, p)) {
+                <i class='fa fa-caret-left'></i>
+            } else if (Model.IsSpacerPage(6, p)) {
+                <b>...</b>
+            } else {
+                @(p + 1)
+            }
+        </a>
+    </span>
+    }
+</div>
+}
+<div class="lynicon-number-pager-total">@Model.Total items</div>

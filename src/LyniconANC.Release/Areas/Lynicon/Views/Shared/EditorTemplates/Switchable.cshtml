@@ -1,0 +1,87 @@
+﻿@model Lynicon.Models.Switchable
+@using Lynicon.Models
+@using Lynicon.Utility
+@using Lynicon.Attributes
+@using System.Reflection
+
+@{
+    int useDepth = ViewData.TemplateInfo.TemplateDepth + ((ViewData["addDepth"] as int?) ?? 0) - 1;
+    var props = ViewData.ModelMetadata.Properties.Where(pm => pm.PropertyName != "SelectedProperty" && (pm.AdditionalValues.ContainsKey(SwitchableIconAttribute.Markup) || pm.ShowForEdit)).ToList();
+}
+@{
+    Func<ModelMetadata, bool> ShouldShow = (ModelMetadata metadata) =>
+    {
+        bool shouldShowType = true;
+        PropertyInfo pi = metadata.ModelType.GetProperty("ShouldShow", BindingFlags.Public | BindingFlags.Static);
+        if (pi != null)
+            shouldShowType = (bool)pi.GetValue(null);
+
+        return metadata.ShowForEdit
+            //&& !metadata.IsComplexType
+            //&& !ViewData.TemplateInfo.Visited(metadata)
+            && shouldShowType;
+    };
+}
+<div class='object level-@useDepth'>
+    @Html.DropDownListFor(m => m.SelectedProperty,
+            new SelectList(props.Select(p => new { Name = p.PropertyName.ExpandCamelCase(), Value = p.PropertyName }),
+            "Value", "Name",
+            Model.SelectedProperty.First()), new { @class = "lyniconBlockSelectBox" })
+
+    @{ ViewData["HeaderRendered" + useDepth] = true; }
+    @foreach (var prop in props.Where(pm => ShouldShow(pm)))
+    {
+        <div class="editor-unit level-@useDepth prop-@prop.PropertyName" style="@(prop.PropertyName == Model.SelectedProperty ? "" : "display:none")">
+            <div class="editor-field indent-@useDepth">@Html.Editor(prop.PropertyName)</div>
+        </div>
+    }
+    @{ ViewData["HeaderRendered" + useDepth] = false; }
+</div>
+@Html.RegisterScript("switchable-script", @"javascript:
+$(document).ready(function () {
+    $('body').on('change', '.lyn-switchable-radio', function () {
+        var $this = $(this);
+        $this.siblings('.editor-unit').hide().filter('.prop-' + $this.val()).show();
+        var $hdg = $this.closest('.editor-field').prev('.collection-item-bar').find('.collection-item-heading');
+        if ($hdg.length && $hdg[0].firstChild)
+            $hdg[0].firstChild.data = $this.next('span').text() + ' ';
+        notifyLayout();
+    }).on('change', '.lyniconBlockSelectBox', function() {
+        var $this = $(this);
+        console.log($this);
+        var currentVal = $this.find('option:selected').val();
+        console.log(currentVal);
+        $this.siblings('.editor-unit').hide().filter('.prop-' + currentVal).show();
+        var $hdg = $this.closest('.editor-field').prev('.collection-item-bar').find('collection-item-heading');
+        if ($hdg.length && $hdg[0].firstChild)
+            $hdg[0].firstChild.data = $this.next('span').text() + ' ';
+        notifyLayout();
+        notifyVisible($this.parent().find('.lyn-reference-select'));
+    }).on('click', '.switchable-icon', function () {
+        var $this = $(this);
+        $this.addClass('selected').siblings('.switchable-icon').removeClass('selected');
+        var $showCont = $this.closest('.switchable-icons-block').siblings('.editor-unit').hide().filter('.prop-' + $this.data('property-name'));
+        $showCont.show();
+        notifyVisible($showCont);
+        $this.siblings('input').val($this.data('property-name'));
+        var $hdg = $this.closest('.editor-field').prev('.collection-item-bar').find('.collection-item-heading');
+        if ($hdg.length && $hdg[0].firstChild)
+            $hdg[0].firstChild.data = $this.prop('title') + ' ';
+        notifyLayout();
+    })
+});", new List<string> { "jquery" })
+
+@*
+    .on('click', '.switchable-icon', function () {
+        var $this = $(this);
+        $this.addClass('selected').siblings('.switchable-icon').removeClass('selected');
+        var $showCont = $this.closest('.switchable-icons-block').siblings('.editor-unit').hide().filter('.prop-' + $this.data('property-name'));
+        $showCont.show();
+        notifyVisible($showCont);
+        $this.siblings('input').val($this.data('property-name'));
+        var $hdg = $this.closest('.editor-field').prev('.collection-item-bar').find('.collection-item-heading');
+        if ($hdg.length && $hdg[0].firstChild)
+            $hdg[0].firstChild.data = $this.prop('title') + ' ';
+        notifyLayout();
+    })
+*@

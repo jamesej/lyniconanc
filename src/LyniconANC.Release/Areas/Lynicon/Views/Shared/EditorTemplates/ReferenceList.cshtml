@@ -1,0 +1,46 @@
+﻿@model IReferenceList
+@using Lynicon.Relations;
+@using Lynicon.Utility;
+@*
+    ReferenceSelect can have very large option lists, therefore it stores the data for the list in a single js variable for all selects with the same list, and demand-loads it
+    (code to demand load is in LyniconMasonryBoxes.js in notifyVisible)
+*@
+@if (Model != null)
+{
+    Guid id = Guid.NewGuid();
+    <div class="lyn-reference lyn-reference-select">
+        @Html.DropDownListFor(m => m.SerializedValue,
+            Model.SerializedValue.Split(',').Select(sv => new SelectListItem { Value = sv, Text = "Initial", Selected = true }).ToArray(),
+            null, new { @class = "lyn-reference-id chosen-select post-load-select", multiple = "multiple" })
+        <input type="hidden" id="@id" class="select-list-id" value="@Model.SelectListId()" />
+    </div>
+    if (!Html.ScriptIsRegistered(Model.SelectListId()))
+    {
+        Html.RegisterScript(Model.SelectListId(), @"javascript:
+        if (!window.hasOwnProperty('lynSelectLists'))
+            window.lynSelectLists = {};
+        lynSelectLists." + Model.SelectListId()
+                + " = ["
+                + Model.GetSelectList()
+                .Select(sli => "{value:\"" + sli.Value + "\",text:\"" + sli.Text.Replace("\"", "\\\"") + "\"}" )
+                .Join(",")
+                + @"];
+    
+        function loadRefSelect($refSel) {
+            var $listId = $refSel.siblings('input.select-list-id');
+            if ($listId.length) {
+                var currSelected = $refSel.find('option').map(function () { return this.value; }).get();
+                var selList = lynSelectLists[$listId.val()];
+                $refSel.empty();
+                var html = '';
+                for (var i = 0; i < selList.length; i++) {
+                    html += '<option value=""' + selList[i].value + '""' + (currSelected.indexOf(selList[i].value) >= 0 ? ' selected' : '') + '>' + selList[i].text + '</option>';
+                }
+                $refSel.html(html);
+            }
+        }",
+        new List<string> { "jquery" });
+    }
+}
+
+

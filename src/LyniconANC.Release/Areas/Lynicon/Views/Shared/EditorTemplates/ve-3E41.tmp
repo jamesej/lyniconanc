@@ -1,0 +1,10 @@
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<string>" %>
+<%
+    Html.RegisterScript("/L24CM/Embedded/Scripts/jquery.simplemodal.js");
+    Html.RegisterScript("/scripts/tiny_mce/jquery.tinymce-applier.js");
+    Html.RegisterHtmlBlock("_L24RTEContainer", "<div style='display:none'><textarea id='_L24RTE'></textarea></div>");
+     %>
+<div class='_L24Html'>
+<%= Model%>
+</div>
+

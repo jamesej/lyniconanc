@@ -1,0 +1,91 @@
+﻿@model string
+@using Lynicon.Utility
+
+<div id="@Model" class="lynicon-number-pager" data-bind="foreach: pageRange(6)">
+    <span data-bind="css: { current: $parent.Page == $data }">
+        <a class="paging-link" data-bind="attr: { href: $parent.getUrl($data) }">
+            <!-- ko if: $parent.pageForm(6, $data) == 'right' -->
+            <i class='fa fa-caret-right'></i>
+            <!-- /ko -->
+            <!-- ko if: $parent.pageForm(6, $data) == 'left' -->
+            <i class='fa fa-caret-left' data-bind="if: $parent.pageForm(6, $data) == 'left'"></i>
+            <!-- /ko -->
+            <!-- ko if: $parent.pageForm(6, $data) == 'spacer' -->
+            <b data-bind="if: $parent.pageForm(6, $data) == 'spacer'">...</b>
+            <!-- /ko -->
+            <!-- ko if: $parent.pageForm(6, $data) == 'number' -->
+            <span data-bind="text: $data + 1"></span>
+            <!-- /ko -->
+        </a>
+    </span>
+</div>
+
+@Html.RegisterScript("knockout-paging", @"javascript:
+    var LyniconKnockoutPager = function (pagerInfo, currentUrl, reloadViewModel) {
+        $.extend(this, pagerInfo);
+        this.CurrentUrl = currentUrl;
+        this.ReloadViewModel = reloadViewModel;
+    }
+    LyniconKnockoutPager.prototype.pageRange = function (width) {
+            var rng = [];
+            if (!this.NeedsPager) return rng;
+
+            if (width > this.TotalPages) width = this.TotalPages;
+            var start = this.Page - width / 2;
+            if (start + width > this.TotalPages) start = this.TotalPages - width;
+            if (start < 0) start = 0;
+            rng.push(0);
+            if (start - width > 0) rng.push(start - width);
+            for (var i = start + 1; i < start + width - 1; i++)
+                rng.push(i);
+            if (start + 2 * width < this.TotalPages)
+                rng.push(start + 2 * width - 1);
+            if (this.TotalPages > 1)
+                rng.push(this.TotalPages - 1);
+            return rng;
+        };
+    LyniconKnockoutPager.prototype.isSpacerPage = function (width, p) {
+            return ((p < this.Page - width / 2) || (p > this.Page + width / 2 + 1));
+        };
+    LyniconKnockoutPager.prototype.isEndPage = function (width, p) {
+            return this.isSpacerPage(width, p) && (p == 0 || p == this.TotalPages - 1);
+        };
+    LyniconKnockoutPager.prototype.getUrl = function (p) {
+            var skip = p * this.Take;
+            if (skip < 0) skip = 0;
+            if (skip >= this.Total) skip = Math.floor(this.Total / this.Take) * this.Take;
+            
+            var url = null, urlParts = this.CurrentUrl.split('?');
+            if (urlParts.length == 1)
+                url = this.CurrentUrl + '?$skip=' + skip;
+            else {
+                var queryParts = urlParts[1].split('$skip');
+                if (queryParts.length == 1)
+                    url = this.CurrentUrl + '&$skip=' + skip;
+                else
+                    url = urlParts[0] + '?' + queryParts[0] + '$skip=' + queryParts[1].replace(/^[^&]*/, skip);
+            }
+            return 'javascript:' + this.ReloadViewModel + '(""' + url + '"");';
+        };
+    LyniconKnockoutPager.prototype.pageForm = function (width, p) {
+            if (this.isEndPage(width, p) && p > 0)
+                return 'right';
+            else if (this.isEndPage(width, p))
+                return 'left';
+            else if (this.isSpacerPage(width, p))
+                return 'spacer';
+            else
+                return 'number'; 
+        };
+    $.fn.lynPager = function (pagingData, initialUrl, reloadViewModel) {
+        if (this.data('lynViewModel')) {
+            var obs = this.data('lynViewModel');
+            reloadViewModel = obs().ReloadViewModel;
+            obs(new LyniconKnockoutPager(pagingData, initialUrl, reloadViewModel));
+        } else {
+            var obs = ko.observable(new LyniconKnockoutPager(pagingData, initialUrl, reloadViewModel));
+            this.data('lynViewModel', obs);
+            ko.applyBindings(obs, this[0]);
+        }
+    }
+", new List<string> { "jquery" })

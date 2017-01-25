@@ -1,0 +1,28 @@
+﻿@using Lynicon.Utility
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Lynicon - Items</title>
+    <script id="jquery" src="~/js/lynicon/jquery.js" type="text/javascript"></script>
+
+    <link type="text/css" href="~/css/lynicon/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/lynicon/LyniconMain.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" href="~/css/lynicon/font-awesome.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/js/lynicon/jquery-ui.js"></script>
+    <script src="~/js/lynicon/jquery.tmpl.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/lynicon/masonry.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconMain.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconMasonryBoxes.js"></script>
+    @Html.InsertIncludesHeader()
+</head>
+<body style="overflow-y: scroll">
+    @Html.Partial("LyniconItems")
+    @Html.InsertIncludesBody()
+</body>
+</html>

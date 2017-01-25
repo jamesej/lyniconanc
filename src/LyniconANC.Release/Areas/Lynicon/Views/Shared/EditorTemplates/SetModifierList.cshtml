@@ -1,0 +1,139 @@
+﻿@model GBC.Core.Models.SetModifierList
+@using GBC.Core.Models;
+@using Lynicon.Models
+@using Lynicon.Utility
+
+@{
+    Html.RegisterLocalStyles("setmodifier-list", @"
+#setModifierListSelectContainer { width: 60%; float: left; margin-top: 7px; margin-left: 3px; }
+#setModifierListSelect { width: 100%; }
+#setModifierListControls { padding: 10px 0px 0px 8px; }
+#setModifierListControls .ticker { float: left; }
+#setModifierListControls .text-display { display: block; float: left; margin: 2px 2px 0px 3px; }
+#setModifierListControls .setmodifier-add { float: left; margin: 7px 0px 0px 9px; font-size: 1.6em; }
+#setModifierList .op-label { font-size: 8px; position: relative; top: -3px; }
+#setModifierTable { width: 100%; padding: 7px 3px 0px 5px; }
+#setModifierOptions { width: 60px; float: left; }
+#setModifiersShow.action-button { background-color: #5ca39f; color: #fff; font-size: 12px; font-weight: bold; width: 53px; border-radius: 9px; line-height: 17px; margin-left: 13px; }
+#setModifiersView { max-height: 300px; overflow-y: auto; margin-top: 10px; }
+");
+}
+
+<div id="setModifierList" class="object closed">
+    <div id="setModifierListControls">
+        <div id="setModifierOptions">
+            @{ SetOperator op = SetOperator.Or; }
+            @Html.RadioButtonFor(m => op, SetOperator.Or, new { @class = "setmodifier-list-radio" })
+            <span class="op-label">OR</span>
+            @Html.RadioButtonFor(m => op, SetOperator.And, new { @class = "setmodifier-list-radio" })
+            <span class="op-label">AND</span>
+        </div>
+        
+        <div id="setModifierListSelectContainer">
+            <select id="setModifierListSelect"></select>
+        </div>
+        <div class="setmodifier-add action-button">
+            <i id="setModifierAddModifier" class="fa fa-plus-circle" />
+        </div>
+    </div>
+    <table id="setModifierTable">
+        @{ int index = 0; }
+        @foreach (var sm in Model ?? new SetModifierList())
+        {
+            if (sm.Operator == null || sm.SetItem == null)
+            {
+                continue;
+            }
+        <tr>
+            <td>
+                @Html.RadioButtonFor(m => m[index].Operator, SetOperator.Or, new { @class = "setmodifier-list-radio" })
+                <span class="op-label">OR</span>
+                @Html.RadioButtonFor(m => m[index].Operator, SetOperator.And, new { @class = "setmodifier-list-radio" })
+                <span class="op-label">AND</span>
+            </td>
+            <td>
+                @BaseContent.ContentClassDisplayName(sm.SetItem.Type)
+                @Html.HiddenFor(m => m[index].SetItem.SerializedValue)
+            </td>
+            <td>
+                @if (sm.SetItem.IsEmpty)
+                {
+                    <span>Not available</span>
+                }
+                else
+                {
+                    <a href="@sm.SetItem.Summary.Url">@sm.SetItem.Summary.Title</a>
+                }
+            </td>
+            <td><i class="fa fa-times-circle action-button delete"></i></td>
+        </tr>
+            index++;
+        }
+    </table>
+    <div id="setModifiersShow" class="show-button action-button">SHOW</div>
+    <div id="setModifiersView">
+        <table id="setModifiersResults"></table>
+    </div>
+</div>
+@* This template is assumed to appear only once per page *@
+<script type="text/javascript">
+    function sortColText(tr, sortCols) {
+        var txt = "";
+        $.each(sortCols, function (i, v) {
+            txt += $(tr).find('td').eq(v).text().trim();
+        });
+        return txt;
+    }
+    $('#setModifierList').bind("shown", function (ev, deferreds) {
+        if ($('#setModifierListSelect').has('option').length == 0) {
+            var loaded = $.Deferred();
+            deferreds.push(loaded);
+            $('#setModifierListSelect').load('/lynicon/relations/getselectoptions', function () {
+                $('#setModifierListSelect').chosen({ search_contains: true });
+                loaded.resolve();
+            });
+        }
+    });
+    $('#setModifierTable').on('click', '.delete', function () {
+        var $tr = $(this).closest('tr');
+        var nameParts = $tr.find('input:first').prop('name').split('[');
+        var idx = parseInt(nameParts[nameParts.length - 1]);
+        $tr.remove();
+        var prefix = '@(ViewData.TemplateInfo.HtmlFieldPrefix)';
+        reindex($('#setModifierTable'), prefix, -1, true, idx);
+        notifyChanged();
+    })
+    $('#setModifierListControls .setmodifier-add').click(function () {
+        var newIdx = $('#setModifierTable tr').length;
+        var txt = $('#setModifierListSelect_chosen .chosen-single > span').text();
+        var cat = txt.split('(')[1].replace(')', '');
+        var title = txt.split(' (')[0];
+        var itemId = $('#setModifierListSelect').val();
+        var $selInp = $('#setModifierListControls input:checked');
+        var isBoth = false;
+        if ($selInp.length && $selInp.val() == "And")
+            isBoth = true;
+        var nameBase = '@(ViewData.TemplateInfo.HtmlFieldPrefix)[' + newIdx + ']';
+
+        $('#setModifierTable').append('<tr><td><input class="setmodifier-list-radio" name="'
+            + nameBase + '.Operator" type="radio" value="Or"'
+            + (isBoth ? '' : ' checked="true" ') + '/><span class="op-label">OR</span><input class="setmodifier-list-radio" name="'
+            + nameBase + '.Operator" type="radio" value="And"'
+            + (isBoth ? ' checked="true" ' : '') + '/><span class="op-label">AND</span></td><td>'
+            + cat + '<input name="'
+            + nameBase + '.SetItem.SerializedValue" type="hidden" value="'
+            + itemId + '"></td><td>'
+            + title + '</td><td><i class="fa fa-times-circle action-button delete"></i></td></tr>');
+        notifyLayout();
+        notifyChanged();
+    });
+    $('#setModifiersShow').click(function () {
+        var setModifiers = "";
+        $('#setModifierTable tr').each(function () {
+            setModifiers += (setModifiers == "" ? "" : "|") + $(this).find('input[type="radio"]:checked').val() + "#" + $(this).find('input[type="hidden"]').val();
+        })
+        $('#setModifiersResults').load(location.href.replace('/index', '') + '/memberlist?$mode=view', { setModifiers: setModifiers }, function () {
+            notifyLayout();
+        });
+    })
+</script>

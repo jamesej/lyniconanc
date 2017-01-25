@@ -1,0 +1,103 @@
+﻿@model IList
+@using System.Linq
+@using System.Collections
+@using System.Collections.ObjectModel
+@using System.Linq.Expressions
+@using Lynicon.Attributes
+@using Lynicon.Utility
+@using Lynicon.Models
+@{
+    int useDepth = ViewData.TemplateInfo.TemplateDepth + ((ViewData["addDepth"] as int?) ?? 0) - 1;
+    string closed = "closed";
+    if ((ViewData["HeaderRendered" + (useDepth - 1)] as bool?) ?? false)
+    {
+        closed = "";
+    }     
+}
+<div id="@ViewData.TemplateInfo.HtmlFieldPrefix" class="collection @closed">
+@{
+
+    int oldInd = (ViewData["indent"] as int?) ?? 0;
+    int ind = oldInd + 1;
+    int oldCollDepth = (ViewData["collectionDepth"] as int?) ?? -1;
+    ViewData["collectionDepth"] = ViewData.TemplateInfo.TemplateDepth;
+
+    string oldPrefix = ViewData.TemplateInfo.HtmlFieldPrefix;
+    int index = 0;
+
+    ViewData.TemplateInfo.HtmlFieldPrefix = String.Empty;
+
+    ViewData["indent"] = ind;
+    int count = Model == null ? 0 : (Model as IEnumerable).Cast<object>().Count();
+    Type itemType = ReflectionX.ElementType(Model == null ? ViewData.ModelMetadata.ModelType : Model.GetType());
+    string itemHeading = BaseContent.ContentClassDisplayName(itemType);
+    string propName = ViewData.ModelMetadata.PropertyName ?? (string)ViewData["propertyPath"];
+    if (propName != null && propName.EndsWith("s"))
+    {
+        if (propName.Contains("."))
+        {
+            propName = propName.LastAfter(".");
+        }
+        itemHeading = propName.Depluralise();
+        itemHeading = itemHeading.ExpandCamelCase();
+    }
+    var additionalValues = ViewData.ModelMetadata.AdditionalValues?.Merge(ViewData["CollectionAdditionalValues"] as Dictionary<string, object>);
+    string template = (string)(additionalValues.ContainsKey(ItemTemplateAttribute.Key) ? additionalValues[ItemTemplateAttribute.Key] : null);
+
+    if (count == 0)
+    {
+        // even for zero count, ensure the markup is built once so that any necessary includes are
+        // put on the page
+        object dummyItem = ReflectionX.NewOrDefault(itemType);
+        Html.EditorForItem(dummyItem, template, "dummy", null);
+    }
+    else
+    {
+        foreach (object item in (IEnumerable)Model)
+        {
+            string fieldName = String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}[{1}]", oldPrefix, index);
+            string heading = itemHeading;
+            string title = ReflectionX.TryGetTitle(item);
+            if (item is Switchable)
+            {
+                heading = ((Switchable)item).SelectedProperty.ExpandCamelCase();
+            }
+
+            <div class="collection-item-bar editor-label parent child-closed">
+                <span class="collection-item-heading editor-label indent-@ind">
+                    @if (string.IsNullOrEmpty(title))
+                    {
+                        @heading <span class="index">@(index + 1)</span>
+                    }
+                    else
+                    {
+                        @(heading)<text>:</text> @title
+                    }
+                </span>
+                <div id="del-@fieldName" class="action-button delete indent-@ind"><i class="fa fa-times-circle"></i></div>
+                <div class="reorder indent-@ind @(index == 0 ? " first" : (index == count - 1 ? " last": "" ))">
+                    <div class="reorder-up action-button">
+                        <i id="up-@fieldName" class="fa fa-caret-up"></i>
+                    </div>
+                    <div class="reorder-down action-button">
+                        <i id="down-@fieldName" class="fa fa-caret-down"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-field indent-@ind">
+                @Html.EditorForItem(item, template, fieldName, new { CollectionAdditionalValues = additionalValues })
+            </div>
+
+            index++;
+        }
+    }
+
+    ViewData["indent"] = oldInd;
+    ViewData.TemplateInfo.HtmlFieldPrefix = oldPrefix;
+    ViewData["collectionDepth"] = oldCollDepth;
+
+    <div id="add2-@ViewData.TemplateInfo.HtmlFieldPrefix" class="add-button add-button-bottom indent-@ind depth-@ViewData.TemplateInfo.TemplateDepth">+</div>
+}
+</div>
+
+<div id="add-@ViewData.TemplateInfo.HtmlFieldPrefix" class="add-button add-button-top indent-@ind depth-@ViewData.TemplateInfo.TemplateDepth">+</div>

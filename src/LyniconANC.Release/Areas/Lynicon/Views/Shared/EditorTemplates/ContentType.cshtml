@@ -1,0 +1,11 @@
+﻿@model GBC.Core.Models.ContentType
+
+@if (Model != null)
+{
+    @Html.DropDownListFor(m => m.TypeName, Model.GetSelectList(), null, new { @class = "lyn-reference-id chosen-select" })
+}
+else
+{
+    <span>Empty Reference</span>
+}
+

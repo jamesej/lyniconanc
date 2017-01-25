@@ -1,0 +1,10 @@
+﻿<div class="filter-unit">
+    <label>Title</label>
+    <input id="titleFilter" type="text" name="Title" />
+    <script type="text/javascript">
+        filterValueFunctions.push(function () {
+            return "Title:" + $('#titleFilter').val();
+
+        });
+    </script>
+</div>

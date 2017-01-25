@@ -1,0 +1,24 @@
+﻿@model AlternativeUrl
+@using Lynicon.Base.Models
+@using Lynicon.Utility
+@if (Model != null)
+{
+    <div class="lyn-alt-url">
+        <span class="url-label">Url</span>@Html.EditorFor(m => m.Url)
+        <div class="lyn-alt-url-buttons">
+            @Html.RadioButtonFor(m => m.Mode, UrlRedirectMode.Main.ToString(), new { @class = "lyn-switchable-radio" })
+            <span>Main</span>
+            @Html.RadioButtonFor(m => m.Mode, UrlRedirectMode.Canonical.ToString(), new { @class = "lyn-switchable-radio" })
+            <span>Canonical</span>
+            @Html.RadioButtonFor(m => m.Mode, UrlRedirectMode.Redirect301.ToString(), new { @class = "lyn-switchable-radio" })
+            <span>301</span>
+            @Html.RadioButtonFor(m => m.Mode, UrlRedirectMode.Redirect302.ToString(), new { @class = "lyn-switchable-radio" })
+            <span>302</span>
+        </div>
+    </div>
+    @Html.RegisterLocalStyles("lyn-alt-url", @"
+        .lyn-alt-url .text-display { display: inline-block; }
+        #editPanel .lyn-alt-url .text-box { width: 80%; }
+        .lyn-alt-url .url-label { display: inline-block; margin-right: 10px; font-weight: bold; }
+    ")
+}

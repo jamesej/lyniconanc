@@ -1,0 +1,268 @@
+﻿@using Lynicon.Attributes
+@using Lynicon.Models
+@using Lynicon.Map
+@using Lynicon.Collation
+@using Lynicon.Routing
+@using System.Text.RegularExpressions
+@{
+    var enumElementReplacer = new Regex("\\{.*\\}");
+    bool canAdd = ViewData.ContainsKey("UrlPermission") && (bool)ViewData["UrlPermission"];
+    bool firstGroup = true;
+}
+<div id='lyn-item-selector' class="edit-100" style="@(ViewData.ContainsKey("popup") ? "display:none" : "")">
+    <div id="edit">
+        <div id="editPanelContainer">
+            <div id="editPanel">
+                @foreach (var typeGroup in ContentTypeHierarchy.AllContentTypes.GroupBy(t => ContentTypeCategoryAttribute.GetForType(t)).OrderBy(tg => tg.Key ?? "ZZZ"))
+                {
+                if (!(firstGroup && string.IsNullOrEmpty(typeGroup.Key)))
+                {
+                    <h2>@(typeGroup.Key ?? "Others")</h2>
+                }
+                    firstGroup = false;
+                <div class="object level-0">
+                @foreach (var type in typeGroup.OrderBy(t => t.Name))
+                {
+                    var patts = ViewContext.RouteData.GetTemplatePatterns(type);
+                    if (!patts.Any()) { continue; }
+                    <div class="editor-unit parent-unit level-0">
+                        <div class="editor-label indent-0 parent child-closed">
+                            <label>@BaseContent.ContentClassDisplayName(type)</label>
+                            @Html.Hidden(type.FullName + "-name", type.FullName, new { @class = "type-name" })
+                        </div>
+                        <div class="editor-field indent-0">
+                            @if (canAdd)
+                            {
+                            <ul class="new-item-url-patterns">
+                                @foreach (string patt in patts)
+                                {
+                                <li>
+                                    @Html.Raw(enumElementReplacer.Replace(patt
+                                        .Replace("{?}", "<span class='pathel'>___</span>")
+                                        .Replace("{*}", "<span class='pathelopt'>___</span>")
+                                        .Replace("{/}", "<span class='subpath'>___</span>"),
+                                        "<span class='pathelenum'>___</span>"))
+                                    <input type="hidden" class="url-pattern" value="@patt" />
+                                </li>
+                                }
+                            </ul>
+                            }
+                            <div class="object level-1 closed">
+
+                            </div>
+                            @if (canAdd) {
+                            <span class="add-button new-item">+</span>
+                            }
+                        </div>
+                    </div>
+                }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="lyn-item-selected" />
+    </div>
+    <div style="clear:both"></div>
+</div>
+@if (!ViewData.ContainsKey("popup"))
+{
+    @Html.DisplayForModel("FuncPanel")
+}
+<script type="text/javascript">
+var $shownDD = null;
+var $newEntry = null;
+function addNew($cont, pattern) {
+    if ($newEntry) {
+        $newEntry.hide('fast', function () {
+            $newEntry.remove();
+            $newEntry = null;
+            addNew($cont, pattern);
+        });
+        return;
+    }
+    var addHtml = urlEntryHtml(pattern, 'add-link', '<i class="fa fa-file"></i>', 'add-url-link');
+    $newEntry = $(addHtml).hide();
+    $cont.prepend($newEntry);
+    $newEntry.show('fast', notifyLayout);
+}
+
+function urlEntryHtml(pattern, mainClass, action, actionClass) {
+    var addHtml = "<div class='" + mainClass + "'><div class='pattern'><span>" + pattern +
+    "</span></div><a class='cancel-link cmd-link'><i class='fa fa-times'></i></a><a class='" + actionClass + " cmd-link'>" + action + "</a></div>";
+    var addHtmlSplit = addHtml.split('{');
+    if (addHtmlSplit.length > 1) {
+        for (var i = 1; i < addHtmlSplit.length; i++) {
+            var split2 = addHtmlSplit[i].split('}');
+            var inpDetails = split2[0];
+            if (inpDetails[0] == '*')
+                addHtmlSplit[i] = "</span><input class='pathelopt-input' value='" + inpDetails.substr(1) + "'/><span>";
+            else if (inpDetails[0] == '?')
+                addHtmlSplit[i] = "</span><input class='pathel-input' value='" + inpDetails.substr(1) + "'/><span>";
+            else if (inpDetails[0] == '/')
+                addHtmlSplit[i] = "</span><input class='subpath-input' value='" + inpDetails.substr(1) + "'/><span>";
+            else {
+                addHtmlSplit[i] = "</span><select class='pathel-select'><option>"
+                    + inpDetails.split('|').join('</option><option>') + '</option></select><span>';
+                addHtmlSplit[i] = addHtmlSplit[i].replace('<option>??</option>', '<option>&lt;blank&gt;</option>');
+            }
+            addHtmlSplit[i] += split2[1];
+        }
+        addHtml = addHtmlSplit.join('');
+    }
+    return addHtml;
+}
+
+function readUrlEntry($container) {
+    var url = '';
+    var error = null;
+    $container.children('span, input, select').each(function () {
+        if (!$(this).hasClass('subpath-input') && $(this).val().indexOf('/') >= 0)
+            error = "Please remove '/' character in '" + $(this).val() + "'";
+        if ($(this).hasClass('pathel-input') && !$(this).val())
+            error = "Please remove blank entry not allowed in that position";
+        url += $(this).val() || $(this).text();
+    });
+    url = url.replace('<blank>', '');
+    while (url.slice(-1) == '/')
+        url = url.slice(0, -1);
+    if (url.indexOf('//') >= 0)
+        error = "Please ensure url does not contain two consecutive '/'s";
+    if (error) {
+        alert(error);
+        return null;
+    } else
+        return url;
+}
+
+function addUrl($clicked, $newEntry) {
+    var $pattern = $clicked.closest('.add-link').find('.pattern');
+    var url = readUrlEntry($pattern);
+    if (url == null)
+        return;
+    $newEntry.hide('fast', function () {
+        $newEntry.remove();
+        $newEntry = null;
+        notifyLayout();
+    });
+    window.open("/" + url + "?$type=" + $clicked.closest('.editor-unit').find('.type-name').val());
+}
+
+$('#lyn-item-selector').on('shown', '.object.level-1', function (ev, deferreds) {
+    var $this = $(this);
+    var $box = $this.closest('.editor-unit');
+    var typeName = $box.find('.type-name').val();
+    setBoxSpinner($box, true);
+    var doLoad = $.Deferred();
+    deferreds.push(doLoad);
+    $this.load('/lynicon/items/getpage?$top=10&$orderby=Title&datatype=' + typeName, function () {
+        setBoxSpinner($box.closest('.editor-unit'), false);
+        notifyLayout();
+        doLoad.resolve();
+    });
+}).on('click', 'a.paging-link', function (ev) {
+    var $panel = $(this).closest('.object.level-1');
+    $panel.load($(this).prop('href'), notifyLayout);
+    ev.preventDefault();
+}).on('click', 'a.move-link', function (ev) {
+    ev.preventDefault();
+    var $mover = $(this);
+    $.get($mover.prop('href'), function (patt) {
+        if (patt.indexOf('{') < 0) {
+            alert('This url cannot be changed, no part of it is variable');
+            return;
+        }
+        var $cont = $mover.closest('.lyn-item-entry');
+        var $item = $cont.find('.item-link');
+        var edHtml = urlEntryHtml(patt, 'edit-link', 'Save', 'save-url-link');
+        var $ed = $(edHtml).hide();
+        $item.after($ed);
+        $ed.show('fast', function () { notifyLayout(); });
+        $mover.hide();
+        $item.closest('.lyn-item-entry').find('.edit-link input:first').focus();
+    });
+}).on('click', 'a.save-url-link', function (ev) {
+    ev.preventDefault();
+    var $entry = $(this).closest('.lyn-item-entry');
+    var $pattern = $entry.find('.pattern');
+    var url = readUrlEntry($pattern);
+    if (url == null)
+        return;
+    var id = $entry.find('.item-link').prop('title');
+    initAjax();
+    $.post('/' + url + '?$urlset=' + id, function (res) {
+        if (res == "OK") alert('url has been changed');
+        else if (res == "Already Exists") {
+            alert("url has not been changed as the new url already exists");
+        }
+        var datatype = $entry.closest('.editor-field').prev('.editor-label').find('input.type-name').val()
+        $.get("@Url.Action("GetItem", "Items", new { area = "Lynicon" })", { id: id, datatype: datatype }, function (res) {
+            $entry.replaceWith($(res));
+            endAjax();
+        });
+    });
+}).on('click', '.edit-link a.cancel-link', function (ev) {
+    ev.preventDefault();
+    var $entry = $(this).closest('.lyn-item-entry');
+    $entry.find('.edit-link').hide(300, function () {
+        $(this).closest('.lyn-item-entry').find('.reveal-funcs').hide();
+        $(this).remove();
+    });
+    $entry.find('.move-link').show();
+}).on('click', '.add-link a.cancel-link', function (ev) {
+    $newEntry.hide('fast', function () {
+        $newEntry.remove();
+        $newEntry = null;
+        notifyLayout();
+    });
+}).on('click', 'a.del-link', function (ev) {
+    ev.preventDefault();
+    var $entry = $(this).closest('.lyn-item-entry');
+    var url = $entry.find('.item-link').prop('href');
+    var resp = confirm("Are you sure you want to delete " + url + " ?");
+    if (!resp) return;
+    $.post(url + "?$urldelete=true", function (res) {
+        if (res == "OK") {
+            alert('url deleted');
+            $entry.remove();
+        }
+    });
+}).on('click', '.new-item', function (ev) {
+    var $ul = $(this).closest('.editor-unit').find('.new-item-url-patterns');
+    if ($ul.find('li').length > 1) {
+        if ($shownDD) $shownDD.hide();
+        $shownDD = $ul.show();
+        ev.stopPropagation();
+    } else {
+        addNew($(this).closest('.editor-field'), $ul.find('li input').val());
+    }
+}).on('click', '.new-item-url-patterns li', function (ev) {
+    $('.new-item-url-patterns').hide();
+    addNew($(this).closest('.editor-field'), $(this).find('input').val());
+}).on('click', '.add-url-link', function (ev) {
+    addUrl($(this), $newEntry);
+}).on('keydown', '.pattern input', function (ev) {
+    if (ev.keyCode == 13) {
+        var filled = true;
+        $('.pattern input').each(function () {
+            if (!$(this).val())
+                filled = false;
+        });
+        if (filled)
+            addUrl($(this), $newEntry);
+    }
+}).on('mouseenter', '.lyn-item-entry', function () {
+    $(this).find('.reveal-funcs').show();
+}).on('mouseleave', '.lyn-item-entry', function () {
+    $(this).find('.reveal-funcs').hide();
+});
+
+/*
+$('body').click(function () {
+    if ($shownDD) $shownDD.hide();
+});
+*/
+
+$('#editPanel .object.level-0').masonry();
+</script>

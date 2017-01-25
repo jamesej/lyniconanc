@@ -1,0 +1,93 @@
+﻿@using System.Collections
+@using Lynicon.Utility
+@{
+    Layout = "~/Areas/Lynicon/Views/Shared/EditorLayout.cshtml";
+    ViewBag._Lyn_Title = "Editor";
+    ViewBag._Lyn_BaseUrl = ViewContext.HttpContext.Request.Path;
+}
+
+<div id='container' class="lynicon-list-detail" style="height: 100%; width: 100%; position:relative;">
+    <div id="view-container">
+        <div id="view">
+            @Html.EditorForModel((string)ViewContext.RouteData.Values["listView"], new { displayFields = ViewBag.DisplayFields })
+
+            @if (ViewBag.CanAdd)
+            {
+                <div id="lynicon-list-add-button" class="lynicon-ctl-button">ADD</div>
+            }
+            @if (ViewContext.RouteData.DataTokens.ContainsKey("@Paging"))
+            {
+                <div>@Html.Partial("PagingSpec", this.ViewContext.RouteData.DataTokens["@Paging"])</div>
+            }
+        </div>
+    </div>
+    <div id="edit">
+        <div id="editPanelContainer">
+            @{
+                int index = (int)ViewData["ItemIndex"];
+                var item = ((ICollection)Model).Cast<object>().Skip(index).FirstOrDefault();
+                if (item == null)
+                {
+                    item = Activator.CreateInstance(Model.GetType().GetGenericArguments()[0]);
+                    ViewData["ItemIndex"] = -1;
+                }
+            }
+            @Html.Partial("EditorTemplates/LyniconEditPanel", item)
+        </div>
+        @Html.Partial("DisplayTemplates/FuncPanel", item, new ViewDataDictionary(ViewData) { { "Sections", "Record,Opener" } })
+    </div>
+</div>
+
+@section Scripts
+{
+<script type="text/javascript">
+    function processField(v) {
+        if (typeof v == "string" && v.substr(0, 6) == "/Date(") {
+            var d = new Date(parseInt(v.substr(6)));
+            return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        } else
+            return v;
+    }
+    function mapForm(func) {
+        $('form').find('input, textarea, select').each(function () {
+            if ($(this).prop('name').substr(0, 5) == 'item.')
+                func($(this));
+        });
+    }
+    function loadDetail(idx) {
+        var formNames = '';
+        mapForm(function ($fld) {
+            formNames += $fld.prop('name') + ' ';
+        });
+        $('#editPanelContainer').load(
+            "@(ViewBag._Lyn_BaseUrl as string)?$mode=getValues@(Html.Raw(ViewBag.OriginalQuery as string)) #editPanel",
+            { formNames: formNames, idx: idx },
+            function () {
+                setupAfterLoad($('#editPanel'));
+                createGeneralContainer();
+                $('#editPanel .object.level-0').masonry();
+            });
+    }
+    function clearForm() {
+        mapForm(function ($fld) { $fld.val(null) });
+    }
+
+    $('.list-table').on('click', 'tr', function () {
+        var idx = $(this).prop('id').after('-');
+        loadDetail(parseInt(idx));
+        $('#lynicon_itemIndex').val(idx);
+        $(this).closest('.list-table').find('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });
+    $('#lynicon-list-add-button').on('click', function () {
+        $('#lynicon_itemIndex').val('-1');
+        loadDetail(-1);
+        $('.list-table').find('.selected').removeClass('selected');
+    });
+
+    $(document).ready(function() {
+        //$('#container').layout({ east: { size: '280', spacing_open: 10, spacing_closed: 14, togglerLength_open: 60 } });
+        //loadDetail(0);
+    });
+</script>
+}

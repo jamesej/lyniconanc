@@ -1,0 +1,10 @@
+﻿@model List<Summary>
+@using Lynicon.Models
+
+<h1>@Model.Count results</h1>
+@foreach (var summ in Model)
+{
+    <div>
+        <a href="@summ.Url">@summ.Title</a>
+    </div>
+}

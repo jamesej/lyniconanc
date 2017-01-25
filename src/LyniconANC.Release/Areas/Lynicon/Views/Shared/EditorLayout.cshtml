@@ -1,0 +1,35 @@
+﻿@using Lynicon.Membership
+@using Lynicon.Utility
+<!DOCTYPE HTML>
+
+<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%; width: 100%">
+<head runat="server">
+    <title>@(ViewData["_Lyn_Title"] == null ? "Editor" : (string)ViewData["_Lyn_Title"])</title>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script> -->
+    <script id="jquery" src="~/js/lynicon/jquery.js" type="text/javascript"></script>
+    <script id="jquery-ui" type="text/javascript" src="~/js/lynicon/jquery-ui.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/masonry.js"></script>
+    <link href="~/css/lynicon/chosen.css" rel="Stylesheet" type="text/css" />
+    <link id="selectize" href="~/css/lynicon/selectize.css" rel="Stylesheet" type="text/css" />
+    <link type="text/css" href="~/css/lynicon/jquery-ui.css" rel="stylesheet" />
+    <link type="text/css" href="~/css/lynicon/font-awesome.css" rel="stylesheet" />
+    <link href="~/css/lynicon/LyniconMain.css" rel="stylesheet" type="text/css" />
+    <script src="~/js/lynicon/jquery.tmpl.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconMain.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/chosen.jquery.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/selectize.js"></script>
+    <script type="text/javascript" id="simplemodal-script" src="~/js/lynicon/jquery.simplemodal.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconMasonryBoxes.js"></script>
+    <script type="text/javascript" src="~/js/lynicon/LyniconEditPanel.js"></script>
+    @RenderSection("Head", required: false)
+    <script type="text/javascript">
+        var userIsAdmin = @(SecurityManager.Current.CurrentUserInRole("A") ? "true" : "false");
+        var userIsPower = @(SecurityManager.Current.CurrentUserInRole("P") ? "true" : "false");
+    </script>
+</head>
+<body style="height: 100%; width: 100%">
+    @RenderBody()
+    @RenderSection("Scripts", required: false)
+    @Html.InsertIncludesBody()
+</body>
+</html>

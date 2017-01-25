@@ -1,0 +1,16 @@
+﻿
+@{
+    Layout = "~/Areas/Lynicon/Views/Shared/EditorLayout.cshtml";
+    ViewBag._Lyn_Title = "Item Lister";
+}
+
+@section Head {
+
+}
+
+<div class="formWrap">
+    <h1>Item Lister</h1>
+    @await Component.InvokeAsync("ListFilters")
+</div>
+<div id="lister-bottom-spacer"></div>
+@Html.DisplayForModel("FuncPanel", new { ShowVersions = false })

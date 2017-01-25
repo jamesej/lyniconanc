@@ -1,0 +1,35 @@
+﻿@model System.Int32
+@using Lynicon.Utility
+
+<div class="sorter" style="display: inline-block;">
+    @Html.Hidden("", Model)
+
+    <div class="sorter-buttons">
+        <div class="sort-none action-button" style="@(Model == 0 ? null : "display:none")">
+            <i id="none-@ViewData.TemplateInfo.HtmlFieldPrefix" class="fa fa-sort"></i>
+        </div>
+        <div class="sort-asc action-button" style="@(Model > 0 ? null : "display:none")">
+            <i id="asc-@ViewData.TemplateInfo.HtmlFieldPrefix" class="fa fa-sort-amount-asc"></i>
+        </div>
+        <div class="sort-desc action-button" style="@(Model < 0 ? null : "display:none")">
+            <i id="desc-@ViewData.TemplateInfo.HtmlFieldPrefix" class="fa fa-sort-amount-desc"></i>
+        </div>
+    </div>
+</div>
+@{
+    Html.RegisterScript("lyn_sorter_script",
+  @"javascript:
+    function cycleSort($cont) {
+        var $inp = $cont.children('input');
+        $inp.val($inp.val() == 0 ? 1 : ($inp.val() > 0 ? -1 : 0));
+        var showClass = ($inp.val() == 0 ? 'sort-none' : ($inp.val() < 0 ? 'sort-desc' : 'sort-asc'));
+        $cont.find('.action-button').hide().filter('.' + showClass).show();
+    }
+    $(document).ready(function () {
+        $('body').on('click', '.sorter-buttons .action-button', function () {
+            cycleSort($(this).closest('.sorter'));
+        });
+    });
+    ", new List<string> { "jquery" });
+}
+
