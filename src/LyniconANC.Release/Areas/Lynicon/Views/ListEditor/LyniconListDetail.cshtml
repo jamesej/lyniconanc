@@ -9,7 +9,7 @@
 <div id='container' class="lynicon-list-detail" style="height: 100%; width: 100%; position:relative;">
     <div id="view-container">
         <div id="view">
-            @Html.EditorForModel((string)ViewContext.RouteData.Values["listView"], new { displayFields = ViewBag.DisplayFields })
+            @Html.EditorForModel((string)ViewBag.ListView, new { displayFields = ViewBag.DisplayFields })
 
             @if (ViewBag.CanAdd)
             {
@@ -31,7 +31,9 @@
                     item = Activator.CreateInstance(Model.GetType().GetGenericArguments()[0]);
                     ViewData["ItemIndex"] = -1;
                 }
+                ViewData["addDepth"] = 1;
             }
+
             @Html.Partial("EditorTemplates/LyniconEditPanel", item)
         </div>
         @Html.Partial("DisplayTemplates/FuncPanel", item, new ViewDataDictionary(ViewData) { { "Sections", "Record,Opener" } })

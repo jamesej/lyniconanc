@@ -5,7 +5,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     /// <summary>
     /// Base class for creating a MarshalByRefObject in a new AppDomain and receiving messages from it for the purpose

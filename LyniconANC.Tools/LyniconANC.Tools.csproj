@@ -63,6 +63,7 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="DTEFinder.cs" />
     <Compile Include="FileModel.cs" />
+    <Compile Include="FileModelStripper.cs" />
     <Compile Include="InitializeLyniconAdmin.cs" />
     <Compile Include="InitializeLyniconDatabase.cs" />
     <Compile Include="InitializeLyniconProject.cs" />

@@ -42,9 +42,9 @@ namespace Lynicon.Modules
                 new { controller = "Dynamic", Area = "Lynicon" });
             builder.MapDataRoute<List<User>>("lyniconusers",
                 "Lynicon/Users",
-                new { controller = "User", action = "List", view = "LyniconListDetail", listView = "UserList", Area = "Lynicon" },
+                new { controller = "User", action = "List", view = "LyniconListDetail", Area = "Lynicon" },
                 new { },
-                new { top = "15" });
+                new { listView = "UserList", top = "15" });
             builder.MapRoute("lyniconadmin",
                 "Lynicon/{controller:regex(ajax|admin|filemanager|items|login|nav|ui|upload|urlmanager|version)}/{action}",
                 new { controller = "Ajax", action = "Index", Area = "Lynicon" }

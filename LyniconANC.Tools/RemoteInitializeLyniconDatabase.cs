@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     [Serializable]
     public class RemoteInitializeLyniconDatabase : RemoteProjectContextCommand

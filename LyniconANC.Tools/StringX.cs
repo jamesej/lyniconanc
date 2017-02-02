@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     public static class StringX
     {

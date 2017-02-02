@@ -10,7 +10,7 @@ using EnvDTE;
 using System.Reflection;
 using System.IO;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     // Windows PowerShell assembly.
 
@@ -22,6 +22,23 @@ namespace Lynicon.Tools
         protected override void ProcessRecord()
         {
             var fileModel = ProjectContextLoader.GetItemFileModel(SendMessage, "Startup.cs");
+
+            bool added;
+            bool found;
+            
+            found = fileModel.FindLineContains("Startup(");
+            found = found && fileModel.FindEndOfMethod();
+            if (found)
+            {
+                added = fileModel.InsertUniqueLineWithIndent("env.ConfigureLog4Net(\"log4net.xml\");");
+                if (added)
+                    SendMessage(new MessageEventArgs(MessageType.Output, "Added log4net configuration"));
+            }
+            else
+                SendMessage(new MessageEventArgs(MessageType.Output, "Failed to add log4net configuration"));
+
+
+            
 
             //bool found = fileModel.FindLineContains("Application_Start()")
             //             && fileModel.FindLineIs("{");

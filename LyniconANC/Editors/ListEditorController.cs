@@ -164,6 +164,7 @@ namespace Lynicon.Editors
             object container = Collator.Instance.GetContainer(item);
             string id = Collator.Instance.GetIdProperty(container.GetType()).GetValue(container).ToString();
             ViewBag.Id = id;
+            ViewData["addDepth"] = 1;
 
             return PartialView("~/Areas/Lynicon/Views/Shared/EditorTemplates/LyniconEditPanel.cshtml", item);
         }
@@ -174,7 +175,7 @@ namespace Lynicon.Editors
             
             Type itemType = data.GetType().GetGenericArguments()[0];
 
-            ViewBag.ListView = this.RouteData.DataTokens["listView"];
+            ViewBag.ListView = this.RouteData.DataTokens["listView"] ?? "ObjectList";
             if (string.IsNullOrEmpty(rowFields))
             {
                 ViewBag.ListFields = itemType

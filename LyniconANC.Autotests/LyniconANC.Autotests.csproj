@@ -348,6 +348,7 @@
     <Compile Include="CollatorTest.cs" />
     <Compile Include="EqualityTests.cs" />
     <Compile Include="FacadeTest.cs" />
+    <Compile Include="FileModelTest.cs" />
     <Compile Include="GlobalEventTest.cs" />
     <Compile Include="ItemIdTests.cs" />
     <Compile Include="MockController.cs" />
@@ -381,6 +382,10 @@
     <ProjectReference Include="..\..\LyniconANC\LyniconANC.csproj">
       <Project>{cf183da7-8321-4fdd-ad06-81ddfd095abe}</Project>
       <Name>LyniconANC</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LyniconANC.Tools\LyniconANC.Tools.csproj">
+      <Project>{5ec722ae-b052-4b7c-be37-dbb427261752}</Project>
+      <Name>LyniconANC.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

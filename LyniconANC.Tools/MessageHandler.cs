@@ -5,7 +5,7 @@ using System.Management.Automation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     public static class MessageHandler
     {

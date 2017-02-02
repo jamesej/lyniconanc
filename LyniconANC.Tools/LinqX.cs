@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Collections;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     public static class LinqX
     {

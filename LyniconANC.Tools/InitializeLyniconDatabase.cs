@@ -10,7 +10,7 @@ using EnvDTE;
 using System.Reflection;
 using System.IO;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     // Windows PowerShell assembly.
 

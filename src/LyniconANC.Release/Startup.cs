@@ -99,6 +99,7 @@ namespace LyniconANC.Release
                 routes.MapLyniconRoutes();
                 routes.MapDataRoute<TestContent>("test", "test/{_0}", new { controller = "Test", action = "Index" });
                 routes.MapDataRoute<HeaderContent>("header", "test/{_0}", new { controller = "Test", action = "Header" });
+                routes.MapDataRoute<List<TestContent>>("test-list", "test-list", new { controller = "Test", action = "List" });
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

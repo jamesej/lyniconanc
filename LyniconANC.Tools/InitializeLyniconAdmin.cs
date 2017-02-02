@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Linq.Expressions;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     // Windows PowerShell assembly.
 

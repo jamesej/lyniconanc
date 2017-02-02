@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     public static class DTEFinder
     {

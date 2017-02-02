@@ -24,7 +24,7 @@
 
 <div id='container' style="height: 100%; width: 100%; position:relative;">
     <div id="list">
-        @Html.Partial((string)ViewContext.RouteData.Values["listView"], (object)Model)
+        @Html.Partial((string)ViewBag.ListView, (object)Model)
     </div>
     <div id="bar" >
         <i id="move-left" class="fa fa-chevron-left fa-2x"></i>

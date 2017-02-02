@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     /// <summary>
     /// Base class for a remote proxy to perform operations in another AppDomain having loaded the executable

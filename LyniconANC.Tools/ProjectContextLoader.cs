@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using EnvDTE;
+using System.Diagnostics;
 
-
-namespace Lynicon.Tools
+namespace LyniconANC.Tools
 {
     public class ProjectContextLoader
     {
@@ -17,8 +17,6 @@ namespace Lynicon.Tools
 
         public static EnvDTE80.DTE2 DTE2 { get; set; }
         private static string DllPath { get; set; }
-
-        public static EnvDTE.Project MainProject { get; set; }
 
         public static string AssName { get; set; }
 
@@ -53,18 +51,34 @@ namespace Lynicon.Tools
                 return;
 
             DTE2 = DTEFinder.GetDTE();
-            //var mvcProj = dte.Solution.Projects.Cast<Project>().FirstOrDefault(p => p.Kind == Constants.vsProjectKind)
-            string startupProjIdx = ((Array)DTE2.Solution.SolutionBuild.StartupProjects).Cast<string>().First();
-            var startupProj = DTE2.Solution.Item(startupProjIdx);
+
+            string startupProjPath = ((Array)DTE2.Solution.SolutionBuild.StartupProjects).Cast<string>().First();
+            var startupProj = DTE2.Solution.Projects.Cast<Project>().FirstOrDefault(p => p.Name == "src");
+            string solPath = DTE2.Solution.FullName;
+            RootPath = solPath.UpToLast("\\") + "\\" + startupProjPath.UpToLast("\\");
+            //var startupProj = DTE2.Solution.Item(startupProjIdx);
             if (sendMessage != null)
                 sendMessage(new MessageEventArgs("Found startup project: " + startupProj.Name));
 
-            MainProject = startupProj;
-            AssName = startupProj.Properties.Item("AssemblyName").Value.ToString();
-            DefaultNs = startupProj.Properties.Item("DefaultNamespace").Value.ToString();
-            RootPath = startupProj.FullName.UpToLast("\\");
-            AssPath = RootPath + "\\bin\\" + AssName + ".dll";
+            AssName = startupProjPath.LastAfter("\\").UpToLast(".");
+            string binPath = RootPath + "\\bin";
+            string configPath = FindExistingChildDir(binPath, "Debug");
+            string netVsnPath = FindExistingChildDir(configPath, "net452");
+            string winProcPath = FindExistingChildDir(netVsnPath, "win7-x64");
+            DllPath = winProcPath;
+            AssPath = winProcPath + "\\" + AssName + ".exe";
             WebConfigPath = RootPath + "\\web.config";
+        }
+
+        public static string FindExistingChildDir(string path, string preferred)
+        {
+            var dirInfo = new DirectoryInfo(path + "\\" + preferred);
+            if (!dirInfo.Exists)
+            {
+                dirInfo = new DirectoryInfo(path);
+                dirInfo = dirInfo.GetDirectories().FirstOrDefault();
+            }
+            return dirInfo.FullName;
         }
 
         public static void SetupAssemblyResolution()
@@ -90,8 +104,6 @@ namespace Lynicon.Tools
             System.AppDomain.CurrentDomain.SetData("APPBASE", RootPath);
             System.AppDomain.CurrentDomain.SetData("PRIVATE_BINPATH", "bin");
             System.AppDomain.CurrentDomain.SetData("DataDirectory", RootPath + "\\App_Data");
-
-            DllPath = RootPath + "\\bin\\";
 
             // Use the web config of the website project as config for this appdomain
             using (AppConfig.Change(WebConfigPath))
@@ -227,12 +239,13 @@ namespace Lynicon.Tools
         {
             EnsureDTE(sendMessage);
 
-            var global = FindItemByPath(MainProject.ProjectItems, itemName);
-            if (global == null)
-                sendMessage(new MessageEventArgs(new Exception("Can't find " + itemName + " to update")));
-            var globalFileName = global.get_FileNames(1);
-            if (!globalFileName.EndsWith(".cs"))
-                globalFileName += ".cs";
+            itemName = itemName.Replace("/", "\\");
+            var globalFileName = RootPath + "\\" + itemName;
+            //if (global == null)
+            //    sendMessage(new MessageEventArgs(new Exception("Can't find " + itemName + " to update")));
+            //var globalFileName = global.get_FileNames(1);
+            //if (!globalFileName.EndsWith(".cs"))
+            //    globalFileName += ".cs";
 
             var fileModel = new FileModel(globalFileName);
             return fileModel;
@@ -246,6 +259,7 @@ namespace Lynicon.Tools
         /// <returns>the project item</returns>
         public static ProjectItem FindItemByPath(ProjectItems topItems, string itemPath)
         {
+            List<string> names = topItems.OfType<ProjectItem>().Select(pi => pi.Name).ToList();
             ProjectItem item = topItems.OfType<ProjectItem>().FirstOrDefault(pi => pi.Name == itemPath.UpTo("/"));
             if (!itemPath.Contains("/"))
                 return item;
