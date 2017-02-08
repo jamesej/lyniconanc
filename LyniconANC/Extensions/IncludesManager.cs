@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
+//using HtmlAgilityPack;
 using Lynicon.Extensibility;
 using Lynicon.Utility;
 
@@ -41,14 +41,14 @@ namespace Lynicon.Extensions
             // fixes a bug where Html Agility Pack always renders 'form' and 'option' as an empty tag
             // you might want to remove this behaviour if you aren't using XHTML doctype, it was apparently
             // added to deal with overlapping tags which are valid HTML.
-            HtmlNode.ElementsFlags.Remove("form");
-            HtmlNode.ElementsFlags.Remove("option");
+            //HtmlNode.ElementsFlags.Remove("form");
+            //HtmlNode.ElementsFlags.Remove("option");
 
             // When process includes attribute fires global event, catch it and process it with the current
             // request's IncludeManager instance
-            EventHub.Instance.RegisterEventProcessor("PostProcess.Html",
-                ehd => (Instance == null) ? ehd.Data : Instance.ProcessDocument(ehd),
-                "IncludesManager");
+            //EventHub.Instance.RegisterEventProcessor("PostProcess.Html",
+            //    ehd => (Instance == null) ? ehd.Data : Instance.ProcessDocument(ehd),
+            //    "IncludesManager");
         }
 
         public IncludesManager()
@@ -78,21 +78,21 @@ namespace Lynicon.Extensions
 
         #region Html Processing
 
-        private HtmlNode MakeNode(HtmlDocument doc, string tag, string mainAttr, string mainValue, Dictionary<string, string> createAttributes)
-        {
-            // can't create a new node for a script where the value is its id
-            if (mainAttr == "src" && Regex.IsMatch(mainValue.ToLower(), "^[a-z][a-z0-9_\\-]*$"))
-                return null;
+        //private HtmlNode MakeNode(HtmlDocument doc, string tag, string mainAttr, string mainValue, Dictionary<string, string> createAttributes)
+        //{
+        //    // can't create a new node for a script where the value is its id
+        //    if (mainAttr == "src" && Regex.IsMatch(mainValue.ToLower(), "^[a-z][a-z0-9_\\-]*$"))
+        //        return null;
 
-            HtmlNode newNode = doc.CreateElement(tag);
-            if (mainValue.StartsWith("javascript:"))
-                newNode.AppendChild(doc.CreateTextNode(mainValue.After("javascript:")));
-            else
-                newNode.Attributes.Add(doc.CreateAttribute(mainAttr, mainValue));
-            foreach (KeyValuePair<string, string> kvp in createAttributes)
-                newNode.Attributes.Add(doc.CreateAttribute(kvp.Key, kvp.Value));
-            return newNode;
-        }
+        //    HtmlNode newNode = doc.CreateElement(tag);
+        //    if (mainValue.StartsWith("javascript:"))
+        //        newNode.AppendChild(doc.CreateTextNode(mainValue.After("javascript:")));
+        //    else
+        //        newNode.Attributes.Add(doc.CreateAttribute(mainAttr, mainValue));
+        //    foreach (KeyValuePair<string, string> kvp in createAttributes)
+        //        newNode.Attributes.Add(doc.CreateAttribute(kvp.Key, kvp.Value));
+        //    return newNode;
+        //}
 
         /// <summary>
         /// Update the given html document with a specific kind of includes from a list
@@ -102,110 +102,110 @@ namespace Lynicon.Extensions
         /// <param name="attr">The attribute of the tag which is set with the url of the include</param>
         /// <param name="includes">The list of include specifications</param>
         /// <param name="createAttributes">Attributes to add to created HTML nodes</param>
-        public void UpdateIncludes(HtmlDocument doc, string tag, string attr, List<IncludeEntry> includes, Dictionary<string, string> createAttributes)
-        {
-            if (includes == null || includes.Count == 0)
-                return;
+        //public void UpdateIncludes(HtmlDocument doc, string tag, string attr, List<IncludeEntry> includes, Dictionary<string, string> createAttributes)
+        //{
+        //    if (includes == null || includes.Count == 0)
+        //        return;
 
-            List<HtmlNode> existingIncludes = doc.DocumentNode
-                .Descendants(tag)
-                .Where(n => n.GetAttributeValue(attr, "") != "")
-                .ToList();
-            int c = existingIncludes.Count;
+        //    List<HtmlNode> existingIncludes = doc.DocumentNode
+        //        .Descendants(tag)
+        //        .Where(n => n.GetAttributeValue(attr, "") != "")
+        //        .ToList();
+        //    int c = existingIncludes.Count;
 
-            // Remove duplicates leaving later item in place
-            for (int i = 1; i < c; i++)
-                for (int j = 0; j < i; j++)
-                    if (existingIncludes[i].GetAttributeValue(attr, "") == existingIncludes[j].GetAttributeValue(attr, ""))
-                    {
-                        existingIncludes.RemoveAt(j);
-                        i--; c--;
-                        break;
-                    }
+        //    // Remove duplicates leaving later item in place
+        //    for (int i = 1; i < c; i++)
+        //        for (int j = 0; j < i; j++)
+        //            if (existingIncludes[i].GetAttributeValue(attr, "") == existingIncludes[j].GetAttributeValue(attr, ""))
+        //            {
+        //                existingIncludes.RemoveAt(j);
+        //                i--; c--;
+        //                break;
+        //            }
 
-            List<string> newIncludes = CreateIncludeList(
-                existingIncludes
-                    .Select(n => new IncludeEntry
-                            {
-                                Include = n.GetAttributeValue(attr, ""),
-                                Id = n.GetAttributeValue("id", "")
-                            }).ToList(),
-                includes);
-            int pos = 0;
-            foreach (HtmlNode existingIncl in existingIncludes)
-            {
-                while (pos < newIncludes.Count && newIncludes[pos] != existingIncl.GetAttributeValue(attr, ""))
-                {
-                    HtmlNode newNode = MakeNode(doc, tag, attr, newIncludes[pos], createAttributes);
-                    if (newNode != null)
-                        existingIncl.ParentNode.InsertBefore(newNode, existingIncl);
-                    pos++;
-                }
-                pos++;
-            }
-            HtmlNode incl = existingIncludes.LastOrDefault();
-            if (incl != null)
-                while (pos < newIncludes.Count)
-                {
-                    HtmlNode newNode = MakeNode(doc, tag, attr, newIncludes[pos], createAttributes);
-                    if (newNode != null)
-                        incl.ParentNode.InsertAfter(newNode, incl);
-                    pos++;
-                }
-            else
-            {
-                HtmlNode head = doc.DocumentNode.Element("html").Element("head");
-                if (head != null)
-                {
-                    pos = newIncludes.Count - 1;
-                    while (pos >= 0)
-                    {
-                        HtmlNode newNode = MakeNode(doc, tag, attr, newIncludes[pos], createAttributes);
-                        if (newNode != null)
-                            head.PrependChild(newNode);
-                        pos--;
-                    }
-                }
-            }
+        //    List<string> newIncludes = CreateIncludeList(
+        //        existingIncludes
+        //            .Select(n => new IncludeEntry
+        //                    {
+        //                        Include = n.GetAttributeValue(attr, ""),
+        //                        Id = n.GetAttributeValue("id", "")
+        //                    }).ToList(),
+        //        includes);
+        //    int pos = 0;
+        //    foreach (HtmlNode existingIncl in existingIncludes)
+        //    {
+        //        while (pos < newIncludes.Count && newIncludes[pos] != existingIncl.GetAttributeValue(attr, ""))
+        //        {
+        //            HtmlNode newNode = MakeNode(doc, tag, attr, newIncludes[pos], createAttributes);
+        //            if (newNode != null)
+        //                existingIncl.ParentNode.InsertBefore(newNode, existingIncl);
+        //            pos++;
+        //        }
+        //        pos++;
+        //    }
+        //    HtmlNode incl = existingIncludes.LastOrDefault();
+        //    if (incl != null)
+        //        while (pos < newIncludes.Count)
+        //        {
+        //            HtmlNode newNode = MakeNode(doc, tag, attr, newIncludes[pos], createAttributes);
+        //            if (newNode != null)
+        //                incl.ParentNode.InsertAfter(newNode, incl);
+        //            pos++;
+        //        }
+        //    else
+        //    {
+        //        HtmlNode head = doc.DocumentNode.Element("html").Element("head");
+        //        if (head != null)
+        //        {
+        //            pos = newIncludes.Count - 1;
+        //            while (pos >= 0)
+        //            {
+        //                HtmlNode newNode = MakeNode(doc, tag, attr, newIncludes[pos], createAttributes);
+        //                if (newNode != null)
+        //                    head.PrependChild(newNode);
+        //                pos--;
+        //            }
+        //        }
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// Insert HTML snippets into an HTML document
         /// </summary>
         /// <param name="doc">HTML document</param>
         /// <param name="htmls">HTML snippet include entries</param>
-        public void InsertHtmls(HtmlDocument doc, List<IncludeEntry> htmls)
-        {
-            HtmlNode body = doc.DocumentNode.Element("html").Element("body");
-            foreach (IncludeEntry html in htmls)
-            {
-                HtmlNode insHtml = HtmlNode.CreateNode("<div>" + html.Include + "</div>");
-                if (insHtml.ChildNodes.Count == 1)
-                    insHtml = insHtml.FirstChild;
-                insHtml.Attributes.Add("id", html.Id);
-                body.AppendChild(insHtml);
-            }
-        }
+        //public void InsertHtmls(HtmlDocument doc, List<IncludeEntry> htmls)
+        //{
+        //    HtmlNode body = doc.DocumentNode.Element("html").Element("body");
+        //    foreach (IncludeEntry html in htmls)
+        //    {
+        //        HtmlNode insHtml = HtmlNode.CreateNode("<div>" + html.Include + "</div>");
+        //        if (insHtml.ChildNodes.Count == 1)
+        //            insHtml = insHtml.FirstChild;
+        //        insHtml.Attributes.Add("id", html.Id);
+        //        body.AppendChild(insHtml);
+        //    }
+        //}
 
         /// <summary>
         /// Insert local styles into an HTML document
         /// </summary>
         /// <param name="doc">HTML document</param>
         /// <param name="styles">Local style include entries</param>
-        public void InsertStyles(HtmlDocument doc, List<IncludeEntry> styles)
-        {
-            if (styles == null || styles.Count == 0)
-                return;
+        //public void InsertStyles(HtmlDocument doc, List<IncludeEntry> styles)
+        //{
+        //    if (styles == null || styles.Count == 0)
+        //        return;
 
-            StringBuilder sb = new StringBuilder();
-            foreach (var style in styles)
-            {
-                sb.AppendLine(style.Include);
-            }
-            doc.DocumentNode.Element("html").Element("head")
-                .AppendChild(HtmlNode.CreateNode("<style>" + sb.ToString() + "</style>"));
-        }
+        //    StringBuilder sb = new StringBuilder();
+        //    foreach (var style in styles)
+        //    {
+        //        sb.AppendLine(style.Include);
+        //    }
+        //    doc.DocumentNode.Element("html").Element("head")
+        //        .AppendChild(HtmlNode.CreateNode("<style>" + sb.ToString() + "</style>"));
+        //}
 
         /// <summary>
         /// Build a sorted list of includes from existing includes in the document and requested/registered includes
@@ -271,26 +271,26 @@ namespace Lynicon.Extensions
         /// </summary>
         /// <param name="ehd">EventHubData for output html</param>
         /// <returns>Event data output, the HtmlDocument after processing</returns>
-        public object ProcessDocument(EventHubData ehd)
-        {
-            var doc = (HtmlDocument)ehd.Data;
-            DateTime st = DateTime.Now;
-            if (Csses != null)
-                UpdateIncludes(doc, "link", "href", Csses,
-                    new Dictionary<string, string> { { "rel", "stylesheet" }, { "type", "text/css" } });
+        //public object ProcessDocument(EventHubData ehd)
+        //{
+        //    var doc = (HtmlDocument)ehd.Data;
+        //    DateTime st = DateTime.Now;
+        //    if (Csses != null)
+        //        UpdateIncludes(doc, "link", "href", Csses,
+        //            new Dictionary<string, string> { { "rel", "stylesheet" }, { "type", "text/css" } });
 
-            if (Scripts != null)
-                UpdateIncludes(doc, "script", "src", Scripts,
-                    new Dictionary<string, string> { { "type", "text/javascript" } });
+        //    if (Scripts != null)
+        //        UpdateIncludes(doc, "script", "src", Scripts,
+        //            new Dictionary<string, string> { { "type", "text/javascript" } });
 
-            if (Htmls != null)
-                InsertHtmls(doc, Htmls);
+        //    if (Htmls != null)
+        //        InsertHtmls(doc, Htmls);
 
-            if (Styles != null)
-                InsertStyles(doc, Styles);
+        //    if (Styles != null)
+        //        InsertStyles(doc, Styles);
 
-            return doc;
-        }
+        //    return doc;
+        //}
 
         #endregion
     }

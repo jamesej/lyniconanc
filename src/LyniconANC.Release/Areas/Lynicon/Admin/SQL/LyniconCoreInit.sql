@@ -48,24 +48,6 @@ CREATE TABLE [dbo].[Users](
 
 GO
 
-INSERT INTO [dbo].[Users]
-           ([Id]
-           ,[UserName]
-           ,[Email]
-           ,[Password]
-           ,[Roles]
-           ,[Created]
-           ,[Modified])
-     VALUES
-           ('9A86E183-8C19-4AE1-8A72-44E6A38192C6'
-           ,'Jimmy'
-           ,'admin@lynicon-cms.com'
-           ,'8zz9HQqRHBLXfTqTIcIjMw=='
-           ,'AEU'
-           ,GETDATE()
-           ,GETDATE())
-GO
-
 /****** Object:  Table [dbo].[DbChanges]    Script Date: 11/18/2013 11:50:58 ******/
 
 CREATE TABLE [dbo].[DbChanges](

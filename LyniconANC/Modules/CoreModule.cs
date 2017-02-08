@@ -42,7 +42,7 @@ namespace Lynicon.Modules
                 new { controller = "Dynamic", Area = "Lynicon" });
             builder.MapDataRoute<List<User>>("lyniconusers",
                 "Lynicon/Users",
-                new { controller = "User", action = "List", view = "LyniconListDetail", Area = "Lynicon" },
+                new { controller = "User", action = "List", Area = "Lynicon" },
                 new { },
                 new { listView = "UserList", top = "15" });
             builder.MapRoute("lyniconadmin",

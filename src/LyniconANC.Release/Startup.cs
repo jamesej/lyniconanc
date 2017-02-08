@@ -18,6 +18,11 @@ using Microsoft.AspNetCore.Identity;
 using Lynicon.Services;
 using Lynicon.Extensibility;
 using Lynicon.Logging;
+using LyniconANC.Release.Models;
+using Lynicon.Collation;
+using Lynicon.Repositories;
+using Lynicon.DataSources;
+using Lynicon.Editors;
 
 namespace LyniconANC.Release
 {
@@ -51,13 +56,13 @@ namespace LyniconANC.Release
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<User, IdentityRole>()
-                //.AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
             // Add framework services.
             services.AddMvc(options => options.AddLyniconOptions())
                 .AddApplicationPart(typeof(LyniconSystem).Assembly);
+
+            services.AddIdentity<User, IdentityRole>()
+                //.AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddAuthorization(options =>
                 options.AddLyniconAuthorization());
@@ -65,7 +70,11 @@ namespace LyniconANC.Release
             services.AddLynicon(options =>
                 options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
                     .UseModule<CoreModule>()
-                    )
+                    .UseTypeSetup(tsr =>
+                        {
+                            tsr.SetupType(typeof(TestData), new BasicCollator(null), new BasicRepository(new CoreDataSourceFactory()), DataDiverter.Instance.NullDivert);
+                        }
+                    ))
                 .AddLyniconIdentity();
         }
 
@@ -99,7 +108,8 @@ namespace LyniconANC.Release
                 routes.MapLyniconRoutes();
                 routes.MapDataRoute<TestContent>("test", "test/{_0}", new { controller = "Test", action = "Index" });
                 routes.MapDataRoute<HeaderContent>("header", "test/{_0}", new { controller = "Test", action = "Header" });
-                routes.MapDataRoute<List<TestContent>>("test-list", "test-list", new { controller = "Test", action = "List" });
+                routes.MapDataRoute<List<TestContent>>("test-list", "test-list", new { controller = "Test", action = "List" }, null, new { view = "LyniconListDetail", listView = "ObjectList", rowFields = "Title, TestText" });
+                routes.MapDataRoute<TestData>("testData", "testdata/{_0}", new { controller = "Test", action = "Data" }, null, null, DataDiverter.Instance.NullDivert);
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

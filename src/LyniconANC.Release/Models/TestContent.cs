@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 // TMP BASE using Lynicon.Base.Models;
 using Lynicon.Models;
+using Newtonsoft.Json;
 
 namespace Lynicon.Test.Models
 {
@@ -30,6 +31,9 @@ namespace Lynicon.Test.Models
         public string Body { get; set; }
 
         public string[] Array { get; set; }
+
+        [JsonIgnore, ScaffoldColumn(false)]
+        public List<HeaderSummary> Hdrs { get; set; }
 
         public TestContent()
         {

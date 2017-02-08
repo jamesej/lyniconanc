@@ -3,6 +3,7 @@
 @using Lynicon.Utility
 @using Lynicon.Attributes
 @using System.Reflection
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 
 @{
     int useDepth = ViewData.TemplateInfo.TemplateDepth + ((ViewData["addDepth"] as int?) ?? 0) - 1;

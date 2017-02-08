@@ -31,26 +31,23 @@ namespace Lynicon.Editors
         /// <param name="rowFields">the fields to show on each row of the list</param>
         /// <returns>Markup of editor</returns>
         [HttpGet, Authorize(Roles = Membership.User.EditorRole)]
-        public IActionResult Index(object data, string view, string rowFields)
+        public IActionResult Index(object data)
         {
+            string rowFields = (string)RouteData.DataTokens["rowFields"];
             SetViewBag(data, 0, rowFields);
-            return View(view ?? "LyniconListDetail", data);
+            return View((string)RouteData.DataTokens["view"] ?? "LyniconListDetail", data);
         }
 
         /// <summary>
         /// Update/add a record in the list/detail editor
         /// </summary>
         /// <param name="data">Original list of items</param>
-        /// <param name="view">the view to use to render the list editor (defaults to LyniconListDetail)</param>
-        /// <param name="rowFields">the fields to show on each row of the list</param>
         /// <param name="lynicon_itemIndex">the index of the item being edited or -1 to add a record</param>
         /// <param name="form">The form data of the edited / added item</param>
-        /// <param name="editAction">Deprecated indication of a specific edit action to take on the data</param>
         /// <param name="formState">The UI state of the form</param>
         /// <returns>Markup of editor</returns>
         [HttpPost, Authorize(Roles = Membership.User.EditorRole)]
-        public async Task<IActionResult> Index(object data, string view, string rowFields,
-            int? lynicon_itemIndex, string editAction, string formState)
+        public async Task<IActionResult> Index(object data, int? lynicon_itemIndex, string formState)
         {
             object item;
             Type type = data.GetType().GetGenericArguments()[0];
@@ -67,36 +64,7 @@ namespace Lynicon.Editors
                 type = item.GetType();
             }
 
-            //FormCollection itemForm = new FormCollection();
-            //form.ToKeyValues()
-            //    .Where(kvp => kvp.Key.StartsWith("item"))
-            //    .Do(kvp => itemForm.Add(kvp.Key.After("item."), kvp.Value));
-
             await base.Bind(item);
-
-            //if (editAction != null)
-            //{
-            //    IList list;
-            //    Type itemType;
-            //    switch (editAction.UpTo("-"))
-            //    {
-            //        case "add":
-            //            list = ReflectionX.GetPropertyValueByPath(data, editAction.After("-")) as IList;
-            //            itemType = list.GetType().GetGenericArguments()[0];
-            //            if (list != null)
-            //                list.Add(CreateInstance(itemType));
-            //            break;
-            //        case "del":
-            //            list = ReflectionX.GetPropertyValueByPath(data, editAction.After("-").UpToLast("[")) as IList;
-            //            itemType = list.GetType().GetGenericArguments()[0];
-            //            if (list != null)
-            //            {
-            //                ModelState.Clear(); // templating system will take old values out of the ModelState unless you do this
-            //                list.RemoveAt(int.Parse(editAction.LastAfter("[").UpTo("]")));
-            //            }
-            //            break;
-            //    }
-            //}
 
             if (ModelState.IsValid)
             {
@@ -106,9 +74,11 @@ namespace Lynicon.Editors
                 ModelState.Clear();
             }
 
-            SetViewBag(data, lynicon_itemIndex.HasValue && lynicon_itemIndex.Value > 0 ? lynicon_itemIndex.Value : 0, rowFields);
+            string rowFields = (string)RouteData.DataTokens["rowFields"];
+            int idx = lynicon_itemIndex.HasValue && lynicon_itemIndex.Value > 0 ? lynicon_itemIndex.Value : 0;
+            SetViewBag(data, idx, rowFields);
 
-            return View(view ?? "LyniconListDetail", data);
+            return View((string)RouteData.DataTokens["view"] ?? "LyniconListDetail", data);
         }
 
         /// <summary>
@@ -147,15 +117,6 @@ namespace Lynicon.Editors
 
             ViewData["ItemIndex"] = idx ?? 0;
 
-            //string url = Request.RawUrl.UpTo("?");
-            //var idPi = LinqX.GetIdProp(item.GetType(), null);
-            //string idVal = idPi.GetValue(item).ToString();
-            //if (idPi.PropertyType == typeof(string))
-            //    idVal = "'" + idVal + "'";
-            //else if (idPi.PropertyType == typeof(Guid))
-            //    idVal = "guid'" + idVal + "'";
-            //string idFilter = string.Format("$filter={0} eq {1}", idPi.Name, idVal);
-
             string url = Request.GetEncodedUrl().UpTo("?");
             string query = Request.GetEncodedUrl().After("?");
             query = query.Split('&').Where(s => s != "$mode=getValues").Join("&");
@@ -180,6 +141,7 @@ namespace Lynicon.Editors
             {
                 ViewBag.ListFields = itemType
                     .GetPersistedProperties()
+                    .Where(pi => pi.PropertyType.IsValueType)
                     .Select(pi => pi.Name)
                     .Where(nm => nm != "Id")
                     .ToList();

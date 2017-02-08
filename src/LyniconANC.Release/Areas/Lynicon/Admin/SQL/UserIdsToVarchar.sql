@@ -1,8 +1,0 @@
-ALTER TABLE ContentItems
-ALTER COLUMN UserCreated VARCHAR(40);
-
-ALTER TABLE ContentItems
-ALTER COLUMN UserUpdated VARCHAR(40);
-
-ALTER TABLE ContentItems
-ALTER COLUMN UserTransferred VARCHAR(40);

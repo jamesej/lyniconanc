@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Lynicon.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LyniconANC.Tools
+namespace Lynicon.Tools
 {
     /// <summary>
     /// Line-based model for a code file
@@ -177,11 +178,12 @@ namespace LyniconANC.Tools
         /// </summary>
         /// <param name="line">the line to insert</param>
         /// <param name="useIndentAfter">Match indentation to following line (otherwise uses previous line)</param>
-        public bool InsertUniqueLineWithIndent(string line, bool useIndentAfter = false)
+        /// <param name="backIndent">Number of characters to delete from indent</param>
+        public bool InsertUniqueLineWithIndent(string line, bool useIndentAfter = false, int backIndent = 0)
         {
             if (lines.Any(l => l.Contains(line)))
                 return false;
-            InsertLineWithIndent(line, useIndentAfter: useIndentAfter);
+            InsertLineWithIndent(line, useIndentAfter: useIndentAfter, backIndent: backIndent);
             return true;
         }
 
@@ -190,13 +192,16 @@ namespace LyniconANC.Tools
         /// </summary>
         /// <param name="line">the line to insert</param>
         /// <param name="useIndentAfter">Match indentation to following line (otherwise uses previous line)</param>
-        public void InsertLineWithIndent(string line, bool useIndentAfter = false)
+        /// <param name="backIndent">Number of characters to delete from indentation</param>
+        public void InsertLineWithIndent(string line, bool useIndentAfter = false, int backIndent = 0)
         {
             string indent = "";
             if (!useIndentAfter && LineNum > 0)
                 indent = new string(lines[LineNum - 1].TakeWhile(c => char.IsWhiteSpace(c)).ToArray());
             else if (useIndentAfter && LineNum < lines.Count - 1)
                 indent = new string(lines[LineNum + 1].TakeWhile(c => char.IsWhiteSpace(c)).ToArray());
+            if (backIndent != 0)
+                indent = indent.Substring(0, Math.Max(indent.Length - backIndent, 0));
             LineNum++;
             lines.Insert(LineNum, indent + line);
             searchLines.Insert(LineNum, indent + line);

@@ -63,8 +63,8 @@ namespace LyniconANC.Autotests
             {
                 "// abc",
                 "// def",
-                "var xyz = \"qqq\"",
-                "var ddd = @\" qqq",
+                "var xyz = \"qq\\\"q\"",
+                "var ddd = @\" q\"\"qq",
                 "ghi\" xxx",
                 "/*",
                 "* dkdkdk",
@@ -135,6 +135,26 @@ namespace LyniconANC.Autotests
             fm.FindLineContains("Thingy(");
             fm.FindEndOfMethod();
             Assert.AreEqual(19, fm.LineNum);
+        }
+
+        [Test]
+        public void TestModelBracketInsert()
+        {
+            var doc = new List<string>
+            {
+                "// hello",
+                "{",
+                "var x = y.Func1(x =>",
+                "\t(isZ ? 0 : 1));",
+                "}"
+            };
+
+            var fm = new FileModel(doc);
+
+            fm.FindLineContains("Func1(");
+            bool succeed = fm.InsertTextAfterMatchingBracket("Func1(", ".qqq()");
+            Assert.IsTrue(succeed, "Insert Text failed");
+            Assert.AreEqual("\t(isZ ? 0 : 1)).qqq();", doc[3]);
         }
     }
 }

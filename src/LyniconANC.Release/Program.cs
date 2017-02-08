@@ -18,6 +18,9 @@ namespace LyniconANC.Release
                 .UseStartup<Startup>()
                 .Build();
 
+            if (Lynicon.Tools.CommandRunner.InterceptAndRunCommands(host.Services, args))
+                return;
+
             host.Run();
         }
     }

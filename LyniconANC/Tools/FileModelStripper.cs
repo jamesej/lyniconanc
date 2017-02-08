@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LyniconANC.Tools
+namespace Lynicon.Tools
 {
     public class FileModelStripper
     {
