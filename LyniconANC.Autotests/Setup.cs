@@ -52,6 +52,8 @@ namespace LyniconANC.Autotests
             LyniconSystem.Modules.SkipDbStateCheck = true;
             LyniconSystem.Initialise();
 
+            VersionManager.Instance.RegisterVersion(new TestVersioner());
+
             var testingRoutes = new RouteCollection();
             testingRoutes.AddTestDataRoute<HeaderContent>("header", "header/{_0}", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<TestData>("test-data", "testd/{_0}", new { controller = "mock", action = "mock" });

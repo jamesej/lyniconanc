@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Lynicon.Models;
 using Lynicon.Extensions;
+using Lynicon.Tools;
 
 namespace Lynicon.Startup
 {
@@ -27,6 +28,7 @@ namespace Lynicon.Startup
             LyniconSystem.Instance = lynSystem;
             services.AddSingleton<LyniconSystem>(lynSystem);
             services.AddSingleton<IAuthorizationHandler, ContentPermissionHandler>();
+            services.AddSingleton<ICommandRunner, CommandRunner>();
             return new LyniconSystemBuilder(lynSystem, services);
         }
 

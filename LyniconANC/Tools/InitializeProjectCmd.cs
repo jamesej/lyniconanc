@@ -27,9 +27,19 @@ namespace Lynicon.Tools
             UpdateStartup(fileModel);
             fileModel.Write();
 
-            fileModel = new FileModel(this.GetProjectBase() + "\\appsettings.json");
+            fileModel = new FileModel(this.GetProjectBase() + "\\appsettings.json", "///*");
             UpdateAppSettings(fileModel);
             fileModel.Write();
+
+            fileModel = new FileModel(this.GetProjectBase() + "\\Program.cs");
+            UpdateProgram(fileModel);
+            fileModel.Write();
+
+            var downloader = new ZipDownloader();
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            string vsn = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
+            string url = "http://www.lynicon.com/install/lyniconanc." + vsn + ".zip";
+            downloader.Download(new Uri(url), this.GetProjectBase(), true);
 
             return true;
         }
@@ -251,6 +261,13 @@ namespace Lynicon.Tools
         {
             bool found;
 
+            found = fileModel.FindLineContains("\"Lynicon\": {");
+            if (found)
+            {
+                Console.WriteLine("App Settings already updated");
+                return false;
+            }
+
             fileModel.Jump(9999);
             found = fileModel.FindPrevLineIs("}");
             if (found)
@@ -259,9 +276,9 @@ namespace Lynicon.Tools
                 fileModel.ReplaceText("}", "},");
                 fileModel.InsertUniqueLineWithIndent("\"Lynicon\": {", backIndent: 2);
                 fileModel.InsertUniqueLineWithIndent("  \"Core\": {");
-                fileModel.InsertUniqueLineWithIndent("  \"FileManagerRoot\": \"Uploads\",");
-                fileModel.InsertUniqueLineWithIndent("  \"SqlConnectionString\": \"<to be set>\",");
-                fileModel.InsertUniqueLineWithIndent("\"LyniconAreaBaseUrl\": \"/Areas/Lynicon\"");
+                fileModel.InsertUniqueLineWithIndent("  \"FileManagerRoot\": \"/Uploads/\",");
+                fileModel.InsertUniqueLineWithIndent("  \"SqlConnectionString\": \"...\",");
+                fileModel.InsertUniqueLineWithIndent("\"LyniconAreaBaseUrl\": \"/Areas/Lynicon/\"");
                 fileModel.InsertLineWithIndent("}", backIndent: 2);
                 fileModel.InsertLineWithIndent("}", backIndent: 4);
 
@@ -270,6 +287,43 @@ namespace Lynicon.Tools
             else
             {
                 Console.WriteLine("Failed to add basic Lynicon configuration");
+                return false;
+            }
+
+
+            return true;
+        }
+
+        public bool UpdateProgram(FileModel fileModel)
+        {
+            bool found;
+
+            fileModel.ToTop();
+
+            found = fileModel.FindLineContains("namespace");
+            if (found)
+            {
+                fileModel.Jump(-1);
+                fileModel.InsertUniqueLineWithIndent("using Lynicon.Tools;");
+                fileModel.InsertLineWithIndent("");
+
+                Console.WriteLine("Added using to Program.cs");
+            }
+            else
+            {
+                Console.WriteLine("Failed using to Program.cs");
+                return false;
+            }
+
+            found = fileModel.FindLineContains("UseContentRoot(");
+            if (found && !fileModel.LineContains("ContentRootLocator.GetContentRoot(args)"))
+            {
+                fileModel.ReplaceText("UseContentRoot(", "UseContentRoot(ContentRootLocator.GetContentRoot(args) ?? ");
+                Console.WriteLine("Added content route redirection to Program.cs");
+            }
+            else
+            {
+                Console.WriteLine("Failed to add content route redirection to Program.cs");
                 return false;
             }
 

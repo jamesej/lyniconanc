@@ -68,6 +68,8 @@ namespace Lynicon.Collation
         /// <param name="id">The identifier</param>
         public ItemId(Type type, object id)
         {
+            if (id == null || type == null)
+                throw new ArgumentException("Cannot create ItemId with null id or type");
             this.Id = id;
             this.Type = type == null ? null : type.ContentType();
         }
@@ -120,13 +122,13 @@ namespace Lynicon.Collation
         public ItemId(string s)
         {
             if (string.IsNullOrEmpty(s) || !s.Contains(":"))
-                return;
+                throw new ArgumentException("Serialized ItemId in wrong format: " + (s ?? "NULL"));
 
             string[] parts = s.Split(':');
             var idStr = parts[0].Trim();
             var typeStr = parts[1].Trim();
             if (string.IsNullOrEmpty(idStr) || string.IsNullOrEmpty(typeStr))
-                return;
+                throw new ArgumentException("Serialized ItemId in wrong format: " + (s ?? "NULL"));
             this.Id = idStr;
             this.Type = ContentTypeHierarchy.GetContentType(typeStr);
         }

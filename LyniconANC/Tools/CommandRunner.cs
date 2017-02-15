@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Lynicon.Services;
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +14,17 @@ namespace Lynicon.Tools
         {
             var commandRunner = (ICommandRunner)services.GetService(typeof(ICommandRunner));
             if (commandRunner == null)
-                commandRunner = new CommandRunner();
+                commandRunner = new CommandRunner(null);
             return commandRunner.InterceptAndRunCommands(args);
         }
 
         protected Dictionary<string, ToolsCommandBase> commands = new Dictionary<string, ToolsCommandBase>();
 
-        public CommandRunner()
+        public CommandRunner(LyniconSystem sys)
         {
-            this.RegisterCommand(new BuildStartupCmd());
+            this.RegisterCommand(new InitializeProjectCmd());
+            this.RegisterCommand(new InitializeDatabaseCmd(sys));
+            this.RegisterCommand(new InitializeAdminCmd(sys));
         }
 
         public bool RegisterCommand(ToolsCommandBase toolsCommand)
@@ -35,6 +38,9 @@ namespace Lynicon.Tools
 
         public bool InterceptAndRunCommands(string[] args)
         {
+            if (args.Length < 1)
+                return false;
+
             if (args[0].ToLower() != "lynicon")
                 return false;
 

@@ -16,11 +16,15 @@ namespace Lynicon.Tools
         private char? prev;
         private List<string> lines;
         private Queue<bool> skip = new Queue<bool>();
+        private string useDelimiters;
 
-        public FileModelStripper(List<string> lines)
+        public FileModelStripper(List<string> lines) : this(lines, null)
+        { }
+        public FileModelStripper(List<string> lines, string useDelimiters)
         {
             stripping = false;
             this.lines = lines;
+            this.useDelimiters = useDelimiters ?? "/*//\"";
             StripLines();
         }
 
@@ -65,7 +69,7 @@ namespace Lynicon.Tools
                 switch (c)
                 {
                     case '/':
-                        if (prev == '/')
+                        if (prev == '/' && useDelimiters.Contains("//"))
                         {
                             stripping = true;
                             endMatch = '\n';
@@ -73,7 +77,7 @@ namespace Lynicon.Tools
                         }
                         break;
                     case '*':
-                        if (prev == '/')
+                        if (prev == '/' && useDelimiters.Contains("/*"))
                         {
                             stripping = true;
                             endMatch = '/';
@@ -81,11 +85,14 @@ namespace Lynicon.Tools
                         }
                         break;
                     case '"':
-                        stripping = true;
-                        endMatch = '"';
-                        if (prev != '@')
-                            endMatchPrev = ch => ch == null || ch.Value != '\\';
-                        skip.Enqueue(prev == '"');
+                        if (useDelimiters.Contains("\""))
+                        {
+                            stripping = true;
+                            endMatch = '"';
+                            if (prev != '@')
+                                endMatchPrev = ch => ch == null || ch.Value != '\\';
+                            skip.Enqueue(prev == '"');
+                        }
                         break;
                 }
             }

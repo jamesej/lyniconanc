@@ -142,7 +142,9 @@ namespace Lynicon.Relations
         {
             get
             {
-                return new ItemVersionedId(ItemId, VersionManager.Instance.CurrentVersion);
+                if (IsEmpty)
+                    return null;
+                return new ItemVersionedId(this.ItemId, VersionManager.Instance.CurrentVersion);
             }
             set
             {
@@ -276,6 +278,8 @@ namespace Lynicon.Relations
         /// </summary>
         public static List<Type> AssignableContentTypes { get; set; }
 
+        private static List<string> assignableContentTypeNames { get; set; }
+
         static Reference()
         {
             if (typeof(Summary).IsAssignableFrom(typeof(T)))
@@ -286,13 +290,19 @@ namespace Lynicon.Relations
                 AssignableContentTypes = new List<Type> { typeof(T) };
             else
                 AssignableContentTypes = ContentTypeHierarchy.GetAssignableContentTypes(typeof(T));
+            assignableContentTypeNames = AssignableContentTypes.Select(t => t.FullName).ToList();
         }
 
         private string dataType = null;
         public override string DataType
         {
             get { return IsContentType ? typeof(T).FullName : dataType; }
-            set { dataType = value; }
+            set
+            {
+                if (!assignableContentTypeNames.Contains(value))
+                    throw new ArgumentException("Reference type " + typeof(T).FullName + " cannot have a data type of " + value);
+                dataType = value;
+            }
         }
 
         public override bool FixedDataType

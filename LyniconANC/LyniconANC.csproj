@@ -619,11 +619,15 @@
     <Compile Include="Services\LyniconSystemOptions.cs" />
     <Compile Include="Startup\StartupX.cs" />
     <Compile Include="Tools\CommandRunner.cs" />
+    <Compile Include="Tools\ContentRootLocator.cs" />
+    <Compile Include="Tools\InitializeAdminCmd.cs" />
+    <Compile Include="Tools\InitializeDatabaseCmd.cs" />
     <Compile Include="Tools\FileModel.cs" />
     <Compile Include="Tools\FileModelStripper.cs" />
     <Compile Include="Tools\ICommandRunner.cs" />
-    <Compile Include="Tools\BuildStartupCmd.cs" />
+    <Compile Include="Tools\InitializeProjectCmd.cs" />
     <Compile Include="Tools\ToolsCommand.cs" />
+    <Compile Include="Tools\ZipDownloader.cs" />
     <Compile Include="Utility\ArrayGraph.cs" />
     <Compile Include="Utility\DictionaryX.cs" />
     <Compile Include="Utility\HtmlHelperX.cs" />

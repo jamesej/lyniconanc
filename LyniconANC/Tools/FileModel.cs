@@ -18,7 +18,9 @@ namespace Lynicon.Tools
         string path = null;
         public int LineNum { get; set; }
 
-        public FileModel(string path)
+        public FileModel(string path) : this(path, null)
+        { }
+        public FileModel(string path, string useDelimiters)
         {
             lines = new List<string>();
             this.path = path;
@@ -27,14 +29,16 @@ namespace Lynicon.Tools
                 while (!reader.EndOfStream)
                     lines.Add(reader.ReadLine());
             }
-            var fms = new FileModelStripper(lines);
+            var fms = new FileModelStripper(lines, useDelimiters);
             searchLines = fms.StrippedLines;
             LineNum = 0;
         }
-        public FileModel(List<string> lines)
+        public FileModel(List<string> lines) : this(lines, null)
+        { }
+        public FileModel(List<string> lines, string useDelimiters)
         {
             this.lines = lines;
-            var fms = new FileModelStripper(lines);
+            var fms = new FileModelStripper(lines, useDelimiters);
             searchLines = fms.StrippedLines;
             LineNum = 0;
         }

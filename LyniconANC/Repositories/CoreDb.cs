@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+//using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Reflection;

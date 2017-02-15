@@ -192,7 +192,9 @@ namespace Lynicon.Extensibility
             bool changed = false;
 
             // detected if we have recursed into this (on the current thread/request) and don't apply override if so
-            bool blocked = (bool?)RequestThreadCache.Current[overrideBlockKey] ?? false;
+            bool blocked = RequestThreadCache.Current.ContainsKey(overrideBlockKey)
+                ? ((bool?)RequestThreadCache.Current[overrideBlockKey] ?? false)
+                : false;
 
             if (over.Count > 0 && !blocked)
             {

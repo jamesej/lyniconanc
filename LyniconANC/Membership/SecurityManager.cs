@@ -25,5 +25,24 @@ namespace Lynicon.Membership
 
         static SecurityManager() { }
 
+        public static void EnsureAdminUser(string password)
+        {
+            Current.EnsureRoles("AEU");
+
+            var adminUser = Collator.Instance.Get<User, User>(iq => iq.Where(u => u.UserName == "administrator")).FirstOrDefault();
+            if (adminUser == null)
+            {
+                Guid adminUserId = Guid.NewGuid();
+                adminUser = Collator.Instance.GetNew<User>(new Address(typeof(User), adminUserId.ToString()));
+                adminUser.Email = "admin@lynicon-user.com";
+                adminUser.Id = adminUserId;
+                adminUser.Roles = "AEU";
+                adminUser.UserName = "administrator";
+                Collator.Instance.Set(adminUser, true);
+            }
+
+            Current.SetPassword(adminUser.IdAsString, password);
+        }
+
     }
 }

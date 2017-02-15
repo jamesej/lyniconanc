@@ -141,7 +141,7 @@ namespace Lynicon.Editors
             {
                 ViewBag.ListFields = itemType
                     .GetPersistedProperties()
-                    .Where(pi => pi.PropertyType.IsValueType)
+                    .Where(pi => pi.PropertyType == typeof(string) || pi.PropertyType.IsValueType)
                     .Select(pi => pi.Name)
                     .Where(nm => nm != "Id")
                     .ToList();

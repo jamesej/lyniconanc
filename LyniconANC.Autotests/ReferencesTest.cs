@@ -19,6 +19,17 @@ namespace LyniconANC.Autotests
     public class ReferencesTest
     {
         [Test]
+        public void ReferenceTest()
+        {
+            var iid = new ItemId(typeof(RefTargetContent), Guid.NewGuid());
+            Reference<RefTargetContent> refr = new Reference<Test.Models.RefTargetContent>(iid);
+            Assert.AreEqual(refr.ItemId, iid, "Reference stored itemid");
+
+            refr = new Reference<RefTargetContent>();
+            Assert.IsTrue(refr.IsEmpty, "default constr reference is empty");
+        }
+
+        [Test]
         public void FollowRefs()
         {
             var rt1 = Collator.Instance.GetNew<RefTargetContent>(new Address(typeof(RefTargetContent), "1"));
