@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
@@ -113,8 +112,8 @@ namespace Lynicon.Repositories
             {
                 qed.Source = dataSource.GetSource(typeof(ContentItem));
 
-                if (!Cache.IsTotalCached(typeof(T), isSummary))
-                    qed.Source = qed.Source.AsNoTracking();
+                //if (!Cache.IsTotalCached(typeof(T), isSummary))
+                //    qed.Source = qed.Source.AsNoTracking();
 
                 string eventName = string.Format("Repository.Get.{0}.Ids", isSummary ? "Summaries" : "Items");
                 qed = EventHub.Instance.ProcessEvent(eventName, this, qed).Data as QueryEventData<IQueryable>;
@@ -145,11 +144,14 @@ namespace Lynicon.Repositories
 
             var qed = new QueryEventData<IQueryable>
             {
-                QueryBody = iq => queryBody(
-                        iq.AsFacade<ContentItem>()
+                //QueryBody = iq => queryBody(
+                //        iq.AsFacade<ContentItem>()
+                //            .WhereIn(ci => ci.DataType, types.Select(t => t.FullName))
+                //            .AsFacade<T>()
+                //    )
+                QueryBody = iq => queryBody(iq.AsFacade<T>()).AsFacade<ContentItem>()
                             .WhereIn(ci => ci.DataType, types.Select(t => t.FullName))
                             .AsFacade<T>()
-                    )
             };
             
             // if types contain object, don't select by type
@@ -160,8 +162,8 @@ namespace Lynicon.Repositories
             {
                 qed.Source = dataSource.GetSource(typeof(ContentItem));
 
-                if (!Cache.IsTotalCached(typeof(T), isSummary))
-                    qed.Source = qed.Source.AsNoTracking();
+                //if (!Cache.IsTotalCached(typeof(T), isSummary))
+                //    qed.Source = qed.Source.AsNoTracking();
 
                 string eventName = string.Format("Repository.Get.{0}", isSummary ? "Summaries" : "Items");
                 qed = EventHub.Instance.ProcessEvent(eventName, this, qed).Data as QueryEventData<IQueryable>;

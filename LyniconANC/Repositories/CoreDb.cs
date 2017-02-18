@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-//using Microsoft.EntityFrameworkCore;
+//using System.Data.Entity;
+//using System.Data.Entity.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Reflection;
@@ -15,6 +15,9 @@ using Lynicon.Collation;
 using Lynicon.Models;
 using System.Diagnostics;
 using Lynicon.DataSources;
+using Lynicon.Utility;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Lynicon.Repositories
 {
@@ -23,60 +26,12 @@ namespace Lynicon.Repositories
     /// </summary>
     public class CoreDb : DbContext
     {
-        static CoreDb()
-        {
-            Database.SetInitializer<CoreDb>(null);
-        }
+        protected static IModel CoreModel { get; set; }
 
-        public CoreDb()
-            : base(LyniconSystem.Instance.Settings.SqlConnectionString)
+        protected static void BuildModel()
         {
-            this.Configuration.ProxyCreationEnabled = !Repository.Instance.NoTypeProxyingInScope;
-        }
-        public CoreDb(string nameOrCs)
-            : base(nameOrCs)
-        {
-            this.Configuration.ProxyCreationEnabled = !Repository.Instance.NoTypeProxyingInScope;
-        }
-
-        /// <summary>
-        /// Get a DbQuery (in the extended type) for a given base type
-        /// </summary>
-        /// <typeparam name="TBase">The base type</typeparam>
-        /// <returns>A DbQuery against the underlying database</returns>
-        public DbQuery CompositeSet<TBase>()
-        {
-            return CompositeSet(typeof(TBase));
-        }
-        /// <summary>
-        /// Get a DbQuery (in the extended type) for a given base type
-        /// </summary>
-        /// <param name="tBase">The base type</param>
-        /// <returns>A DbQuery against the underlying database</returns>
-        public DbQuery CompositeSet(Type tBase, bool useIncludes)
-        {
-            if (!CompositeTypeManager.Instance.BaseTypes.Contains(tBase))
-                throw new Exception("No composite of base type " + tBase.FullName);
-
-            Type extType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
-            DbQuery q = Set(extType);
-            if (useIncludes)
-            {
-                foreach (var inclPi in extType.GetProperties().Where(pi => pi.GetCustomAttribute<AlwaysIncludeAttribute>() != null))
-                    q = q.Include(inclPi.Name);
-            }
-
-            return q;
-        }
-        public DbQuery CompositeSet(Type tBase)
-        {
-            return CompositeSet(tBase, useIncludes: true);
-        }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            if (!Collator.Instance.RepositoryBuilt)
-                throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
+            //if (!Collator.Instance.RepositoryBuilt)
+            //    throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
 
             Debug.WriteLine("Building CoreDb");
 
@@ -86,44 +41,73 @@ namespace Lynicon.Repositories
                 .Where(crt => Repository.Instance.Registered(crt).DataSourceFactory is CoreDataSourceFactory)
                 .ToList();
 
-            var entityMethod = typeof(DbModelBuilder).GetMethod("Entity");
+            var builder = new ModelBuilder(SqlServerConventionSetBuilder.Build());
+
 
             foreach (var extendedType in CompositeTypeManager.Instance.ExtendedTypes.Where(kvp => requiredTypes.Contains(kvp.Value)))
             {
-                // below code runtime equivalent of
-                // typeConfig = modelBuilder.Entity<extendedType.Value>();
-                // typeConfig.HasKey<Guid>(x => x.Id);
-
-                var typeConfig = entityMethod.MakeGenericMethod(extendedType.Value)
-                    .Invoke(modelBuilder, new object[] { });
-                //var hasKey = typeConfig.GetType().GetMethod("HasKey");
-                
-                //ParameterExpression x = Expression.Parameter(extendedType.Value, "x");
-                //PropertyInfo piId = extendedType.Value.GetProperty("Id");
-                //LambdaExpression le = System.Linq.Dynamic.DynamicExpression.ParseLambda(
-                //    new ParameterExpression[] { x }, piId.PropertyType, "x.Id");
-
-                //hasKey.MakeGenericMethod(piId.PropertyType).Invoke(typeConfig, new object[] { le });
-
-                string tableName = null;
-                var tableNamePi = extendedType.Key.GetProperty("TableName", BindingFlags.Static | BindingFlags.Public);
-                if (tableNamePi != null)
-                    tableName = (string)tableNamePi.GetValue(null, null);
-                if (tableName == null)
-                {
-                    var tableAttr = extendedType.Key.GetCustomAttribute<TableAttribute>();
-                    if (tableAttr != null)
-                        tableName = tableAttr.Name;
-                    else
-                    {
-                        tableName = extendedType.Key.Name;
-                        if (!tableName.EndsWith("s")) tableName += "s";
-                    }
-                }
-
-                var toTable = typeConfig.GetType().GetMethod("ToTable", new Type[] { typeof(string) });
-                toTable.Invoke(typeConfig, new object[] { tableName });
+                builder.Entity(extendedType.Value).ToTable(LinqX.GetTableName(extendedType.Key));
             }
+
+            CoreModel = builder.Model;
+        }
+
+        static CoreDb()
+        {
+            BuildModel();
+        }
+
+        public CoreDb()
+            : base(
+                  new DbContextOptionsBuilder<CoreDb>()
+                  .UseModel(CoreModel)
+                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
+                  .Options)
+        { }
+        public CoreDb(string connectionString)
+            : base(
+                  new DbContextOptionsBuilder<CoreDb>()
+                  .UseModel(CoreModel)
+                  .UseSqlServer(connectionString)
+                  .Options)
+        { }
+
+        public IQueryable InnerCompositeSet<T>(bool useIncludes) where T : class
+        {
+            IQueryable<T> q = Set<T>();
+            if (useIncludes)
+            {
+                foreach (var inclPi in typeof(T).GetProperties().Where(pi => pi.GetCustomAttribute<AlwaysIncludeAttribute>() != null))
+                    q = q.Include(inclPi.Name);
+            }
+
+            return (IQueryable)q;
+        }
+        /// <summary>
+        /// Get a DbQuery (in the extended type) for a given base type
+        /// </summary>
+        /// <param name="tBase">The base type</param>
+        /// <param name="useIncludes">Whether to use includes specified by AlwaysIncludesAttribute</param>
+        /// <returns>A DbQuery against the underlying database</returns>
+        public IQueryable CompositeSet(Type tBase, bool useIncludes)
+        {
+            if (!CompositeTypeManager.Instance.BaseTypes.Contains(tBase))
+                throw new Exception("No composite of base type " + tBase.FullName);
+
+            Type extType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
+
+            IQueryable q = (IQueryable)ReflectionX.InvokeGenericMethod(this, "InnerCompositeSet", extType, true, useIncludes);
+
+            return q;
+        }
+        /// <summary>
+        /// Get a DbQuery (in the extended type) for a given base type
+        /// </summary>
+        /// <param name="tBase">The base type</param>
+        /// <returns>A DbQuery against the underlying database</returns>
+        public IQueryable CompositeSet(Type tBase)
+        {
+            return CompositeSet(tBase, useIncludes: true);
         }
     }
 }

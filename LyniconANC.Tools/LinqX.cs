@@ -219,7 +219,7 @@ namespace LyniconANC.Tools
                 return e => false;
 
             var equals = values.Select(value => (Expression)Expression.Equal(propertySelector.Body, Expression.Constant(value, typeof(TValue))));
-            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.Or(accumulate, equal));
+            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.OrElse(accumulate, equal));
 
             return Expression.Lambda<Func<TElement, bool>>(body, p);
         }
@@ -234,7 +234,7 @@ namespace LyniconANC.Tools
                 return e => false;
 
             var equals = values.Select(value => (Expression)Expression.Equal(propertySelector.Body, Expression.Constant(value, itemType == null ? (value == null ? typeof(object) : value.GetType()) : itemType)));
-            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.Or(accumulate, equal));
+            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.OrElse(accumulate, equal));
 
             return Expression.Lambda<Func<TElement, bool>>(body, p);
         }
@@ -245,7 +245,7 @@ namespace LyniconANC.Tools
                 return e => false;
 
             var equals = values.Select(value => (Expression)Expression.Equal(propertySelector.Body, Expression.Constant(value, typeof(TValue))));
-            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.Or(accumulate, equal));
+            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.OrElse(accumulate, equal));
             if (!isInclude)
                 body = Expression.Not(body);
 

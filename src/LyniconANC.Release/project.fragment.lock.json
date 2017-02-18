@@ -8,8 +8,6 @@
         "bin/Debug/LyniconANC.dll": {}
       },
       "runtime": {
-        "../../TestLyniconANC/packages/EntityFramework.6.1.3/lib/net45/EntityFramework.SqlServer.dll": {},
-        "../../TestLyniconANC/packages/EntityFramework.6.1.3/lib/net45/EntityFramework.dll": {},
         "../../TestLyniconANC/packages/HtmlAgilityPack.1.4.9.5/lib/Net45/HtmlAgilityPack.dll": {},
         "../../TestLyniconANC/packages/Linq2Rest.4.1.0.0/lib/Net451/Linq2Rest.dll": {},
         "../../TestLyniconANC/packages/Microsoft.AspNetCore.Antiforgery.1.1.0/lib/net451/Microsoft.AspNetCore.Antiforgery.dll": {},
@@ -102,12 +100,13 @@
         "../../TestLyniconANC/packages/System.ComponentModel.Primitives.4.3.0/lib/net45/System.ComponentModel.Primitives.dll": {},
         "../../TestLyniconANC/packages/System.ComponentModel.TypeConverter.4.3.0/lib/net45/System.ComponentModel.TypeConverter.dll": {},
         "../../TestLyniconANC/packages/System.Diagnostics.DiagnosticSource.4.3.0/lib/portable-net45+win8+wpa81/System.Diagnostics.DiagnosticSource.dll": {},
-        "../../TestLyniconANC/packages/System.Interactive.Async.3.1.1/lib/net45/System.Interactive.Async.dll": {},
         "../../TestLyniconANC/packages/System.Reflection.Metadata.1.4.2/lib/portable-net45+win8/System.Reflection.Metadata.dll": {},
         "../../TestLyniconANC/packages/System.Runtime.CompilerServices.Unsafe.4.3.0/lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll": {},
         "../../TestLyniconANC/packages/System.Runtime.InteropServices.RuntimeInformation.4.3.0/lib/net45/System.Runtime.InteropServices.RuntimeInformation.dll": {},
         "../../TestLyniconANC/packages/System.Text.Encodings.Web.4.3.0/lib/netstandard1.0/System.Text.Encodings.Web.dll": {},
         "../../TestLyniconANC/packages/log4net.2.0.7/lib/net45-full/log4net.dll": {},
+        "../packages/Microsoft.EntityFrameworkCore.SqlServer.1.1.0/lib/net451/Microsoft.EntityFrameworkCore.SqlServer.dll": {},
+        "../packages/System.Interactive.Async.3.0.0/lib/net45/System.Interactive.Async.dll": {},
         "bin/Debug/LyniconANC.dll": {}
       },
       "contentFiles": {

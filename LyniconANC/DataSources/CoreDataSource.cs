@@ -2,7 +2,8 @@
 using Lynicon.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+//using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,10 +46,11 @@ namespace Lynicon.DataSources
                 && RequestContextManager.Instance.CurrentContext.Items != null)
                 RequestContextManager.Instance.CurrentContext.Items.Add("_lynicon_request_context", db);
 
-            if (QueryTimeoutSecs.HasValue)
-                db.Database.CommandTimeout = QueryTimeoutSecs.Value;
-            else if (Repository.Instance.QueryTimeoutSecs.HasValue)
-                db.Database.CommandTimeout = Repository.Instance.QueryTimeoutSecs;
+            // TMP
+            //if (QueryTimeoutSecs.HasValue)
+            //    db.Database.CommandTimeout = QueryTimeoutSecs.Value;
+            //else if (Repository.Instance.QueryTimeoutSecs.HasValue)
+            //    db.Database.CommandTimeout = Repository.Instance.QueryTimeoutSecs;
 
             return db;
         }

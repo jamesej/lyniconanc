@@ -4,8 +4,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+//using System.Data.Entity;
+//using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Linq.Expressions;
@@ -19,6 +19,10 @@ using Lynicon.Config;
 using Lynicon.Services;
 using Lynicon.Collation;
 using Lynicon.DataSources;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace Lynicon.Repositories
 {
@@ -29,43 +33,14 @@ namespace Lynicon.Repositories
     /// </summary>
     public class SummaryDb : DbContext
     {
-        private static ConcurrentDictionary<Type, LambdaExpression> projectors = null;
-        private static ConcurrentDictionary<Type, MethodInfo> selectors = null;
-        private static ConcurrentDictionary<Type, List<string>> alwaysIncludes = null;
-        static SummaryDb()
+        protected static IModel SummaryModel { get; set; }
+
+        public static void BuildModel()
         {
-            Database.SetInitializer<SummaryDb>(null);
+            //if (!Collator.Instance.RepositoryBuilt)
+            //    throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
 
-            projectors = new ConcurrentDictionary<Type, LambdaExpression>();
-            selectors = new ConcurrentDictionary<Type, MethodInfo>();
-            alwaysIncludes = new ConcurrentDictionary<Type, List<string>>();
-
-            // Prebuilds expressions which are expensive to build because of reflection
-            foreach (var baseType in CompositeTypeManager.Instance.SummarisedTypes.Keys)
-            {
-                projectors.TryAdd(baseType, GetProjector(baseType));
-                selectors.TryAdd(baseType, GetSelectMethodInfo(baseType));
-                alwaysIncludes.TryAdd(baseType, GetAlwaysIncludes(baseType));
-            }
-        }
-
-        public SummaryDb()
-            : base(LyniconSystem.Instance.Settings.SqlConnectionString)
-        {
-            this.Configuration.ProxyCreationEnabled = Repository.Instance.NoTypeProxyingInScope;
-        }
-        public SummaryDb(string nameOrCs)
-            : base(nameOrCs)
-        {
-            this.Configuration.ProxyCreationEnabled = Repository.Instance.NoTypeProxyingInScope;
-        }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Ignore(CompositeTypeManager.Instance.SummarisedTypes.Keys);
-
-            if (!Collator.Instance.RepositoryBuilt)
-                throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
+            Debug.WriteLine("Building SummaryDb");
 
             var requiredBaseTypes = ContentTypeHierarchy.AllContentTypes
                 .Select(ct => Collator.Instance.ContainerType(ct))
@@ -76,33 +51,52 @@ namespace Lynicon.Repositories
                 .Where(crt => Repository.Instance.Registered(crt).DataSourceFactory is CoreDataSourceFactory)
                 .ToList();
 
-            var entityMethod = typeof(DbModelBuilder).GetMethod("Entity");
+            var builder = new ModelBuilder(SqlServerConventionSetBuilder.Build());
+
+            CompositeTypeManager.Instance.SummarisedTypes.Keys.Do(t => builder.Ignore(t));
 
             foreach (var sumsType in CompositeTypeManager.Instance.SummarisedTypes.Where(kvp => requiredBaseTypes.Contains(kvp.Key)))
             {
-                string tableName = null;
-                var tableNamePi = sumsType.Key.GetProperty("TableName", BindingFlags.Static | BindingFlags.Public);
-                if (tableNamePi != null)
-                    tableName = (string)tableNamePi.GetValue(null, null);
-                if (tableName == null)
-                {
-                    var tableAttr = sumsType.Key.GetCustomAttribute<TableAttribute>();
-                    if (tableAttr != null)
-                        tableName = tableAttr.Name;
-                    else
-                    {
-                        tableName = sumsType.Key.Name;
-                        if (!tableName.EndsWith("s")) tableName += "s";
-                    }
-                }
-
-                var summTypeConfig = entityMethod.MakeGenericMethod(sumsType.Value)
-                                        .Invoke(modelBuilder, new object[] { });
-
-                var summToTable = summTypeConfig.GetType().GetMethod("ToTable", new Type[] { typeof(string) });
-                summToTable.Invoke(summTypeConfig, new object[] { tableName });
+                builder.Entity(sumsType.Value).ToTable(LinqX.GetTableName(sumsType.Key));
             }
+
+            SummaryModel = builder.Model;
         }
+
+        private static ConcurrentDictionary<Type, LambdaExpression> projectors = null;
+        private static ConcurrentDictionary<Type, MethodInfo> selectors = null;
+        private static ConcurrentDictionary<Type, List<string>> alwaysIncludes = null;
+        static SummaryDb()
+        {
+            projectors = new ConcurrentDictionary<Type, LambdaExpression>();
+            selectors = new ConcurrentDictionary<Type, MethodInfo>();
+            alwaysIncludes = new ConcurrentDictionary<Type, List<string>>();
+
+            // Prebuilds expressions which are expensive to build because of reflection
+            foreach (var summType in CompositeTypeManager.Instance.SummarisedTypes)
+            {
+                projectors.TryAdd(summType.Key, GetProjector(summType.Key));
+                selectors.TryAdd(summType.Key, GetSelectMethodInfo(summType.Key));
+                alwaysIncludes.TryAdd(summType.Value, GetAlwaysIncludes(summType.Key));
+            }
+
+            BuildModel();
+        }
+
+        public SummaryDb()
+            : base(
+                  new DbContextOptionsBuilder<SummaryDb>()
+                  .UseModel(SummaryModel)
+                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
+                  .Options)
+        { }
+        public SummaryDb(string connectionString)
+            : base(
+                  new DbContextOptionsBuilder<SummaryDb>()
+                  .UseModel(SummaryModel)
+                  .UseSqlServer(connectionString)
+                  .Options)
+        { }
 
         private static LambdaExpression GetProjector(Type tBase)
         {
@@ -152,11 +146,15 @@ namespace Lynicon.Repositories
         /// Get an IQueryable in the extended type given the base type, sourcing data without fetching
         /// non-summarised fields
         /// </summary>
-        /// <typeparam name="TBase">The base type</typeparam>
+        /// <typeparam name="T">The type</typeparam>
         /// <returns>IQueryable in extended type which doesn't fetch non-summarised fields</returns>
-        public IQueryable SummarisedSet<TBase>()
+        public IQueryable SummarisedSet<T>() where T : class
         {
-            return SummarisedSet(typeof(TBase));
+            IQueryable<T> q = Set<T>().AsNoTracking();
+            foreach (string inclName in alwaysIncludes[typeof(T)])
+                q = q.Include(inclName);
+
+            return q;
         }
         /// <summary>
         /// Get an IQueryable in the extended type given the base type, sourcing data without fetching
@@ -179,22 +177,13 @@ namespace Lynicon.Repositories
                 return ((IEnumerable)(Activator.CreateInstance(listType))).AsQueryable();
             }
                 
-
             Type sumsType = CompositeTypeManager.Instance.SummarisedTypes[tBase];
-            //Type extType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
-
-            DbQuery q = Set(sumsType);
-            foreach (string inclName in alwaysIncludes[tBase])
-                q = q.Include(inclName);
+            IQueryable q = (IQueryable)ReflectionX.InvokeGenericMethod(this, "SummarisedSet", sumsType);
 
             var project = projectors[tBase];
             var selectMi = selectors[tBase];
 
-            //var aTX = Expression.New();
-            //var qry = ((IQueryable)q.AsNoTracking());
-
             var qryOut = (IQueryable)selectMi.Invoke(null, new object[] { q, project });
-
 
             return qryOut;
         }

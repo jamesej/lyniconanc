@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Configuration;
-using System.Data.Entity;
+//using System.Data.Entity;
 using System.Linq;
 using System.Linq.Dynamic;
 using System.Linq.Expressions;
@@ -13,6 +13,7 @@ using Lynicon.Models;
 using Lynicon.Utility;
 using Lynicon.Config;
 using Lynicon.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lynicon.Repositories
 {
@@ -21,13 +22,15 @@ namespace Lynicon.Repositories
     /// </summary>
     public class PreloadDb : DbContext
     {
-        static PreloadDb()
-        {
-            Database.SetInitializer<PreloadDb>(null);
-        }
-
         public PreloadDb()
-            : base(LyniconSystem.Instance.Settings.SqlConnectionString)
+            : base(new DbContextOptionsBuilder<PreloadDb>()
+                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
+                  .Options)
+        { }
+        public PreloadDb(string connectionString)
+            : base(new DbContextOptionsBuilder<PreloadDb>()
+          .UseSqlServer(connectionString)
+          .Options)
         { }
 
         /// <summary>
@@ -42,12 +45,14 @@ namespace Lynicon.Repositories
         {
             List<string> actions = new List<string>();
 
-            bool dbChangesExists = Database
-                     .SqlQuery<int?>(@"
-                         SELECT 1 FROM sys.tables AS T
-                         INNER JOIN sys.schemas AS S ON T.schema_id = S.schema_id
-                         WHERE S.Name = 'dbo' AND T.Name = 'DbChanges'")
-                     .SingleOrDefault() != null;
+            //bool dbChangesExists = Database
+            //         .(@"
+            //             SELECT 1 FROM sys.tables AS T
+            //             INNER JOIN sys.schemas AS S ON T.schema_id = S.schema_id
+            //             WHERE S.Name = 'dbo' AND T.Name = 'DbChanges'")
+            //         .SingleOrDefault() != null;
+
+            bool dbChangesExists = true;
 
             if (!dbChangesExists)
             {

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Globalization;
 using System.Web;
+using Microsoft.AspNetCore.Html;
 
 namespace Lynicon.Models
 {
@@ -90,7 +91,7 @@ namespace Lynicon.Models
     /// BbText type, stores BbText and converts it automatically to HTML when it is rendered in a page
     /// </summary>
     [JsonConverter(typeof(BbTextJsonConverter)), TypeConverter(typeof(BbTextConverter)), Serializable]
-    public class BbText : IHtmlString
+    public class BbText : HtmlString
     {
         public static implicit operator BbText(string s)
         {
@@ -125,13 +126,13 @@ namespace Lynicon.Models
         /// <summary>
         /// Create an empty BbText
         /// </summary>
-        public BbText()
+        public BbText() : base("")
         { }
         /// <summary>
         /// Create a BbText from the BbText as a string
         /// </summary>
         /// <param name="s">The BbText format</param>
-        public BbText(string s)
+        public BbText(string s) : base(s)
         {
             Text = s;
             text = BbCodeProcessor.Format(s);

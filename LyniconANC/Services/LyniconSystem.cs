@@ -85,9 +85,9 @@ namespace Lynicon.Services
                 this.SecurityManager.InitialiseDataApi();
             }
 
-            LyniconModuleManager.Instance.ValidateModules();
+            Modules.ValidateModules();
 
-            Settings.RunTypeSetup?.Invoke(Collator.Instance);
+            Settings.RunTypeSetup?.Invoke(Collator);
 
             Collator.BuildRepository();
             Modules.Initialise();

@@ -119,8 +119,13 @@ namespace Lynicon.Linq
 
         public TResult Execute<TResult>(Expression expression)
         {
-            object result = (this as IQueryProvider).Execute(expression);
-            return (TResult)result;
+            if (expression == null)
+            {
+                throw new ArgumentNullException("expression");
+            }
+
+            Expression translated = DropFacade(expression);
+            return Source.Provider.Execute<TResult>(translated);
         }
 
         public object Execute(Expression expression)

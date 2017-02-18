@@ -225,11 +225,11 @@ namespace System.Linq.Dynamic
         ModuleBuilder module;
         Dictionary<Signature, Type> classes;
         int classCount;
-        ReaderWriterLock rwLock;
+        ReaderWriterLockSlim rwLock;
 
         private ClassFactory() {
             AssemblyName name = new AssemblyName("DynamicClasses");
-            AssemblyBuilder assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+            AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #if ENABLE_LINQ_PARTIAL_TRUST
             new ReflectionPermission(PermissionState.Unrestricted).Assert();
 #endif
@@ -242,7 +242,7 @@ namespace System.Linq.Dynamic
 #endif
             }
             classes = new Dictionary<Signature, Type>();
-            rwLock = new ReaderWriterLock();
+            rwLock = new ReaderWriterLockSlim();
         }
 
         public Type GetDynamicClass(IEnumerable<DynamicProperty> properties)
@@ -250,7 +250,7 @@ namespace System.Linq.Dynamic
             return GetDynamicClass(properties, null);
         }
         public Type GetDynamicClass(IEnumerable<DynamicProperty> properties, IEnumerable<Type> interfaces) {
-            rwLock.AcquireReaderLock(Timeout.Infinite);
+            rwLock.EnterReadLock();
             try {
                 Signature signature = new Signature(properties);
                 Type type;
@@ -261,12 +261,12 @@ namespace System.Linq.Dynamic
                 return type;
             }
             finally {
-                rwLock.ReleaseReaderLock();
+                rwLock.ExitReadLock();
             }
         }
 
         Type CreateDynamicClass(DynamicProperty[] properties, IEnumerable<Type> interfaces) {
-            LockCookie cookie = rwLock.UpgradeToWriterLock(Timeout.Infinite);
+            rwLock.EnterWriteLock();
             try {
                 string typeName = "DynamicClass" + (classCount + 1);
 #if ENABLE_LINQ_PARTIAL_TRUST
@@ -292,7 +292,7 @@ namespace System.Linq.Dynamic
                 }
             }
             finally {
-                rwLock.DowngradeFromWriterLock(ref cookie);
+                rwLock.ExitWriteLock();
             }
         }
 

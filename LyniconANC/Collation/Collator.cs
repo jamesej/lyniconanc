@@ -106,6 +106,10 @@ namespace Lynicon.Collation
             this.DefaultHandler.Repository = repository;
         }
 
+        public Collator()
+        {
+        }
+
         /// <summary>
         /// The container type this repository uses (or null if its just the content type)
         /// </summary>

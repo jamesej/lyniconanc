@@ -11,6 +11,12 @@ using System.Collections;
 using Lynicon.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Remotion.Linq.Parsing.Structure;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Lynicon.Utility
 {
@@ -141,6 +147,27 @@ namespace Lynicon.Utility
             return Expression.Lambda(mInitExp, param);
         }
 
+        public static string GetTableName(Type tableType)
+        {
+            string tableName = null;
+            var tableNamePi = tableType.GetProperty("TableName", BindingFlags.Static | BindingFlags.Public);
+            if (tableNamePi != null)
+                tableName = (string)tableNamePi.GetValue(null, null);
+            if (tableName == null)
+            {
+                var tableAttr = tableType.GetCustomAttribute<TableAttribute>();
+                if (tableAttr != null)
+                    tableName = tableAttr.Name;
+                else
+                {
+                    tableName = tableType.Name;
+                    if (!tableName.EndsWith("s")) tableName += "s";
+                }
+            }
+
+            return tableName;
+        }
+
         public static IEnumerable OfTypeRuntime(this IEnumerable iq, Type type)
         {
             var ofType = typeof(Enumerable).GetMethod("OfType").MakeGenericMethod(type);
@@ -222,7 +249,7 @@ namespace Lynicon.Utility
                 return e => false;
 
             var equals = values.Select(value => (Expression)Expression.Equal(propertySelector.Body, Expression.Constant(value, typeof(TValue))));
-            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.Or(accumulate, equal));
+            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.OrElse(accumulate, equal));
 
             return Expression.Lambda<Func<TElement, bool>>(body, p);
         }
@@ -237,7 +264,7 @@ namespace Lynicon.Utility
                 return e => false;
 
             var equals = values.Select(value => (Expression)Expression.Equal(propertySelector.Body, Expression.Constant(value, itemType == null ? (value == null ? typeof(object) : value.GetType()) : itemType)));
-            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.Or(accumulate, equal));
+            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.OrElse(accumulate, equal));
 
             return Expression.Lambda<Func<TElement, bool>>(body, p);
         }
@@ -248,7 +275,7 @@ namespace Lynicon.Utility
                 return e => false;
 
             var equals = values.Select(value => (Expression)Expression.Equal(propertySelector.Body, Expression.Constant(value, typeof(TValue))));
-            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.Or(accumulate, equal));
+            var body = equals.Aggregate<Expression>((accumulate, equal) => Expression.OrElse(accumulate, equal));
             if (!isInclude)
                 body = Expression.Not(body);
 
@@ -567,6 +594,22 @@ namespace Lynicon.Utility
                 }
                 entry.State = EntityState.Modified;
             }
+        }
+
+        /// <summary>
+        /// Specify an IQueryable source of data should not maintain tracking of changes on that data
+        /// </summary>
+        /// <param name="source">The IQueryable source</param>
+        /// <returns>The IQueryable source with tracking switched off</returns>
+        public static IQueryable AsNoTracking(this IQueryable source)
+        {
+            if (!source.GetType().IsGenericType)
+                throw new ArgumentException("AsNoTracking must be called on a generically-typed IQueryable");
+
+            Type qType = source.GetType().GetGenericArguments()[0];
+            var mi = typeof(EntityFrameworkQueryableExtensions).GetMethod("AsNoTracking", BindingFlags.Static | BindingFlags.Public);
+            var mit = mi.MakeGenericMethod(qType);
+            return (IQueryable)mi.Invoke(source, null);
         }
 
     }

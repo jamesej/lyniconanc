@@ -46,6 +46,12 @@ namespace Lynicon.Services
             return this;
         }
 
+        public LyniconSystemOptions UseConnectionString(string connectionString)
+        {
+            SqlConnectionString = connectionString;
+            return this;
+        }
+
         public LyniconSystemOptions UseModule<TModule>(params object[] moduleParams) where TModule : Extensibility.Module
         {
             ModuleSpecs.Add(new ModuleSpec { Type = typeof(TModule), Params = moduleParams });

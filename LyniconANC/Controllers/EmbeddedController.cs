@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.IO;
-using System.Web.UI;
 using Lynicon.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Lynicon.Utility;
 
 namespace Lynicon.Controllers
 {
@@ -29,10 +29,27 @@ namespace Lynicon.Controllers
             if (innerUrl.EndsWith("/"))
                 innerUrl = innerUrl.Substring(0, innerUrl.Length - 1);
             string location = "Lynicon." + innerUrl.Replace("/", ".");
-            WebResourceAttribute attribute = assembly.GetCustomAttributes(true)
-                .OfType<WebResourceAttribute>()
-                .FirstOrDefault(wra => wra.WebResource == location);
-            string contentType = (attribute == null ? "text/plain" : attribute.ContentType);
+            string contentType = "text/plain";
+            string extension = location.LastAfter(".").ToLower();
+            switch (extension)
+            {
+                case "jpg":
+                case "jpeg":
+                    contentType = "image/jpeg";
+                    break;
+                case "gif":
+                    contentType = "image/gif";
+                    break;
+                case "png":
+                    contentType = "image/png";
+                    break;
+                case "js":
+                    contentType = "application/javascript";
+                    break;
+                case "css":
+                    contentType = "text/css";
+                    break;
+            }
 
             Stream stream = assembly.GetManifestResourceStream(location);
 
