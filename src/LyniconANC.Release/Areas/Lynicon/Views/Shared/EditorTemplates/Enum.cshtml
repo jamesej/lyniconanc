@@ -1,9 +1,9 @@
 ﻿@model Enum
-
+@using Lynicon.Utility
 @{
     Type enumT = ViewData.ModelMetadata.ModelType;
     bool isNullable = false;
-    if (enumT.IsGenericType && enumT.GetGenericTypeDefinition() == typeof(Nullable<>))
+    if (enumT.IsGenericType() && enumT.GetGenericTypeDefinition() == typeof(Nullable<>))
     {
         enumT = Nullable.GetUnderlyingType(enumT);
         isNullable = true;

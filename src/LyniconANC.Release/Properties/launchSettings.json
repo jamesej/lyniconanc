@@ -17,6 +17,7 @@
     },
     "LyniconANC.Test": {
       "commandName": "Project",
+      "commandLineArgs": "lynicon initialize-project",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5000",
       "environmentVariables": {

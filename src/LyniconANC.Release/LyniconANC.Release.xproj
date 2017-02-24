@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>90df3aaf-ed83-44b6-8812-47f4438ee164</ProjectGuid>
+    <ProjectGuid>451aa7d7-d49c-4bb9-82b8-0ab1857fbb7c</ProjectGuid>
     <RootNamespace>LyniconANC.Release</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
@@ -18,9 +18,6 @@
   <ItemGroup>
     <DnxInvisibleContent Include="bower.json" />
     <DnxInvisibleContent Include=".bowerrc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\LyniconANC\LyniconANC.csproj" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

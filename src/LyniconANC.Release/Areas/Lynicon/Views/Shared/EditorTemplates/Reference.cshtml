@@ -1,8 +1,10 @@
 ﻿@model Lynicon.Relations.Reference
+@using System.Reflection
+@using Lynicon.Utility
 
 @if (Model != null)
 {
-    if (Model.GetType().IsGenericType)
+    if (Model.GetType().IsGenericType())
     {
         <div class="lyn-reference lyn-reference-select">
             @Html.DropDownListFor(m => m.SerializedValue, Model.GetSelectList(), null, new { @class = "lyn-reference-id chosen-select" })
@@ -18,7 +20,7 @@
         @if (Model != null)
         {
             var type = Model.GetType();
-            string refType = type.IsGenericType ? type.GetGenericArguments()[0].FullName : null;
+            string refType = type.IsGenericType() ? type.GetGenericArguments()[0].FullName : null;
             @Html.HiddenFor(m => refType, new { @class = "lyn-reference-typearg" })
         }
     </div>

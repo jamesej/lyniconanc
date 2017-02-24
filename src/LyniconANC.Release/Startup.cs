@@ -17,12 +17,13 @@ using Lynicon.Membership;
 using Microsoft.AspNetCore.Identity;
 using Lynicon.Services;
 using Lynicon.Extensibility;
-using Lynicon.Logging;
 using LyniconANC.Release.Models;
 using Lynicon.Collation;
 using Lynicon.Repositories;
 using Lynicon.DataSources;
 using Lynicon.Editors;
+using System.Reflection;
+using Lynicon.Logging;
 
 namespace LyniconANC.Release
 {
@@ -58,7 +59,7 @@ namespace LyniconANC.Release
 
             // Add framework services.
             services.AddMvc(options => options.AddLyniconOptions())
-                .AddApplicationPart(typeof(LyniconSystem).Assembly);
+                .AddApplicationPart(typeof(LyniconSystem).GetTypeInfo().Assembly);
 
             services.AddIdentity<User, IdentityRole>()
                 //.AddEntityFrameworkStores<ApplicationDbContext>()

@@ -1,0 +1,38 @@
+{
+  "dependencies": {
+    "HtmlAgilityPack.NetCore": "1.5.0.1",
+    "Microsoft.AspNetCore.Identity": "1.1.0",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.1",
+    "Microsoft.EntityFrameworkCore": "1.1.0",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
+    "Microsoft.Extensions.Configuration.Binder": "1.1.0",
+    "System.Reflection.Emit": "4.3.0",
+    "Linq2RestANC": "1.0.0"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "log4net-core-preview": "2.0.6",
+        "NETStandard.Library": "1.6.1"
+      }
+    },
+    "net46": {
+      "dependencies": {
+        "log4net": "2.0.7",
+        "System.IO.Compression.ZipFile": "4.0.0"
+      },
+      "frameworkAssemblies": {
+        "System.IO.Compression": "4.0.0.0",
+        "System.IO.Compression.FileSystem": "4.0.0.0"
+      }
+    }
+  },
+  "scripts": {
+    "postcompile": [
+      "dotnet pack --no-build --configuration %compile:Configuration%"
+    ]
+  },
+  "version": "0.0.2.7"
+}
