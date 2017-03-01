@@ -223,12 +223,14 @@ namespace Lynicon.Commands
         {
             string indent = "";
             if (!useIndentAfter && LineNum > 0)
-                indent = new string(lines[LineNum - 1].TakeWhile(c => char.IsWhiteSpace(c)).ToArray());
+                indent = new string(lines[LineNum].TakeWhile(c => char.IsWhiteSpace(c)).ToArray());
             else if (useIndentAfter && LineNum < lines.Count - 1)
                 indent = new string(lines[LineNum + 1].TakeWhile(c => char.IsWhiteSpace(c)).ToArray());
             if (backIndent != 0)
                 indent = indent.Substring(0, Math.Max(indent.Length - backIndent, 0));
             LineNum++;
+            if (LineNum > lines.Count)
+                LineNum = lines.Count;
             lines.Insert(LineNum, indent + line);
             searchLines.Insert(LineNum, indent + line);
         }

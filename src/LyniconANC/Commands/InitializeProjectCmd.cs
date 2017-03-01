@@ -156,7 +156,7 @@ namespace Lynicon.Commands
                 fileModel.InsertLineWithIndent("services.AddLynicon(options =>");
                 fileModel.InsertLineWithIndent("\toptions.UseConfiguration(Configuration.GetSection(\"Lynicon:Core\"))");
                 fileModel.InsertLineWithIndent("\t.UseModule<CoreModule>())");
-                fileModel.InsertLineWithIndent(".AddLyniconIdentity();", true);
+                fileModel.InsertLineWithIndent(".AddLyniconIdentity();", backIndent: 2);
             }
             else
             {
@@ -285,7 +285,7 @@ namespace Lynicon.Commands
                 fileModel.InsertUniqueLineWithIndent("\"Lynicon\": {", backIndent: 2);
                 fileModel.InsertUniqueLineWithIndent("  \"Core\": {");
                 fileModel.InsertUniqueLineWithIndent("  \"FileManagerRoot\": \"/Uploads/\",");
-                fileModel.InsertUniqueLineWithIndent("  \"SqlConnectionString\": \"...\",");
+                fileModel.InsertUniqueLineWithIndent("\"SqlConnectionString\": \"...\",");
                 fileModel.InsertUniqueLineWithIndent("\"LyniconAreaBaseUrl\": \"/Areas/Lynicon/\"");
                 fileModel.InsertLineWithIndent("}", backIndent: 2);
                 fileModel.InsertLineWithIndent("}", backIndent: 4);
@@ -334,7 +334,6 @@ namespace Lynicon.Commands
                 Console.WriteLine("Failed to add content route redirection to Program.cs");
                 return false;
             }
-
 
             return true;
         }
