@@ -116,7 +116,7 @@ namespace Lynicon.Collation
         /// <inheritdoc/>
         public override TTarget GetSummary<TTarget>(object item)
         {
-            Type itemType = item.GetType().ContentType();
+            Type itemType = item.GetType().UnextendedType();
             var propertyMap = GetPropertyMap(itemType);
             var summTypeAttr = itemType.GetCustomAttribute<SummaryTypeAttribute>();
             Type summType = typeof(Summary);

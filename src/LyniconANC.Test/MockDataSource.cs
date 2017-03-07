@@ -19,7 +19,7 @@ namespace LyniconANC.Test
 
         public IQueryable GetSource(Type type)
         {
-            Type t = type.ContentType();
+            Type t = type.UnextendedType();
             if (!Data.ContainsKey(t))
                 return Array.CreateInstance(t, 0).AsQueryable();
             else
@@ -31,7 +31,7 @@ namespace LyniconANC.Test
             if (o == null)
                 return;
 
-            Data[o.GetType().ContentType()][new ItemId(o)] = o;
+            Data[o.GetType().UnextendedType()][new ItemId(o)] = o;
         }
 
         public void Create(object o)
@@ -39,7 +39,7 @@ namespace LyniconANC.Test
             if (o == null)
                 return;
 
-            Type oType = o.GetType().ContentType();
+            Type oType = o.GetType().UnextendedType();
             if (!Data.ContainsKey(oType))
                 Data.TryAdd(oType, new ConcurrentDictionary<ItemId,object>());
 
@@ -51,11 +51,11 @@ namespace LyniconANC.Test
             if (o == null)
                 return;
 
-            if (!Data.ContainsKey(o.GetType().ContentType()))
+            if (!Data.ContainsKey(o.GetType().UnextendedType()))
                 return;
 
             object remd;
-            Data[o.GetType().ContentType()].TryRemove(new ItemId(o), out remd);
+            Data[o.GetType().UnextendedType()].TryRemove(new ItemId(o), out remd);
         }
 
         public void SaveChanges()

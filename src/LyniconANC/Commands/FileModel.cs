@@ -235,24 +235,16 @@ namespace Lynicon.Commands
             searchLines.Insert(LineNum, indent + line);
         }
 
-        public bool InsertTextAfterMatchingBracket(string match, string text)
+        public bool InsertTextAfterMatchingBracket(string match, string text) =>
+            InsertTextAfterMatchingBracket(match, text, '(', ')');
+        public bool InsertTextAfterMatchingBracket(string match, string text, char open, char close)
         {
-            if (!match.EndsWith("("))
+            if (!match.EndsWith(open.ToString()))
                 throw new ArgumentException("parameter match should end with the open bracket to be matched");
             int idx = searchLines[LineNum].IndexOf(match) + match.Length;
             int lvl = 1;
             while (lvl > 0)
             {
-                switch (searchLines[LineNum][idx])
-                {
-                    case '(':
-                        lvl++;
-                        break;
-                    case ')':
-                        lvl--;
-                        break;
-                }
-                idx++;
                 if (idx >= searchLines[LineNum].Length)
                 {
                     idx = 0;
@@ -260,6 +252,13 @@ namespace Lynicon.Commands
                     if (LineNum >= searchLines.Count)
                         return false;
                 }
+
+                if (searchLines[LineNum][idx] == open)
+                    lvl++;
+                else if (searchLines[LineNum][idx] == close)
+                    lvl--;
+
+                idx++;
             }
             if (lines[LineNum].Substring(0, idx) != searchLines[LineNum].Substring(0, idx))
                 return false;

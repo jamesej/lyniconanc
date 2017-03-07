@@ -29,7 +29,7 @@ namespace Lynicon.Repositories
     /// The container for content item in the Content persistenc model
     /// </summary>
     [Table("ContentItems"), Serializable]
-    public class ContentItem : IContentContainer, IShrinkable, IBasicAuditable, ICachesSummary, ICachesContent
+    public class ContentItem : IContentContainer, IBasicAuditable, ICachesSummary, ICachesContent
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ContentItem));
         
@@ -188,14 +188,11 @@ namespace Lynicon.Repositories
             }
         }
 
-        //[AddressComponent(UsePath = true)]
-        //public virtual string Path { get; set; }
-        //string path;
-
-        public void FixPath()
-        {
-            this.path = Path;
-        }
+        // CHECK: Appears to do nothing, given no overridden versions of Path
+        //public void FixPath()
+        //{
+        //    this.path = Path;
+        //}
 
         string summary;
         /// <summary>
@@ -494,30 +491,6 @@ namespace Lynicon.Repositories
 
             this.DataType = value.GetType().FullName;
         }
-
-        #region IShrinkable Members
-
-        /// <summary>
-        /// Get rid of the cached summary and content objects for reducing the size of a binary serialized verion
-        /// </summary>
-        public void Shrink()
-        {
-            if (summary != null)
-            {
-                // caches deserialized version
-                this.GetSummary();
-                // clear private serialized store to save space
-                summary = null;
-            }
-
-            if (content != null)
-            {
-                this.GetContent();
-                content = null;
-            }
-        }
-
-        #endregion
 
         #region ICachesSummary Members
 

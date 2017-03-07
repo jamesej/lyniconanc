@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using Lynicon.Models;
 using Lynicon.Repositories;
 using Lynicon.Utility;
+using Newtonsoft.Json;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Collation
 {
     /// <summary>
     /// Uniquely identifies a content item (which may have multiple versions)
     /// </summary>
-    
+    [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
     public class ItemId : IEquatable<ItemId>
     {
         /// <summary>
@@ -35,6 +37,11 @@ namespace Lynicon.Collation
                 return idStr.Substring(1, idStr.Length - 2);
             else
                 return idStr;
+        }
+
+        public static explicit operator ItemId(string s)
+        {
+            return new ItemId(s);
         }
 
         private object id = null;
@@ -71,7 +78,7 @@ namespace Lynicon.Collation
             if (id == null || type == null)
                 throw new ArgumentException("Cannot create ItemId with null id or type");
             this.Id = id;
-            this.Type = type == null ? null : type.ContentType();
+            this.Type = type == null ? null : type.UnextendedType();
         }
         public ItemId(ItemId iid) : this(iid.Type, iid.Id)
         { }

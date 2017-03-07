@@ -38,6 +38,9 @@ namespace Lynicon.Relations
         public static IEnumerable<Summary> GetReferencesFrom<TContent>(ItemVersionedId ividToItem, string propertyName)
             where TContent : class
         {
+            if (ividToItem == null)
+                yield break;
+
             if (ReferenceGetter == null)
             {
                 // constructs expression for x => x.propertyName != null && x.propertyName.VersionedId == ividToItem
@@ -88,7 +91,7 @@ namespace Lynicon.Relations
 
                 string strippedValue = (value ?? "").UpTo(" ");
                 extraSerializedData = (value ?? "").After(" ");
-                var itemId = new ItemId(strippedValue);
+                var itemId = string.IsNullOrEmpty(strippedValue) ? null : new ItemId(strippedValue);
                 if (itemId != null && itemId.Id != null)
                 {
                     this.Id = itemId.Id.ToString();
@@ -183,8 +186,16 @@ namespace Lynicon.Relations
         /// <param name="itemId">The ItemId</param>
         public Reference(ItemId itemId)
         {
-            this.DataType = itemId.Type.FullName;
-            this.Id = itemId.Id.ToString();
+            if (itemId == null)
+            {
+                this.DataType = null;
+                this.Id = null;
+            }
+            else
+            {
+                this.DataType = itemId.Type.FullName;
+                this.Id = itemId.Id.ToString();
+            }
         }
 
         protected Summary summary = null;
@@ -232,6 +243,17 @@ namespace Lynicon.Relations
         public virtual string SelectListId()
         {
             return null;
+        }
+
+        /// <summary>
+        /// Get the items of a given content type with a given property which is a reference to this referenced item
+        /// </summary>
+        /// <typeparam name="T">The content type (or parent type or interface) of the referring items</typeparam>
+        /// <param name="propName">The property on the referencing item which must refer to this item</param>
+        /// <returns>List of referencing items</returns>
+        public virtual IEnumerable<Summary> GetReferencingItems<T>(string propName) where T : class
+        {
+            return Reference.GetReferencesFrom<T>(this.VersionedId, propName);
         }
 
         /// <summary>
@@ -300,7 +322,7 @@ namespace Lynicon.Relations
             get { return IsContentType ? typeof(T).FullName : dataType; }
             set
             {
-                if (!assignableContentTypeNames.Contains(value))
+                if (!string.IsNullOrEmpty(value) && !assignableContentTypeNames.Contains(value))
                     throw new ArgumentException("Reference type " + typeof(T).FullName + " cannot have a data type of " + value);
                 dataType = value;
             }

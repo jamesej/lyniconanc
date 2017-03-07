@@ -9,6 +9,7 @@ using Lynicon.Models;
 using Lynicon.Repositories;
 using LyniconANC.Test.Models;
 using NUnit.Framework;
+using Newtonsoft.Json;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -98,5 +99,23 @@ namespace LyniconANC.Test
             Assert.Catch(() => new ItemId(null, Guid.NewGuid()));
         }
 
+        [Test]
+        public void ItemIdSerialization()
+        {
+            Guid id0 = Guid.NewGuid();
+            var ii0 = new ItemId(typeof(HeaderContent), id0);
+            var dict = new Dictionary<ItemId, string>();
+            dict.Add(ii0, "hello");
+
+            string ser = JsonConvert.SerializeObject(dict);
+            var dictOut = JsonConvert.DeserializeObject<Dictionary<ItemId, string>>(ser);
+
+            Assert.AreEqual("hello", dictOut[ii0]);
+
+            ser = JsonConvert.SerializeObject(ii0);
+            var iiOut = JsonConvert.DeserializeObject<ItemId>(ser);
+
+            Assert.AreEqual(ii0, iiOut);
+        }
     }
 }

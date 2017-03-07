@@ -78,7 +78,7 @@ namespace Lynicon.Extensibility
             if (content is IList)
                 type = content.GetType().GetGenericArguments()[0];
             else if (content != null)
-                type = content.GetType().ContentType();
+                type = content.GetType().UnextendedType();
 
             if (content == null || !ContentTypeHierarchy.AllContentTypes.Contains(type))
                 return false;

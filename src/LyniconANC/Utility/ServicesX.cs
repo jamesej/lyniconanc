@@ -25,7 +25,7 @@ namespace Lynicon.Utility
             Type[] paramTypes = parms.Select(p => p.GetType()).ToArray();
             var cons = instanceType.GetConstructorByNonServiceParams(paramTypes);
             if (cons == null)
-                throw new Exception($"Cannot construct module of type {instanceType.FullName} using parameter types {paramTypes.Select(t => t.FullName).Join(", ")}");
+                throw new Exception($"Cannot construct module of type {instanceType.FullName} {(paramTypes.Length == 0 ? "without parameters" : "using parameter types")} {paramTypes.Select(t => t.FullName).Join(", ")}");
 
             var serviceVals = cons.GetParameters()
                 .Where(p => p.GetCustomAttribute<FromServicesAttribute>() != null)

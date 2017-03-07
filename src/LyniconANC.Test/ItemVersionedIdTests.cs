@@ -9,6 +9,7 @@ using Lynicon.Models;
 using Lynicon.Repositories;
 using LyniconANC.Test.Models;
 using NUnit.Framework;
+using Newtonsoft.Json;
 
 namespace LyniconANC.Test
 {
@@ -63,7 +64,7 @@ namespace LyniconANC.Test
             td.Id = 5;
             var ii3 = new ItemVersionedId(td);
             Assert.AreEqual(ii3.Id, td.Id);
-            Assert.AreEqual(ii3.Version, VersionManager.Instance.CurrentVersion);
+            Assert.AreEqual(ii3.Version, VersionManager.Instance.CurrentVersionForType(typeof(TestData)));
 
             // Construct from container
             Guid id = Guid.NewGuid();
@@ -72,20 +73,20 @@ namespace LyniconANC.Test
             var ii4 = new ItemVersionedId(ci);
             Assert.AreEqual(ii4.Id, ident);
             Assert.AreEqual(ii4.Type, typeof(RestaurantContent));
-            Assert.AreEqual(ii4.Version, VersionManager.Instance.CurrentVersion);
+            Assert.AreEqual(ii4.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
 
             // Construct from data item
             RestaurantContent rc = Collator.Instance.GetNew<RestaurantContent>(new Address(typeof(RestaurantContent), "x"));
             var ii5 = new ItemVersionedId(rc);
             Assert.AreEqual(ii5.Id, rc.Identity);
-            Assert.AreEqual(ii5.Version, VersionManager.Instance.CurrentVersion);
+            Assert.AreEqual(ii5.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
 
             // Construct from summary
             RestaurantSummary rs = Collator.Instance.GetSummary<RestaurantSummary>(rc);
             var ii6 = new ItemVersionedId(rs);
             Assert.AreEqual(ii6.Id, rs.Id);
             Assert.AreEqual(ii6.Type, rs.Type);
-            Assert.AreEqual(ii6.Version, VersionManager.Instance.CurrentVersion);
+            Assert.AreEqual(ii6.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
 
             // No empty value allowed
             ContentItem cc = null;
@@ -103,5 +104,24 @@ namespace LyniconANC.Test
             Assert.Catch(() => new ItemVersionedId(typeof(RestaurantContent), Guid.NewGuid(), null));
         }
 
+        [Test]
+        public void ItemIdSerialization()
+        {
+            Guid id0 = Guid.NewGuid();
+            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "testV", "en-GB" } });
+            var ii0 = new ItemVersionedId(typeof(TestData), id0, iv0);
+            var dict = new Dictionary<ItemVersionedId, string>();
+            dict.Add(ii0, "hello");
+
+            string ser = JsonConvert.SerializeObject(dict);
+            var dictOut = JsonConvert.DeserializeObject<Dictionary<ItemVersionedId, string>>(ser);
+
+            Assert.AreEqual("hello", dictOut[ii0]);
+
+            ser = JsonConvert.SerializeObject(ii0);
+            var iiOut = JsonConvert.DeserializeObject<ItemVersionedId>(ser);
+
+            Assert.AreEqual(ii0, iiOut);
+        }
     }
 }

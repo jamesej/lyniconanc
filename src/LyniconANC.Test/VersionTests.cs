@@ -420,15 +420,6 @@ namespace LyniconANC.Test
     [TestFixture]
     public class VersionTests
     {
-        [OneTimeSetUp]
-        public void Init()
-        {
-            VersionManager.Instance.RegisterVersion(new PublishingVersioner(t => t == typeof(HeaderContent)));
-            VersionManager.Instance.RegisterVersion(new I18nVersioner(new string[] { "en-GB", "es-ES" }, "locale", "en-GB", s => s));
-
-            Collator.Instance.SetupType<TestContent>(new TestCollator(), null);
-        }
-
         [Test]
         public void ItemVersionEquality()
         {
@@ -522,6 +513,24 @@ namespace LyniconANC.Test
             var iv10 = iv9.Mask(new ItemVersion { { "Published", null }, { "Locale", "es-ES" } });
             Assert.AreEqual(new ItemVersion { { "Published", true }, { "Locale", "es-ES" } }, iv10);
             Assert.AreEqual("es-ES", iv10["Locale"]);
+        }
+
+        [Test]
+        public void ItemVersionSerialization()
+        {
+            var iv1 = new ItemVersion { { "Published", true }, { "Locale", "en-GB" } };
+            var dict = new Dictionary<ItemVersion, string>();
+            dict.Add(iv1, "hello");
+
+            string ser = JsonConvert.SerializeObject(dict);
+            var dictOut = JsonConvert.DeserializeObject<Dictionary<ItemVersion, string>>(ser);
+
+            Assert.AreEqual("hello", dictOut[iv1]);
+
+            ser = JsonConvert.SerializeObject(iv1);
+            var ivOut = JsonConvert.DeserializeObject<ItemVersion>(ser);
+
+            Assert.AreEqual(iv1, ivOut);
         }
     }
 }

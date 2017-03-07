@@ -9,13 +9,14 @@ using Lynicon.Collation;
 using Lynicon.Extensibility;
 using Lynicon.Repositories;
 using Lynicon.Utility;
+using Newtonsoft.Json;
 
 namespace Lynicon.Collation
 {
     /// <summary>
     /// Uniquely identifies a specific version of a content item
     /// </summary>
-    
+    [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
     public class ItemVersionedId : ItemId, IEquatable<ItemVersionedId>
     {
         /// <summary>
@@ -57,6 +58,11 @@ namespace Lynicon.Collation
                 res.Add(new ItemVersionedId(iid, v));
 
             return res;
+        }
+
+        public static explicit operator ItemVersionedId(string s)
+        {
+            return new ItemVersionedId(s);
         }
 
         ItemVersion version = null;

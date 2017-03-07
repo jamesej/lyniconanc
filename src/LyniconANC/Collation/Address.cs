@@ -12,14 +12,22 @@ using Lynicon.Repositories;
 using Lynicon.Models;
 using Microsoft.AspNetCore.Routing;
 using System.Net;
+using Newtonsoft.Json;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Collation
 {
     /// <summary>
     /// Information extracted from a url which maps to one and only one content item
     /// </summary>
+    [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
     public class Address : Dictionary<string, object>, IEquatable<Address>
     {
+        public static explicit operator Address(string s)
+        {
+            return new Address(s);
+        }
+
         List<string> matched = new List<string>();
         Dictionary<string, string> conversionFormats = new Dictionary<string, string>();
         Type conversionType = null;
@@ -55,9 +63,10 @@ namespace Lynicon.Collation
             }
             set
             {
-                if (!ContentTypeHierarchy.AllContentTypes.Contains(value.ContentType()))
+                Type unexType = value.UnextendedType();
+                if (!ContentTypeHierarchy.AllContentTypes.Contains(unexType))
                     throw new ArgumentException("Can't set address type to non-content type " + value.FullName);
-                type = value.ContentType();
+                type = unexType;
             }
         }
 
@@ -314,17 +323,7 @@ namespace Lynicon.Collation
 
         public override int GetHashCode()
         {
-            // Note the hash is independent of the order of the keys in the dictionary
-            unchecked
-            {
-                int hash = 0;
-                foreach (var kvp in this)
-                {
-                    hash += 31 * (kvp.Key == null ? 0 : kvp.Key.GetHashCode()) + (kvp.Value == null ? 0 : kvp.Value.GetHashCode());
-                }
-                hash = (hash << 5) + 3 + hash ^ (this.Type == null ? 0 : this.Type.GetHashCode());
-                return hash;
-            }
+            return this.ToString().GetHashCode();
         }
 
         public static bool operator ==(Address lhs, Address rhs)
@@ -351,16 +350,7 @@ namespace Lynicon.Collation
             if (other == null || this.Type != other.Type || this.Count != other.Count)
                 return false;
 
-            foreach (var kvp in this)
-            {
-                if (!other.ContainsKey(kvp.Key))
-                    return false;
-                if (other[kvp.Key] == null && kvp.Value == null)
-                    return true;
-                if (other[kvp.Key] == null || !other[kvp.Key].Equals(kvp.Value))
-                    return false;
-            }
-            return true;
+            return this.ToString().Equals(other.ToString());
         }
 
         #endregion

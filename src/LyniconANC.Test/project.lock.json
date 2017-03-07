@@ -4058,7 +4058,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "LyniconANC/0.0.2.4": {
+      "LyniconANC/0.0.2.10": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
@@ -4126,7 +4126,7 @@
       ]
     },
     "Linq2RestANC/1.0.0": {
-      "sha512": "tNeuFbcxdE9m7lsdwRAVW2qEjR8nykWWsmgS9g0/uvbUZSyGAvmVEgHVTed5gQxGzw1fQsnS9QICuZeZrKv7cw==",
+      "sha512": "58nmAfc+1Re9nH6+7A8lgyCqd27j+uyECVOh3uYpDf+Eug8EFmidxeYxmJeJKOuWiGPqheKj77kDRoeg/IJa8Q==",
       "type": "package",
       "path": "Linq2RestANC/1.0.0",
       "files": [
@@ -10765,7 +10765,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "LyniconANC/0.0.2.4": {
+    "LyniconANC/0.0.2.10": {
       "type": "project",
       "path": "../LyniconANC/project.json",
       "msbuildProject": "../LyniconANC/LyniconANC.xproj"

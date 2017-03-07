@@ -21,7 +21,7 @@ namespace Lynicon.Extensibility
     /// a set of specific version, the set gained by all combinations of substituting valid
     /// specific version values for the null values.
     /// </summary>
-    
+    [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
     public class ItemVersion : Dictionary<string, object>, IEquatable<ItemVersion>
     {
         /// <summary>
@@ -46,6 +46,11 @@ namespace Lynicon.Extensibility
                 return (object)Convert.ToInt32(o);
             else
                 return o;
+        }
+
+        public static explicit operator ItemVersion(string s)
+        {
+            return new ItemVersion(s);
         }
 
         /// <summary>
@@ -103,7 +108,7 @@ namespace Lynicon.Extensibility
         {
             if (string.IsNullOrEmpty(desc))
                 return;
-            ItemVersion newIv = JsonConvert.DeserializeObject<ItemVersion>(desc);
+            var newIv = JsonConvert.DeserializeObject<Dictionary<string, object>>(desc);
             newIv.Do(kvp => this.Add(kvp.Key, kvp.Value is Int64 ? Convert.ToInt32(kvp.Value) : kvp.Value));
         }
 
@@ -310,7 +315,8 @@ namespace Lynicon.Extensibility
         /// <returns>Serialized string</returns>
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this);
+            // build a dict from this ItemVersion in order to avoid infinite serialization recursion
+            return JsonConvert.SerializeObject(new Dictionary<string, object>(this));
         }
 
         public override bool Equals(object obj)

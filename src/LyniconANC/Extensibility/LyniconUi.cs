@@ -230,10 +230,10 @@ namespace Lynicon.Extensibility
 
             if (viewContext.ViewData.Model != null)
             {
-                var type = viewContext.ViewData.Model.GetType().ContentType();
+                var type = viewContext.ViewData.Model.GetType().UnextendedType();
                 if (ContentTypeHierarchy.AllContentTypes.Contains(type))
                 {
-                    var address = new Address(viewContext.ViewData.Model.GetType().ContentType(), viewContext.RouteData);
+                    var address = new Address(type, viewContext.RouteData);
                     subs = subs
                         .Replace("$$Path$$", address.GetAsContentPath())
                         .Replace("$$Type$$", address.Type.FullName);

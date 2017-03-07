@@ -30,9 +30,9 @@
     }
   },
   "scripts": {
-    "postcompile": [
-      "dotnet pack --no-build --configuration %compile:Configuration%"
-    ]
+    //"postcompile": [
+    //  "dotnet pack --no-build --configuration %compile:Configuration%"
+    //]
   },
-  "version": "0.0.2.7"
+  "version": "0.0.2.14"
 }

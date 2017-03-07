@@ -122,16 +122,16 @@ namespace Lynicon.Extensibility
         public Cache(IHostingEnvironment env, string name, params string[] dependentOn) : base(name, dependentOn)
         {
             hosting = env;
-            SerializationMode = CacheSerialization.Binary;
+            SerializationMode = CacheSerialization.Json;
         }
         
         /// <summary>
         /// Attempt to load the dump file from the file system into the cache
         /// </summary>
         /// <typeparam name="T">The type of the cache object</typeparam>
-        /// <param name="appDataPath">The path to the file containing the dump file relative to the App_Data folder</param>
+        /// <param name="appDataPath">The path to the file containing the dump file relative to the www folder</param>
         /// <returns>A cache object created from the dumped file</returns>
-        public T TryLoadFromBinaryFile<T>(string appDataPath) where T : class
+        public T TryLoadFromSerializedFile<T>(string appDataPath) where T : class
         {
             FileInfo fi = new FileInfo(hosting.WebRootPath + "\\" + appDataPath);
             T cache = null;
@@ -144,7 +144,7 @@ namespace Lynicon.Extensibility
                     switch (SerializationMode)
                     {
                         case CacheSerialization.Json:
-                            var sz = new JsonSerializer { TypeNameHandling = TypeNameHandling.All };
+                            var sz = new JsonSerializer { TypeNameHandling = TypeNameHandling.All,  };
                             using (var stream = fi.OpenText())
                             {
                                 MemoryBytes = stream.BaseStream.Length;
@@ -170,7 +170,7 @@ namespace Lynicon.Extensibility
         /// <typeparam name="T">The type of the cache object</typeparam>
         /// <param name="appDataPath">The path of the dump file relative to the App_Data folder</param>
         /// <param name="cache">The cache object to write</param>
-        public void SaveToBinaryFile<T>(string appDataPath, T cache) where T : class
+        public void SaveToSerializedFile<T>(string appDataPath, T cache) where T : class
         {
             try
             {

@@ -90,7 +90,7 @@ namespace Lynicon.Collation
 
             var dummy = new TQuery[0].AsQueryable();
             IQueryable<TQuery> results;
-            bool isContainerQuery = typeof(TQuery).ContentType() == typeof(ContentItem)
+            bool isContainerQuery = typeof(TQuery).UnextendedType() == typeof(ContentItem)
                 || (typeof(TQuery).IsAssignableFrom(typeof(ContentItem))
                     && queryBody(dummy).ExtractFields().All(fn => typeof(ContentItem).GetProperty(fn) != null));
             if (isContainerQuery)

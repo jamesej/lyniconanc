@@ -31,6 +31,8 @@ namespace LyniconANC.Test
         [OneTimeSetUp]
         public static void GlobalInit()
         {
+            CompositeTypeManager.Instance.RegisterExtensionType(typeof(ExtTestData));
+
             LyniconSystem = new LyniconSystem(new LyniconSystemOptions()
                 .UseTypeSetup(col =>
                 {
@@ -66,6 +68,11 @@ namespace LyniconANC.Test
             testingRoutes.AddTestDataRoute<HeaderContent2>("hc2", "header2", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<RefContent>("ref", "ref/{_0}/{_1}", new { controller = "mock", action = "mock" });
             ContentMap.Instance.RouteCollection = testingRoutes;
+
+            VersionManager.Instance.RegisterVersion(new PublishingVersioner(t => t == typeof(HeaderContent)));
+            VersionManager.Instance.RegisterVersion(new I18nVersioner(new string[] { "en-GB", "es-ES" }, "locale", "en-GB", s => s));
+
+            Collator.Instance.SetupType<TestContent>(new TestCollator(), null);
         }
 
         private static void SetupLyniconSystemWithDb()

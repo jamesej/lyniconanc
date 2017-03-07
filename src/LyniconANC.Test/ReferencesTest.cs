@@ -25,6 +25,20 @@ namespace LyniconANC.Test
             Reference<RefTargetContent> refr = new Reference<Test.Models.RefTargetContent>(iid);
             Assert.AreEqual(refr.ItemId, iid, "Reference stored itemid");
 
+            iid = null;
+            refr = new Reference<RefTargetContent>(iid);
+            Assert.IsTrue(refr.IsEmpty, "empty reference from null itemid");
+
+            string s = null;
+            refr = new Reference<RefTargetContent>(s);
+            Assert.IsTrue(refr.IsEmpty, "empty reference from null serialization string");
+
+            refr = new Reference<RefTargetContent>(null, null);
+            Assert.IsTrue(refr.IsEmpty, "empty reference from null id/datatype");
+
+            refr = new Reference<RefTargetContent>(typeof(RefTargetContent).FullName, null);
+            Assert.IsTrue(refr.IsEmpty, "emtpy referent from null id, valid datatype");
+
             refr = new Reference<RefTargetContent>();
             Assert.IsTrue(refr.IsEmpty, "default constr reference is empty");
         }

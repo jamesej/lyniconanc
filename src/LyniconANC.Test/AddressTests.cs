@@ -10,6 +10,7 @@ using NUnit.Framework;
 using LyniconANC.Test.Models;
 using LyniconANC.Test.Models;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -115,6 +116,20 @@ namespace LyniconANC.Test
             a2["_0"] = "a";
             a2["_1"] = 1;
             Assert.AreEqual("LyniconANC.Test.Models.HeaderContent:_0=a&_1=1", a2.ToString());
+
+            var dict = new Dictionary<Address, string>();
+            dict.Add(a2, "hello");
+
+            string ser = JsonConvert.SerializeObject(dict);
+            var dictOut = JsonConvert.DeserializeObject<Dictionary<Address, string>>(ser);
+
+            Assert.AreEqual("hello", dictOut[a2]);
+
+            ser = JsonConvert.SerializeObject(a2);
+            var aOut = JsonConvert.DeserializeObject<Address>(ser);
+
+            Assert.IsTrue(a2 == aOut);
+            Assert.IsTrue(a2.Equals(aOut));
         }
 
         [Test]

@@ -71,7 +71,7 @@ namespace Lynicon.Extensibility
 
             if (viewContext.ViewData.Model != null)
             {
-                var address = new Address(viewContext.ViewData.Model.GetType().ContentType(), viewContext.RouteData);
+                var address = new Address(viewContext.ViewData.Model.GetType().UnextendedType(), viewContext.RouteData);
                 subs = subs
                     .Replace("$$Path$$", address.GetAsContentPath())
                     .Replace("$$Type$$", address.Type.FullName);

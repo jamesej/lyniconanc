@@ -198,7 +198,7 @@ namespace Lynicon.Repositories
                 {
                     var qed = new QueryEventData<IQueryable>
                     {
-                        Source = dataSource.GetSource(typeof(T).ContentType()),
+                        Source = dataSource.GetSource(typeof(T).UnextendedType()),
                         QueryBody = iq => queryBody(iq.AsFacade<T>())
                     };
                     qed = EventHub.Instance.ProcessEvent("Repository.Get.Count", this, qed).Data as QueryEventData<IQueryable>;

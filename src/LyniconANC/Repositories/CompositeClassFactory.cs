@@ -22,6 +22,8 @@ namespace Lynicon.Repositories
     {
         public static readonly CompositeClassFactory Instance = new CompositeClassFactory();
 
+        public const string CompositeClassAssembly = "CompositeClasses";
+
         static CompositeClassFactory() { }  // Trigger lazy initialization of static fields
 
         ModuleBuilder module;
@@ -33,7 +35,7 @@ namespace Lynicon.Repositories
 
         private CompositeClassFactory()
         {
-            AssemblyName name = new AssemblyName("CompositeClasses");
+            AssemblyName name = new AssemblyName(CompositeClassAssembly);
             AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #if ENABLE_LINQ_PARTIAL_TRUST
             new ReflectionPermission(PermissionState.Unrestricted).Assert();

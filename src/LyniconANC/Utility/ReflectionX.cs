@@ -467,18 +467,19 @@ namespace Lynicon.Utility
         }
 
         /// <summary>
-        /// Get the (unextended) content type associated with a type
+        /// Get the (unextended) container type associated with a type
         /// </summary>
         /// <param name="t">The type</param>
-        /// <returns>The associated content type</returns>
-        public static Type ContentType(this Type t)
+        /// <returns>The associated unextended type</returns>
+        public static Type UnextendedType(this Type t)
         {
             Type res = t;
             if (res.IsGenericType())
                 res = res.GetGenericArguments().First();
             res = res.UnproxiedType();
-            if (CompositeTypeManager.Instance.ExtendedTypes.ContainsValue(res))
-                res = CompositeTypeManager.Instance.ExtendedTypes.First(kvp => kvp.Value == res).Key;
+            var kvp = CompositeTypeManager.Instance.ExtendedTypes.FirstOrDefault(v => v.Value == res);
+            if (kvp.Key != null)
+                res = kvp.Key;
             return res;
         }
 

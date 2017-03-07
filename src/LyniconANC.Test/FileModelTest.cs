@@ -155,6 +155,12 @@ namespace LyniconANC.Test
             bool succeed = fm.InsertTextAfterMatchingBracket("Func1(", ".qqq()");
             Assert.IsTrue(succeed, "Insert Text failed");
             Assert.AreEqual("\t(isZ ? 0 : 1)).qqq();", doc[3]);
+
+            fm.ToTop();
+            fm.FindLineIs("{");
+            succeed = fm.InsertTextAfterMatchingBracket("{", "bbb", '{', '}');
+            Assert.IsTrue(succeed, "Insert text after } failed");
+            Assert.AreEqual("}bbb", doc[4]);
         }
     }
 }

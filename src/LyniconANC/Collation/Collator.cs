@@ -53,7 +53,7 @@ namespace Lynicon.Collation
             if (o is IContentContainer)
                 return ((IContentContainer)o).ContentType;
             else
-                return o.GetType().ContentType();
+                return o.GetType().UnextendedType();
         }
 
         /// <summary>
@@ -602,10 +602,6 @@ namespace Lynicon.Collation
             object summarised = Activator.CreateInstance(mapType);
             ContainerSummaryFields(mapType).Do(pi => pi.SetValue(summarised, pi.GetValue(container)));
 
-            // call post processing to set up summary
-            if (summarised is IShrinkable)
-                ((IShrinkable)summarised).Shrink();
-
             return summarised;
         }
 
@@ -644,7 +640,7 @@ namespace Lynicon.Collation
             else
             {
 
-                return Registered(o.GetType().ContentType()).GetContainer(a, o);
+                return Registered(o.GetType().UnextendedType()).GetContainer(a, o);
             }
                 
         }
