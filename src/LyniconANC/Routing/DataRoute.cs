@@ -39,6 +39,11 @@ namespace Lynicon.Routing
             return base.RouteAsync(context);
         }
 
+        public virtual Task RouteBypassingCriteriaAsync(RouteContext context)
+        {
+            return target.RouteAsync(context);
+        }
+
         public override VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
             if (context.AmbientValues.ContainsKey("data"))

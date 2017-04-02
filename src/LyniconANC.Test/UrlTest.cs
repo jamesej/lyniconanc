@@ -7,7 +7,7 @@ using Lynicon.Extensibility;
 using Lynicon.Relations;
 using NUnit.Framework;
 using LyniconANC.Test.Models;
-using LyniconANC.Exceptions;
+using Lynicon.Exceptions;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -44,7 +44,7 @@ namespace LyniconANC.Test
             {
                 Collator.Instance.MoveAddress(hc2iid, new Address(typeof(HeaderContent), "ut-a"));
             }
-            catch (ApplicationException appEx)
+            catch (ProhibitedActionException appEx)
             {
                 ex = appEx;
             }

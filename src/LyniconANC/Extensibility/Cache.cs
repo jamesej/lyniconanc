@@ -38,7 +38,7 @@ namespace Lynicon.Extensibility
         public static T CopyCacheItem<T>(T cacheItem) where T : class
         {
             var json = JsonConvert.SerializeObject(cacheItem);
-            return JsonConvert.DeserializeObject<T>(json);
+            return (T)JsonConvert.DeserializeObject(json, cacheItem.GetType());
         }
 
         /// <summary>
@@ -73,17 +73,12 @@ namespace Lynicon.Extensibility
                 if (nameWords.Contains("Caching") && nameWords.Contains("Full"))
                 {
                     if (summaryOnly || nameWords.Contains("Items"))
-                        return cache.ApplyToType(containerType) && !cache.CacheBlocked();
+                        return cache.CheckType(containerType) && !cache.CacheBlocked();
                 }
             }
 
             return false;
         }
-
-        /// <summary>
-        /// Function to test for whether the given type should be handled by the cache module (true if yes)
-        /// </summary>
-        public Func<Type, bool> ApplyToType { get; set; }
 
         /// <summary>
         /// Estimate of current number of bytes taken by cache
@@ -133,6 +128,9 @@ namespace Lynicon.Extensibility
         /// <returns>A cache object created from the dumped file</returns>
         public T TryLoadFromSerializedFile<T>(string appDataPath) where T : class
         {
+            if (hosting.WebRootPath == null)
+                return null;
+
             FileInfo fi = new FileInfo(hosting.WebRootPath + "\\" + appDataPath);
             T cache = null;
             if (fi.Exists)
@@ -174,6 +172,9 @@ namespace Lynicon.Extensibility
         {
             try
             {
+                if (hosting.WebRootPath == null)
+                    return;
+
                 DirectoryInfo di = new DirectoryInfo(hosting.WebRootPath + "\\" + appDataPath.UpToLast("\\"));
                 if (!di.Exists)
                     di.Create();

@@ -49,6 +49,16 @@ namespace Lynicon.Models
         public static Dictionary<string, List<string>> ControllerActions = new Dictionary<string, List<string>>();
 
         /// <summary>
+        /// Lynicon managed content types to always exclude from caching whatever cache configuration
+        /// </summary>
+        public static List<Type> ExcludeFromCaching = new List<Type>();
+
+        /// <summary>
+        /// Lynicon managed content types to always exclude from versioning whatever versioning configuration
+        /// </summary>
+        public static List<Type> ExcludeFromVersioning = new List<Type>();
+
+        /// <summary>
         /// Initialise the content type hierarchy.  Be careful this is not triggered before the route table has been
         /// generated.
         /// </summary>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Collation;
 using Lynicon.Membership;
+using Lynicon.Models;
 
 namespace Lynicon.Extensibility
 {
@@ -70,8 +71,11 @@ namespace Lynicon.Extensibility
         /// <returns>True if it can be versioned</returns>
         public virtual bool Versionable(object container)
         {
-            bool contentVersionable = this.IsVersionable == null || this.IsVersionable(Collator.GetContentType(container));
-            return Versionable(container.GetType()) && contentVersionable;
+            Type contentType = Collator.GetContentType(container);
+            bool contentVersionable = this.IsVersionable == null || this.IsVersionable(contentType);
+            if (!contentVersionable || ContentTypeHierarchy.ExcludeFromVersioning.Contains(contentType))
+                return false;
+            return Versionable(container.GetType());
         }
 
         /// <summary>

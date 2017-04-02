@@ -21,7 +21,7 @@
     "net46": {
       "dependencies": {
         "log4net": "2.0.7",
-        "System.IO.Compression.ZipFile": "4.0.0"
+        "System.IO.Compression.ZipFile": "4.3.0"
       },
       "frameworkAssemblies": {
         "System.IO.Compression": "4.0.0.0",
@@ -29,10 +29,13 @@
       }
     }
   },
+  "buildOptions": {
+    "nowarn": [ "CS1701" ]
+  },
   "scripts": {
     //"postcompile": [
     //  "dotnet pack --no-build --configuration %compile:Configuration%"
     //]
   },
-  "version": "0.0.2.14"
+  "version": "0.0.2.21"
 }

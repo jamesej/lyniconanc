@@ -399,21 +399,23 @@ namespace Lynicon.Extensibility
         /// Push a versioning state just including a VersioningMode (making it active)
         /// </summary>
         /// <param name="mode">The VersioningMode to push</param>
-        public void PushState(VersioningMode mode)
+        public VersioningContext PushState(VersioningMode mode)
         {
-            PushState(mode, null);
+            return PushState(mode, null);
         }
         /// <summary>
         /// Push a versioning state with a VersioningMode and a specific ItemVersion (making it active)
         /// </summary>
         /// <param name="mode">The VersioningMode to push</param>
         /// <param name="specificVersion">The SpecificVersion to push</param>
-        public void PushState(VersioningMode mode, ItemVersion specificVersion)
+        public VersioningContext PushState(VersioningMode mode, ItemVersion specificVersion)
         {
             StateStack.Push(new VersioningState { Mode = this.Mode, SpecificVersion = this.SpecificVersion });
             this.Mode = mode;
             if (specificVersion != null)
                 this.SpecificVersion = specificVersion;
+
+            return new VersioningContext(this.CurrentVersion);
         }
 
         /// <summary>

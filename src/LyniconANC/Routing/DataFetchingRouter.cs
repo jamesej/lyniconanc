@@ -13,9 +13,13 @@ using Lynicon.Editors;
 
 namespace Lynicon.Routing
 {
-    public class DataFetchingRouter
+    public abstract class DataFetchingRouter
     {
         public static Func<Type, bool> TypeCheckExistenceBySummary = (t => false);
+
+        public abstract Task RouteAsync(RouteContext context);
+
+        public abstract VirtualPathData GetVirtualPath(VirtualPathContext context);
     }
 
     public class DataFetchingRouter<T> : DataFetchingRouter, IRouter where T : class, new()
@@ -35,12 +39,12 @@ namespace Lynicon.Routing
             this.DivertOverride = divertOverride;
         }
 
-        public VirtualPathData GetVirtualPath(VirtualPathContext context)
+        public override VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
             return null;
         }
 
-        public async Task RouteAsync(RouteContext context)
+        public override async Task RouteAsync(RouteContext context)
         {
             Dictionary<string, StringValues> qsParams = context.HttpContext.Request.Query.Keys
                 .Where(key => key != null)

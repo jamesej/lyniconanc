@@ -17,7 +17,7 @@ using Lynicon.Linq;
 using Linq2Rest;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
-using LyniconANC.Exceptions;
+using Lynicon.Exceptions;
 
 namespace Lynicon.Collation
 {
@@ -358,7 +358,7 @@ namespace Lynicon.Collation
             //    throw new ApplicationException("There is an item already at that address");
 
             if (ContentMap.Instance.AddressOccupied(moveTo))
-                throw new LyniconANC.Exceptions.ApplicationException("There is an item already at that address");
+                throw new Lynicon.Exceptions.ProhibitedActionException("There is an item already at that address");
 
             var contentItem = Repository.Get<ContentItem>(id.Type, id.Id);
 

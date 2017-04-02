@@ -156,6 +156,11 @@ namespace Lynicon.Controllers
 
             ContentRepository.ChangeProblems.Remove(problem);
 
+            // Resave schema with resolved problem
+            var schemaModule = LyniconModuleManager.Instance.GetModule<ContentSchemaModule>();
+            if (schemaModule != null)
+                schemaModule.Dump();
+
             return Content("OK");
         }
 

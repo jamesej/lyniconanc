@@ -1534,18 +1534,8 @@
           }
         }
       },
-      "System.IO.Compression.ZipFile/4.0.0": {
+      "System.IO.Compression.ZipFile/4.3.0": {
         "type": "package",
-        "dependencies": {
-          "System.IO": "4.0.10",
-          "System.IO.Compression": "4.0.0",
-          "System.IO.FileSystem": "4.0.0",
-          "System.IO.FileSystem.Primitives": "4.0.0",
-          "System.Resources.ResourceManager": "4.0.0",
-          "System.Runtime": "4.0.20",
-          "System.Runtime.Extensions": "4.0.10",
-          "System.Text.Encoding": "4.0.10"
-        },
         "frameworkAssemblies": [
           "System.IO.Compression.FileSystem",
           "mscorlib"
@@ -5699,7 +5689,7 @@
       ]
     },
     "Linq2RestANC/1.0.0": {
-      "sha512": "58nmAfc+1Re9nH6+7A8lgyCqd27j+uyECVOh3uYpDf+Eug8EFmidxeYxmJeJKOuWiGPqheKj77kDRoeg/IJa8Q==",
+      "sha512": "JsT2Rayw30mJBQ2dqfRxmOU6wYKUDQRlPcggFgIzWHUAhpr2yk2DM45lgWg4AKQzz8f4ihPkoQwTpfHM37t3vA==",
       "type": "package",
       "path": "Linq2RestANC/1.0.0",
       "files": [
@@ -8814,37 +8804,6 @@
         "runtimes/unix/lib/netstandard1.3/System.IO.Compression.dll",
         "runtimes/win/lib/net46/System.IO.Compression.dll",
         "runtimes/win/lib/netstandard1.3/System.IO.Compression.dll"
-      ]
-    },
-    "System.IO.Compression.ZipFile/4.0.0": {
-      "sha512": "pwntmtsJqtt6Lez4Iyv4GVGW6DaXUTo9Rnlsx0MFagRgX+8F/sxG5S/IzDJabBj68sUWViz1QJrRZL4V9ngWDg==",
-      "type": "package",
-      "path": "System.IO.Compression.ZipFile/4.0.0",
-      "files": [
-        "System.IO.Compression.ZipFile.4.0.0.nupkg.sha512",
-        "System.IO.Compression.ZipFile.nuspec",
-        "lib/MonoAndroid10/_._",
-        "lib/MonoTouch10/_._",
-        "lib/dotnet/System.IO.Compression.ZipFile.dll",
-        "lib/net46/System.IO.Compression.ZipFile.dll",
-        "lib/xamarinios10/_._",
-        "lib/xamarinmac20/_._",
-        "ref/MonoAndroid10/_._",
-        "ref/MonoTouch10/_._",
-        "ref/dotnet/System.IO.Compression.ZipFile.dll",
-        "ref/dotnet/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/de/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/es/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/fr/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/it/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/ja/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/ko/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/ru/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/zh-hans/System.IO.Compression.ZipFile.xml",
-        "ref/dotnet/zh-hant/System.IO.Compression.ZipFile.xml",
-        "ref/net46/System.IO.Compression.ZipFile.dll",
-        "ref/xamarinios10/_._",
-        "ref/xamarinmac20/_._"
       ]
     },
     "System.IO.Compression.ZipFile/4.3.0": {
@@ -12253,7 +12212,7 @@
     ".NETFramework,Version=v4.6": [
       "System.IO.Compression >= 4.0.0",
       "System.IO.Compression.FileSystem >= 4.0.0",
-      "System.IO.Compression.ZipFile >= 4.0.0",
+      "System.IO.Compression.ZipFile >= 4.3.0",
       "log4net >= 2.0.7"
     ],
     ".NETStandard,Version=v1.6": [

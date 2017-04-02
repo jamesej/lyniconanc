@@ -50,6 +50,14 @@ namespace Lynicon.Extensibility
         /// Error which stopped the module initialising
         /// </summary>
         public string Error { get; set; }
+        /// <summary>
+        /// Whether the module applies to a given content or container type
+        /// </summary>
+        public Func<Type, bool> AppliesToType { get; set; }
+        /// <summary>
+        /// List of type the module never applies to (overrides AppliesToType)
+        /// </summary>
+        public List<Type> NeverAppliesTo { get; set; }
 
         /// <summary>
         /// Create a module supplying its name and the names of any modules on which it is dependent.
@@ -66,6 +74,8 @@ namespace Lynicon.Extensibility
             Blocked = false;
             ManagerView = null;
             Error = null;
+            AppliesToType = t => true;
+            NeverAppliesTo = new List<Type>();
         }
 
         /// <summary>
@@ -94,6 +104,16 @@ namespace Lynicon.Extensibility
         /// </summary>
         public virtual void Shutdown()
         { }
+
+        /// <summary>
+        /// Whether the module should process a given content or container type
+        /// </summary>
+        /// <param name="t">The content or container type</param>
+        /// <returns>Whether the module processes it</returns>
+        public bool CheckType(Type t)
+        {
+            return AppliesToType(t) && !NeverAppliesTo.Contains(t);
+        }
 
         /// <summary>
         /// Called in order to check that a given database schema change record is present, to ensure

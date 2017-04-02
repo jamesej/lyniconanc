@@ -123,3 +123,138 @@ INFO  11:34:48 Core Module Initialised
 INFO  11:58:25 Core Module Initialised
 INFO  12:51:37 Core Module Initialised
 INFO  01:15:37 Core Module Initialised
+INFO  06:48:04 Core Module Initialised
+INFO  08:17:44 Core Module Initialised
+FATAL 08:37:03 Failed to connect to database
+System.Data.SqlClient.SqlException (0x80131904): Connection Timeout Expired.  The timeout period elapsed while attempting to consume the pre-login handshake acknowledgement.  This could be because the pre-login handshake failed or the server was unable to respond back in time.  The duration spent while attempting to connect to this server was - [Pre-Login] initialization=14865; handshake=274;  ---> System.ComponentModel.Win32Exception (0x80004005): The wait operation timed out
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open()
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
+   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
+   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
+   at lambda_method(Closure , QueryContext )
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
+   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
+   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
+   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
+ClientConnectionId:1d8b5179-e0b9-4f34-a89d-00b424110cf2
+Error Number:-2,State:0,Class:11
+ERROR 08:37:04 Module Core blocked, initialisation exception
+System.Exception: Failed to connect to database ---> System.Data.SqlClient.SqlException: Connection Timeout Expired.  The timeout period elapsed while attempting to consume the pre-login handshake acknowledgement.  This could be because the pre-login handshake failed or the server was unable to respond back in time.  The duration spent while attempting to connect to this server was - [Pre-Login] initialization=14865; handshake=274;  ---> System.ComponentModel.Win32Exception: The wait operation timed out
+   --- End of inner exception stack trace ---
+   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
+   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open()
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
+   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
+   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
+   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
+   at lambda_method(Closure , QueryContext )
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
+   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
+   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
+   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
+   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
+   --- End of inner exception stack trace ---
+   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 119
+   at Lynicon.Modules.CoreModule.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\CoreModule.cs:line 56
+   at Lynicon.Extensibility.LyniconModuleManager.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\LyniconModuleManager.cs:line 145
+INFO  08:45:46 Core Module Initialised
+INFO  09:04:30 Core Module Initialised
+WARN  09:05:17 Unused summary type: Lynicon.Models.Summary
+INFO  09:13:23 Core Module Initialised
+WARN  09:13:51 Unused summary type: Lynicon.Models.Summary
+INFO  09:18:40 Core Module Initialised
+WARN  09:19:21 Unused summary type: Lynicon.Models.Summary
+INFO  11:38:30 Core Module Initialised
+WARN  11:38:31 Unused summary type: Lynicon.Models.Summary
+INFO  01:30:57 Core Module Initialised
+WARN  01:30:57 Unused summary type: Lynicon.Models.Summary
+ERROR 01:30:57 Module ContentSchema blocked, initialisation exception
+System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Lynicon.Models.ContentModelSchema.<>c__DisplayClass23_4.<FindProblems>b__5(KeyValuePair`2 kvp) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 243
+   at System.Linq.Enumerable.Any[TSource](IEnumerable`1 source, Func`2 predicate)
+   at Lynicon.Models.ContentModelSchema.FindProblems(ContentModelSchema codeSchema) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 241
+   at Lynicon.Modules.ContentSchemaModule.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 53
+   at Lynicon.Extensibility.LyniconModuleManager.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\LyniconModuleManager.cs:line 145
+INFO  01:33:30 Core Module Initialised
+WARN  01:34:52 Unused summary type: Lynicon.Models.Summary
+INFO  01:35:57 Core Module Initialised
+INFO  01:52:08 Core Module Initialised
+WARN  01:52:18 Unused summary type: Lynicon.Models.Summary
+INFO  01:55:07 Core Module Initialised
+WARN  01:55:21 Unused summary type: Lynicon.Models.Summary
+INFO  02:01:23 Core Module Initialised
+WARN  02:03:50 Unused summary type: Lynicon.Models.Summary
+INFO  02:05:37 Core Module Initialised
+WARN  02:05:46 Unused summary type: Lynicon.Models.Summary
+INFO  02:08:12 Core Module Initialised
+WARN  02:08:38 Unused summary type: Lynicon.Models.Summary
+INFO  02:20:08 Core Module Initialised
+WARN  02:21:19 Unused summary type: Lynicon.Models.Summary
+INFO  02:23:49 Core Module Initialised
+WARN  02:33:04 Unused summary type: Lynicon.Models.Summary
+INFO  02:35:51 Core Module Initialised
+WARN  02:35:54 Unused summary type: Lynicon.Models.Summary
+INFO  03:26:28 Core Module Initialised
+WARN  03:26:29 Unused summary type: Lynicon.Models.Summary
+INFO  03:32:26 Core Module Initialised
+WARN  03:32:27 Unused summary type: Lynicon.Models.Summary
+INFO  03:53:01 Core Module Initialised
+WARN  03:53:02 Unused summary type: Lynicon.Models.Summary
+INFO  03:55:48 Core Module Initialised
+WARN  03:55:49 Unused summary type: Lynicon.Models.Summary
+ERROR 03:55:49 Error creating content schema module dump: 
+System.ArgumentNullException: Value cannot be null.
+Parameter name: key
+   at System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 275
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp) in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action) in C:\Dev\LyniconANC.Release\src\LyniconANC\Utility\LinqX.cs:line 339
+   at Lynicon.Modules.ContentSchemaModule.Dump() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
+INFO  03:59:21 Core Module Initialised
+WARN  03:59:24 Unused summary type: Lynicon.Models.Summary
+ERROR 03:59:25 Error creating content schema module dump: 
+System.ArgumentNullException: Value cannot be null.
+Parameter name: key
+   at System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 275
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp) in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action) in C:\Dev\LyniconANC.Release\src\LyniconANC\Utility\LinqX.cs:line 339
+   at Lynicon.Modules.ContentSchemaModule.Dump() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
+INFO  04:03:55 Core Module Initialised
+WARN  04:03:56 Unused summary type: Lynicon.Models.Summary
+INFO  04:07:04 Core Module Initialised
+WARN  04:07:05 Unused summary type: Lynicon.Models.Summary
+INFO  04:09:37 Core Module Initialised
+WARN  04:09:38 Unused summary type: Lynicon.Models.Summary

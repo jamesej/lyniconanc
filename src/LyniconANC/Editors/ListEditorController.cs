@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Lynicon.Services;
 using System.Reflection;
+using Lynicon.Exceptions;
 
 namespace Lynicon.Editors
 {
@@ -196,7 +197,7 @@ namespace Lynicon.Editors
             {
                 Collator.Instance.Set(currAddress, data, GetIfCreate());
             }
-            catch (LyniconUpdateException lux)
+            catch (ProhibitedActionException lux)
             {
                 ModelState.AddModelError("updateFail", lux.Message);
             }

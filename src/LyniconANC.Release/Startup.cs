@@ -71,6 +71,7 @@ namespace LyniconANC.Release
             services.AddLynicon(options =>
                 options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
                     .UseModule<CoreModule>()
+                    .UseModule<ContentSchemaModule>()
                     .UseTypeSetup(tsr =>
                         {
                             tsr.SetupType(typeof(TestData), new BasicCollator(null), new BasicRepository(new CoreDataSourceFactory()), DataDiverter.Instance.NullDivert);

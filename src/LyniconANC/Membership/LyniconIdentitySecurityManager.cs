@@ -63,7 +63,11 @@ namespace Lynicon.Membership
                     var userId = this.UserId;
                     if (userId == null)
                         return null;
-                    reqItems[CurrentUserKey] = Collator.Instance.Get<User>(new ItemId(typeof(User), userId));
+
+                    using (var ctx = VersionManager.Instance.PushState(VersioningMode.Public))
+                    {
+                        reqItems[CurrentUserKey] = Collator.Instance.Get<User>(new ItemId(typeof(User), userId));
+                    } 
                 }
                 return (IUser)reqItems[CurrentUserKey];
             }

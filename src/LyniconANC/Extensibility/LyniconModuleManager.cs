@@ -63,6 +63,15 @@ namespace Lynicon.Extensibility
             Modules.Add(module.Name, module);
         }
 
+        public void ExcludeTypeFromModules(string moduleNamespace, Type type)
+        {
+            foreach (var module in Modules.Values)
+            {
+                if (module.Name.StartsWith(moduleNamespace))
+                    module.NeverAppliesTo.Add(type);
+            }
+        }
+
         /// <summary>
         /// Get the registered module of the supplied type
         /// </summary>

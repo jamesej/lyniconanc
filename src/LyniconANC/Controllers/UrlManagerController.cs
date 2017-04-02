@@ -12,7 +12,7 @@ using Lynicon.Extensibility;
 using Lynicon.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using LyniconANC.Exceptions;
+using Lynicon.Exceptions;
 
 namespace Lynicon.Controllers
 {
@@ -55,7 +55,7 @@ namespace Lynicon.Controllers
                     new ItemId(type, (string)this.RouteData.DataTokens["$urlset"]),
                     new Address(type, this.RouteData.GetOriginal()));
             }
-            catch (LyniconANC.Exceptions.ApplicationException appEx)
+            catch (Lynicon.Exceptions.ProhibitedActionException appEx)
             {
                 if (appEx.Message == "There is an item already at that address")
                     return Content("Already Exists");

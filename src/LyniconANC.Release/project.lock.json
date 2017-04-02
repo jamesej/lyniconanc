@@ -2886,7 +2886,7 @@
           "lib/net46/System.Xml.XPath.XDocument.dll": {}
         }
       },
-      "LyniconANC/0.0.2.10": {
+      "LyniconANC/0.0.2.21": {
         "type": "project",
         "framework": ".NETFramework,Version=v4.6",
         "dependencies": {
@@ -2898,7 +2898,7 @@
           "Microsoft.EntityFrameworkCore": "1.1.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
           "Microsoft.Extensions.Configuration.Binder": "1.1.0",
-          "System.IO.Compression.ZipFile": "4.0.0",
+          "System.IO.Compression.ZipFile": "4.3.0",
           "System.Reflection.Emit": "4.3.0",
           "log4net": "2.0.7"
         },
@@ -2946,7 +2946,7 @@
       ]
     },
     "Linq2RestANC/1.0.0": {
-      "sha512": "58nmAfc+1Re9nH6+7A8lgyCqd27j+uyECVOh3uYpDf+Eug8EFmidxeYxmJeJKOuWiGPqheKj77kDRoeg/IJa8Q==",
+      "sha512": "JsT2Rayw30mJBQ2dqfRxmOU6wYKUDQRlPcggFgIzWHUAhpr2yk2DM45lgWg4AKQzz8f4ihPkoQwTpfHM37t3vA==",
       "type": "package",
       "path": "Linq2RestANC/1.0.0",
       "files": [
@@ -8649,7 +8649,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "LyniconANC/0.0.2.10": {
+    "LyniconANC/0.0.2.21": {
       "type": "project",
       "path": "../LyniconANC/project.json",
       "msbuildProject": "../LyniconANC/LyniconANC.xproj"

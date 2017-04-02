@@ -2,12 +2,15 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Collation;
 using Lynicon.DataSources;
 using Lynicon.Utility;
 using System.Collections;
+using System.ComponentModel.DataAnnotations.Schema;
+using Lynicon.Repositories;
 
 namespace LyniconANC.Test
 {
@@ -20,10 +23,12 @@ namespace LyniconANC.Test
         public IQueryable GetSource(Type type)
         {
             Type t = type.UnextendedType();
+            var extTypes = CompositeTypeManager.Instance.ExtendedTypes;
+            Type extT = extTypes.ContainsKey(t) ? extTypes[t] : t;
             if (!Data.ContainsKey(t))
-                return Array.CreateInstance(t, 0).AsQueryable();
+                return Array.CreateInstance(extT, 0).AsQueryable();
             else
-                return Data[t].Values.OfTypeRuntime(t).AsQueryable();
+                return Data[t].Values.OfTypeRuntime(extT).AsQueryable();
         }
 
         public void Update(object o)
@@ -38,8 +43,13 @@ namespace LyniconANC.Test
         {
             if (o == null)
                 return;
-
             Type oType = o.GetType().UnextendedType();
+
+            // Update identity key to next identity value if appropriate
+            var keyInfo = LinqX.GetIdProp(o.GetType(), null);
+            if (keyInfo.GetCustomAttribute<DatabaseGeneratedAttribute>()?.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity)
+                keyInfo.SetValue(o, Data.ContainsKey(oType) ? Data[oType].Count + 1 : 1);
+
             if (!Data.ContainsKey(oType))
                 Data.TryAdd(oType, new ConcurrentDictionary<ItemId,object>());
 

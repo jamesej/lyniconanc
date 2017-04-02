@@ -16,6 +16,7 @@ using Lynicon.Collation;
 using Lynicon.Membership;
 using Lynicon.Attributes;
 using Lynicon.DataSources;
+using Lynicon.Exceptions;
 
 namespace Lynicon.Repositories
 {
@@ -224,7 +225,7 @@ namespace Lynicon.Repositories
                 foreach (ContentItem ci in items)
                 {
                     if (ChangeProblems.Any(cp => cp.TypeName == ci.DataType) && !BypassChangeProblems)
-                        throw new LyniconUpdateException("Changes in the structure of the data may cause data loss, please advise an administrator");
+                        throw new ProhibitedActionException("Changes in the structure of the data may cause data loss, please advise an administrator");
                     bool isAdd = (create == null ? ci.Id == Guid.Empty : create.Value);
                     var eventData = new RepositoryEventData(ci, bypassChecks);
                     var eventResult = EventHub.Instance.ProcessEvent("Repository.Set." + (isAdd ? "Add" : "Update"), this, eventData);

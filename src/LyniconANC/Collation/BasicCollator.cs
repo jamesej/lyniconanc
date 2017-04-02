@@ -16,7 +16,7 @@ using Lynicon.Map;
 using Lynicon.Linq;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
-using LyniconANC.Exceptions;
+using Lynicon.Exceptions;
 
 namespace Lynicon.Collation
 {
@@ -173,7 +173,7 @@ namespace Lynicon.Collation
         {
             var testSumm = Repository.Get(typeof(Summary), new Address[] { moveTo }).FirstOrDefault();
             if (testSumm != null)
-                throw new LyniconANC.Exceptions.ApplicationException("There is an item already at that address");
+                throw new Lynicon.Exceptions.ProhibitedActionException("There is an item already at that address");
 
             object item = Repository.Get(id.Type, id.Type, id.Id);
             moveTo.SetAddressFields(item);

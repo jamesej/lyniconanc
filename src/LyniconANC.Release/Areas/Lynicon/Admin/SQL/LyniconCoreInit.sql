@@ -53,7 +53,7 @@ GO
 CREATE TABLE [dbo].[DbChanges](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Change] [nvarchar](100) NOT NULL,
-	[WhenChanged] [datetime] NOT NULL,
+	[ChangedWhen] [datetime] NOT NULL,
  CONSTRAINT [PK_DbChanges] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -64,7 +64,7 @@ GO
 
 INSERT INTO [dbo].[DbChanges]
            ([Change]
-           ,[WhenChanged])
+           ,[ChangedWhen])
      VALUES
            ('LyniconInit 0.1'
            ,GETDATE())

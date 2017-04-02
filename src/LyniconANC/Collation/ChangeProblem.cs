@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lynicon.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,6 @@ namespace Lynicon.Collation
     public enum ChangeProblemType
     {
         DeletionNeeded,
-        NotBinarySerializable,
         NullObjectValue,
         PropertyDroppedFromSummary,
         PropertyDropped,
@@ -79,6 +79,11 @@ namespace Lynicon.Collation
             ProblemType = problemType;
             PropertyName = propertyName;
             TypeName = typeName;
+        }
+
+        public string GetAssemblyQualifiedTypeName()
+        {
+            return ContentTypeHierarchy.GetAnyType(TypeName).AssemblyQualifiedName;
         }
     }
 }

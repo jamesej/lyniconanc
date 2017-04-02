@@ -128,17 +128,14 @@ namespace Lynicon.Map
         /// <returns>IEnumerable of the possible route datas</returns>
         public IEnumerable<RouteData> GetRouteDatas(Address address)
         {
-            var routes = new Route[0];
-                //RouteTable.Routes
-                //.OfType<Route>()
-                //.Where(r => r.GetType().IsGenericType
-                //    && r.GetType().GetGenericTypeDefinition() == typeof(DataRoute<>)
-                //    && r.GetType().GetGenericArguments()[0] == address.Type);
-            foreach (var route in routes)
+            for (int i = 0; i < RouteCollection.Count; i++)
             {
-                var rvds = GetRouteDatas(route, address);
-                foreach (var rvd in rvds)
-                    yield return rvd;
+                var route = (DataRoute)RouteCollection[i];
+                if (!route.DataType.IsAssignableFrom(address.Type)) // possible to have data route with parent class of content class
+                    continue;
+                var rds = GetRouteDatas(route, address);
+                foreach (var rd in rds)
+                    yield return rd;
             }
         }
 
@@ -346,9 +343,7 @@ namespace Lynicon.Map
                     {
                         var rd = new RouteData();
                         r.Do(kvp => rd.Values.Add(kvp.Key, kvp.Value));
-                        //TODO make this work right
-                        //rd.Route = route;
-                        //rd.RouteHandler = route.RouteHandler;
+                        rd.Routers.Add(route);
                         return rd;
                     })
                 .ToList();

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Authorization;
 using Lynicon.Services;
 using System.Reflection;
+using Lynicon.Exceptions;
 
 namespace Lynicon.Editors
 {
@@ -96,11 +97,11 @@ namespace Lynicon.Editors
             {
                 var create = GetIfCreate();
                 if ((create ?? false) && ContentMap.Instance.AddressOccupied(currAddress))
-                    throw new LyniconUpdateException("There is an item already at this url");
+                    throw new ProhibitedActionException("There is an item already at this url");
 
                 Collator.Instance.Set(currAddress, data, create);
             }
-            catch (LyniconUpdateException lux)
+            catch (ProhibitedActionException lux)
             {
                 ModelState.AddModelError("updateFail", lux.Message);
             }
@@ -121,7 +122,7 @@ namespace Lynicon.Editors
             {
                 Collator.Instance.Set(currAddress, data, GetIfCreate());
             }
-            catch (LyniconUpdateException lux)
+            catch (ProhibitedActionException lux)
             {
                 ModelState.AddModelError("updateFail", lux.Message);
             }

@@ -40,7 +40,7 @@
         </div>
     }
     @{
-        var vers = Model == null || Model is IList || !ContentTypeHierarchy.AllContentTypes.Contains(Model.GetType().ContentType())
+        var vers = Model == null || Model is IList || !ContentTypeHierarchy.AllContentTypes.Contains(Model.GetType().UnextendedType())
             ? VersionManager.Instance.CurrentVersion
             : VersionManager.Instance.GetVersion(Collator.Instance.GetContainer(Model));
         bool overridden = VersionManager.Instance.CurrentVersionIsOverridden;
