@@ -5,7 +5,7 @@ using Lynicon.Collation;
 using Lynicon.Extensibility;
 using Lynicon.Models;
 using Lynicon.Repositories;
-using NUnit.Framework;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -14,10 +14,9 @@ using NUnit.Framework;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
     public class GlobalEventTest
     {
-        [Test]
+        [Fact]
         public void ConstraintOrderedCollection()
         {
             var list = new ConstraintOrderedCollection<EventHubData>(ehd => ehd.EventName);
@@ -27,7 +26,7 @@ namespace LyniconANC.Test
             list.Add(new EventHubData { EventName = "e3" }, ConstraintType.ItemsAfter, "e4");
         }
 
-        [Test]
+        [Fact]
         public void GlobalEvents()
         {
             EventHub testHub = new EventHub();
@@ -47,16 +46,16 @@ namespace LyniconANC.Test
             List<string> callList;
 
             callOrder = (Stack<string>)testHub.ProcessEvent("Test", this, new Stack<string>()).Data;
-            Assert.IsTrue(callOrder.SequenceEqual(new string[] { "mod5" }));
+            Assert.True(callOrder.SequenceEqual(new string[] { "mod5" }));
 
             callOrder = (Stack<string>)testHub.ProcessEvent("Test.Var1", this, new Stack<string>()).Data;
             callList = callOrder.Reverse().ToList();
-            Assert.IsTrue(CheckOrderA(callList), "Test.Var1 event sequencing error");
+            Assert.True(CheckOrderA(callList), "Test.Var1 event sequencing error");
 
             callOrder = (Stack<string>)testHub.ProcessEvent("Test.Var1.Var2", this, new Stack<string>()).Data;
             callList = callOrder.Reverse().ToList();
-            Assert.IsTrue(CheckOrderA(callList));
-            Assert.IsTrue(callList.Contains("mod1"));
+            Assert.True(CheckOrderA(callList));
+            Assert.True(callList.Contains("mod1"));
 
         }
 

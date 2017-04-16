@@ -1,17 +1,16 @@
 ﻿using Lynicon.Extensibility;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
     public class EventHubTests
     {
-        [Test]
+        [Fact]
         public void ProcessorOrdering()
         {
             var eh = new EventHub();
@@ -53,16 +52,16 @@ namespace LyniconANC.Test
                 }, "TestMod5", new OrderConstraint("TestMod5", ConstraintType.ItemsAfter, "TestMod2"));
 
             eh.ProcessEvent("x", this, null);
-            Assert.AreEqual(0, processorsCalled.Count, "non-existent event triggered other processors");
+            Assert.Equal(0, processorsCalled.Count);
 
             eh.ProcessEvent("ev", this, null);
-            Assert.Less(processorsCalled.IndexOf("p2"), processorsCalled.IndexOf("p3"), "processor ordering");
-            Assert.Less(processorsCalled.IndexOf("p3"), processorsCalled.IndexOf("p1"), "processor ordering");
-            Assert.Less(processorsCalled.IndexOf("p5"), processorsCalled.IndexOf("p4"), "processor ordering");
-            Assert.Less(processorsCalled.IndexOf("p5"), processorsCalled.IndexOf("p2"), "processor ordering");
+            Assert.True(processorsCalled.IndexOf("p2") < processorsCalled.IndexOf("p3"), "processor ordering");
+            Assert.True(processorsCalled.IndexOf("p3") < processorsCalled.IndexOf("p1"), "processor ordering");
+            Assert.True(processorsCalled.IndexOf("p5") < processorsCalled.IndexOf("p4"), "processor ordering");
+            Assert.True(processorsCalled.IndexOf("p5") < processorsCalled.IndexOf("p2"), "processor ordering");
         }
 
-        [Test]
+        [Fact]
         public void EventHierarchy()
         {
             var eh = new EventHub();
@@ -99,27 +98,27 @@ namespace LyniconANC.Test
                 }, "TestMod3");
 
             eh.ProcessEvent("c.a.a", this, null);
-            Assert.AreEqual(0, processorsCalled.Count, "event doesn't match");
+            Assert.Equal(0, processorsCalled.Count);
             processorsCalled.Clear();
 
             eh.ProcessEvent("c.b.a", this, null);
-            Assert.IsTrue(processorsCalled.Contains("c.b") && processorsCalled.Count == 1);
+            Assert.True(processorsCalled.Contains("c.b") && processorsCalled.Count == 1);
             processorsCalled.Clear();
 
             eh.ProcessEvent("b", this, null);
-            Assert.IsTrue(processorsCalled.Contains("b") && processorsCalled.Count == 1);
+            Assert.True(processorsCalled.Contains("b") && processorsCalled.Count == 1);
             processorsCalled.Clear();
 
             eh.ProcessEvent("a.b.b", this, null);
-            Assert.IsTrue(processorsCalled.Contains("a") && processorsCalled.Count == 1);
+            Assert.True(processorsCalled.Contains("a") && processorsCalled.Count == 1);
             processorsCalled.Clear();
 
             eh.ProcessEvent("c.b.b", this, null);
-            Assert.IsTrue(processorsCalled.Contains("c.b") && processorsCalled.Contains("c.b.b") && processorsCalled.Count == 2);
+            Assert.True(processorsCalled.Contains("c.b") && processorsCalled.Contains("c.b.b") && processorsCalled.Count == 2);
             processorsCalled.Clear();
 
             eh.ProcessEvent("c.b.b.a", this, null);
-            Assert.IsTrue(processorsCalled.Contains("c.b") && processorsCalled.Contains("c.b.b") && processorsCalled.Count == 2);
+            Assert.True(processorsCalled.Contains("c.b") && processorsCalled.Contains("c.b.b") && processorsCalled.Count == 2);
             processorsCalled.Clear();
         }
     }

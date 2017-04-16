@@ -1,35 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Lynicon.Services;
+﻿using Lynicon.Services;
 using LyniconANC.Test.Models;
 using Lynicon.Collation;
-using Lynicon.Models;
 using Lynicon.Repositories;
-using Lynicon.Membership;
-using LyniconANC.Test.Models;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
-using LyniconANC.Test;
 using Lynicon.Map;
 using Lynicon.Modules;
 using Lynicon.Extensibility;
 using Lynicon.DataSources;
+using Xunit;
 
 namespace LyniconANC.Test
 {
-    [SetUpFixture]
-    public class Setup
+    [CollectionDefinition("Lynicon System")]
+    public class LyniconSystemCollectionFixture : ICollectionFixture<LyniconSystemFixture>
+    { }
+
+    public class LyniconSystemFixture
     {
-        public static LyniconSystem LyniconSystem { get; private set; }
+        public LyniconSystem LyniconSystem { get; private set; }
 
-        public static LyniconSystem LyniconSystemWithDb { get; private set; }
+        public LyniconSystem LyniconSystemWithDb { get; private set; }
 
-        [OneTimeSetUp]
-        public static void GlobalInit()
+        public LyniconSystemFixture()
         {
             CompositeTypeManager.Instance.RegisterExtensionType(typeof(ExtTestData));
 
@@ -75,7 +67,7 @@ namespace LyniconANC.Test
             Collator.Instance.SetupType<TestContent>(new TestCollator(), null);
         }
 
-        private static void SetupLyniconSystemWithDb()
+        private void SetupLyniconSystemWithDb()
         {
             LyniconSystemWithDb = new LyniconSystem(new LyniconSystemOptions()
                 .UseConnectionString("Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=LynTest;Integrated Security=True")

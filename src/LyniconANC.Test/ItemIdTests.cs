@@ -8,8 +8,8 @@ using Lynicon.Extensibility;
 using Lynicon.Models;
 using Lynicon.Repositories;
 using LyniconANC.Test.Models;
-using NUnit.Framework;
 using Newtonsoft.Json;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -18,10 +18,17 @@ using Newtonsoft.Json;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
+    [Collection("Lynicon System")]
     public class ItemIdTests
     {
-        [Test]
+        LyniconSystemFixture sys;
+
+        public ItemIdTests(LyniconSystemFixture sys)
+        {
+            this.sys = sys;
+        }
+
+        [Fact]
         public void ItemIdEquality()
         {
             Guid id0 = Guid.NewGuid();
@@ -30,56 +37,56 @@ namespace LyniconANC.Test
             var ii2 = new ItemId(typeof(RestaurantContent), id0);
             var ii3 = new ItemId(typeof(HeaderContent), Guid.NewGuid());
 
-            Assert.IsTrue(ii0.Equals(ii1), ".Equals true");
-            Assert.IsTrue(ii0 == ii1, "== true");
-            Assert.IsFalse(ii0.Equals(ii2), ".Equals false by type");
-            Assert.IsFalse(ii0 == ii2, "== false by type");
-            Assert.IsFalse(ii1.Equals(ii3), ".Equals false by id");
-            Assert.IsFalse(ii1 == ii3, "== false by id");
+            Assert.True(ii0.Equals(ii1), ".Equals true");
+            Assert.True(ii0 == ii1, "== true");
+            Assert.False(ii0.Equals(ii2));
+            Assert.False(ii0 == ii2);
+            Assert.False(ii1.Equals(ii3));
+            Assert.False(ii1 == ii3);
 
-            Assert.IsFalse(ii0.GetHashCode() == ii2.GetHashCode(), "hash code by type");
-            Assert.IsFalse(ii1.GetHashCode() == ii3.GetHashCode(), "hash code by id");
+            Assert.False(ii0.GetHashCode() == ii2.GetHashCode(), "hash code by type");
+            Assert.False(ii1.GetHashCode() == ii3.GetHashCode(), "hash code by id");
         }
 
-        [Test]
+        [Fact]
         public void ItemIdConstructors()
         {
             // ItemId uses ContentType() of the relevant type
             Guid id1 = Guid.NewGuid();
             Type extType = CompositeTypeManager.Instance.ExtendedTypes[typeof(TestData)];
             var ii1 = new ItemId(extType, id1);
-            Assert.AreEqual(typeof(TestData), ii1.Type);
+            Assert.Equal(typeof(TestData), ii1.Type);
 
             // Serialize/Deserialize
             var ii2 = new ItemId(ii1.ToString());
-            Assert.AreEqual(ii2.Type, ii1.Type);
-            Assert.AreEqual(ii2.Id, ii1.Id);
-            Assert.AreEqual(ii2, ii1);
+            Assert.Equal(ii2.Type, ii1.Type);
+            Assert.Equal(ii2.Id, ii1.Id);
+            Assert.Equal(ii2, ii1);
 
             // Construct from basic type
             TestData td = Collator.Instance.GetNew<TestData>(new Address(typeof(TestData), "a"));
             td.Id = 5;
             var ii3 = new ItemId(td);
-            Assert.AreEqual(ii3.Id, td.Id);
+            Assert.Equal(ii3.Id, td.Id);
 
             // Construct from container
             Guid id = Guid.NewGuid();
             Guid ident = Guid.NewGuid();
             ContentItem ci = new ContentItem { Id = id, Identity = ident, DataType = typeof(RestaurantContent).FullName };
             var ii4 = new ItemId(ci);
-            Assert.AreEqual(ii4.Id, ident);
-            Assert.AreEqual(ii4.Type, typeof(RestaurantContent));
+            Assert.Equal(ii4.Id, ident);
+            Assert.Equal(ii4.Type, typeof(RestaurantContent));
 
             // Construct from data item
             RestaurantContent rc = Collator.Instance.GetNew<RestaurantContent>(new Address(typeof(RestaurantContent), "x"));
             var ii5 = new ItemId(rc);
-            Assert.AreEqual(ii5.Id, rc.Identity);
+            Assert.Equal(ii5.Id, rc.Identity);
 
             // Construct from summary
             RestaurantSummary rs = Collator.Instance.GetSummary<RestaurantSummary>(rc);
             var ii6 = new ItemId(rs);
-            Assert.AreEqual(ii6.Id, rs.Id);
-            Assert.AreEqual(ii6.Type, rs.Type);
+            Assert.Equal(ii6.Id, rs.Id);
+            Assert.Equal(ii6.Type, rs.Type);
 
             // No empty value allowed
             ContentItem cc = null;
@@ -87,19 +94,19 @@ namespace LyniconANC.Test
             object otest = null;
             string stest = null;
             Summary summtest = null;
-            Assert.Catch(() => new ItemId(cc));
-            Assert.Catch(() => new ItemId(iitest));
-            Assert.Catch(() => new ItemId(otest));
-            Assert.Catch(() =>
+            Assert.Throws<NullReferenceException>(() => new ItemId(cc));
+            Assert.Throws<NullReferenceException>(() => new ItemId(iitest));
+            Assert.Throws<NullReferenceException>(() => new ItemId(otest));
+            Assert.Throws<ArgumentException>(() =>
             {
                 var x = new ItemId(stest);
             });
-            Assert.Catch(() => new ItemId(summtest));
-            Assert.Catch(() => new ItemId(typeof(RestaurantContent), null));
-            Assert.Catch(() => new ItemId(null, Guid.NewGuid()));
+            Assert.Throws<NullReferenceException>(() => new ItemId(summtest));
+            Assert.Throws<ArgumentException>(() => new ItemId(typeof(RestaurantContent), null));
+            Assert.Throws<ArgumentException>(() => new ItemId(null, Guid.NewGuid()));
         }
 
-        [Test]
+        [Fact]
         public void ItemIdSerialization()
         {
             Guid id0 = Guid.NewGuid();
@@ -110,12 +117,12 @@ namespace LyniconANC.Test
             string ser = JsonConvert.SerializeObject(dict);
             var dictOut = JsonConvert.DeserializeObject<Dictionary<ItemId, string>>(ser);
 
-            Assert.AreEqual("hello", dictOut[ii0]);
+            Assert.Equal("hello", dictOut[ii0]);
 
             ser = JsonConvert.SerializeObject(ii0);
             var iiOut = JsonConvert.DeserializeObject<ItemId>(ser);
 
-            Assert.AreEqual(ii0, iiOut);
+            Assert.Equal(ii0, iiOut);
         }
     }
 }

@@ -5,8 +5,8 @@ using Lynicon.Collation;
 using Lynicon.Repositories;
 using Lynicon.Extensibility;
 using Lynicon.Relations;
-using NUnit.Framework;
 using LyniconANC.Test.Models;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -15,35 +15,42 @@ using LyniconANC.Test.Models;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
+    [Collection("Lynicon System")]
     public class ReferencesTest
     {
-        [Test]
+        LyniconSystemFixture sys;
+
+        public ReferencesTest(LyniconSystemFixture sys)
+        {
+            this.sys = sys;
+        }
+
+        [Fact]
         public void ReferenceTest()
         {
             var iid = new ItemId(typeof(RefTargetContent), Guid.NewGuid());
             Reference<RefTargetContent> refr = new Reference<Test.Models.RefTargetContent>(iid);
-            Assert.AreEqual(refr.ItemId, iid, "Reference stored itemid");
+            Assert.Equal(refr.ItemId, iid);
 
             iid = null;
             refr = new Reference<RefTargetContent>(iid);
-            Assert.IsTrue(refr.IsEmpty, "empty reference from null itemid");
+            Assert.True(refr.IsEmpty, "empty reference from null itemid");
 
             string s = null;
             refr = new Reference<RefTargetContent>(s);
-            Assert.IsTrue(refr.IsEmpty, "empty reference from null serialization string");
+            Assert.True(refr.IsEmpty, "empty reference from null serialization string");
 
             refr = new Reference<RefTargetContent>(null, null);
-            Assert.IsTrue(refr.IsEmpty, "empty reference from null id/datatype");
+            Assert.True(refr.IsEmpty, "empty reference from null id/datatype");
 
             refr = new Reference<RefTargetContent>(typeof(RefTargetContent).FullName, null);
-            Assert.IsTrue(refr.IsEmpty, "emtpy referent from null id, valid datatype");
+            Assert.True(refr.IsEmpty, "emtpy referent from null id, valid datatype");
 
             refr = new Reference<RefTargetContent>();
-            Assert.IsTrue(refr.IsEmpty, "default constr reference is empty");
+            Assert.True(refr.IsEmpty, "default constr reference is empty");
         }
 
-        [Test]
+        [Fact]
         public void FollowRefs()
         {
             var rt1 = Collator.Instance.GetNew<RefTargetContent>(new Address(typeof(RefTargetContent), "1"));
@@ -65,20 +72,20 @@ namespace LyniconANC.Test
             Collator.Instance.Set(rc2);
 
             var backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt1.OriginalRecord), "RefTarget").ToList();
-            Assert.AreEqual(2, backRefs.Count, "Get references to item with 2 refs");
+            Assert.Equal(2, backRefs.Count);
             backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt2.OriginalRecord), "RefTarget").ToList();
-            Assert.AreEqual(0, backRefs.Count, "Get references to item with 0 refs");
+            Assert.Equal(0, backRefs.Count);
             backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt2.OriginalRecord), "RefTargetOther").ToList();
-            Assert.AreEqual(1, backRefs.Count, "Get references to item with 1 refs");
+            Assert.Equal(1, backRefs.Count);
 
             rc2.RefTarget = new Reference<RefTargetContent>(rt2.ItemId);
             Collator.Instance.Set(rc2);
             backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt1.OriginalRecord), "RefTarget").ToList();
-            Assert.AreEqual(1, backRefs.Count, "Get references after update");
+            Assert.Equal(1, backRefs.Count);
 
             Collator.Instance.Delete(rc1);
             backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt1.OriginalRecord), "RefTarget").ToList();
-            Assert.AreEqual(0, backRefs.Count, "Get references after delete");
+            Assert.Equal(0, backRefs.Count);
         }
     }
 }

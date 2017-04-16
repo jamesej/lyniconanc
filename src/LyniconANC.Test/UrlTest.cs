@@ -5,9 +5,9 @@ using Lynicon.Collation;
 using Lynicon.Repositories;
 using Lynicon.Extensibility;
 using Lynicon.Relations;
-using NUnit.Framework;
 using LyniconANC.Test.Models;
 using Lynicon.Exceptions;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -16,10 +16,17 @@ using Lynicon.Exceptions;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
+    [Collection("Lynicon System")]
     public class UrlTest
     {
-        [Test]
+        LyniconSystemFixture sys;
+
+        public UrlTest(LyniconSystemFixture sys)
+        {
+            this.sys = sys;
+        }
+
+        [Fact]
         public void UrlMoveClash()
         {
             var hc = Collator.Instance.GetNew<HeaderContent>(new Address(typeof(HeaderContent), "ut-a"));
@@ -48,7 +55,7 @@ namespace LyniconANC.Test
             {
                 ex = appEx;
             }
-            Assert.IsNotNull(ex, "Failed to block move to an existing data route url");
+            Assert.NotNull(ex);
 
             // Does not now consider standard urls
             //ex = null;
@@ -60,7 +67,7 @@ namespace LyniconANC.Test
             //{
             //    ex = appEx;
             //}
-            //Assert.IsNotNull(ex, "Failed to block move to an existing standard url");
+            //Assert.NotNull(ex, "Failed to block move to an existing standard url");
         }
     }
 }

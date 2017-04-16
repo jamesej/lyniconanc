@@ -1,17 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8319713B-5C90-44C9-9462-A28BD530BEB9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A53FA99-616D-44EE-86DC-B8AC7387BE00}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyniconANC.Release", "src\LyniconANC.Release\LyniconANC.Release.csproj", "{451AA7D7-D49C-4BB9-82B8-0AB1857FBB7C}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LyniconANC.Release", "src\LyniconANC.Release\LyniconANC.Release.xproj", "{451AA7D7-D49C-4BB9-82B8-0AB1857FBB7C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyniconANC", "src\LyniconANC\LyniconANC.csproj", "{2AFF4A4A-C93C-4DB9-9D63-7616DB8FA02E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LyniconANC", "src\LyniconANC\LyniconANC.xproj", "{2AFF4A4A-C93C-4DB9-9D63-7616DB8FA02E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyniconANC.Test", "src\LyniconANC.Test\LyniconANC.Test.csproj", "{EE16E364-9270-4397-BCB4-C34EECDACD1F}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LyniconANC.Test", "src\LyniconANC.Test\LyniconANC.Test.xproj", "{EE16E364-9270-4397-BCB4-C34EECDACD1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

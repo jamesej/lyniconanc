@@ -3,18 +3,17 @@ using Lynicon.Membership;
 using Lynicon.Repositories;
 using LyniconANC.Test.Models;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
     public class TypeCompositionTest
     {
-        [Test]
+        [Fact]
         public void ComposedTypesSerialize()
         {
             var dict = new Dictionary<Type, string>();
@@ -24,7 +23,7 @@ namespace LyniconANC.Test
             string serialized = JsonConvert.SerializeObject(dict, settings);
             var res = JsonConvert.DeserializeObject<Dictionary<Type, string>>(serialized, settings);
 
-            Assert.AreEqual("aaa", res[typeof(TestData)]);
+            Assert.Equal("aaa", res[typeof(TestData)]);
         }
     }
 }

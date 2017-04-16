@@ -13,9 +13,9 @@ using Lynicon.Repositories;
 using Lynicon.Routing;
 using Lynicon.Utility;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using Microsoft.AspNetCore.Routing;
 using System.Reflection;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -416,11 +416,17 @@ namespace LyniconANC.Test
         #endregion
     }
 
-
-    [TestFixture]
+    [Collection("Lynicon System")]
     public class VersionTests
     {
-        [Test]
+        LyniconSystemFixture sys;
+
+        public VersionTests(LyniconSystemFixture sys)
+        {
+            this.sys = sys;
+        }
+
+        [Fact]
         public void ItemVersionEquality()
         {
             Dictionary<string, object> vers = new Dictionary<string, object> { { "Existence", "Exists" }, { "Published", false } };
@@ -434,53 +440,53 @@ namespace LyniconANC.Test
             var ii4 = new ItemVersion(vers);
             var ii5 = new ItemVersion(vers);
 
-            Assert.IsTrue(ii0.Equals(ii1), ".Equals true");
-            Assert.IsTrue(ii0 == ii1, "== true");
-            Assert.IsFalse(ii0.Equals(ii2), ".Equals false by different val");
-            Assert.IsFalse(ii0 == ii2, "== false by different val");
-            Assert.IsFalse(ii1.Equals(ii3), ".Equals false by missing key");
-            Assert.IsFalse(ii1 == ii3, "== false by missing key");
+            Assert.True(ii0.Equals(ii1), ".Equals true");
+            Assert.True(ii0 == ii1, "== true");
+            Assert.False(ii0.Equals(ii2), ".Equals false by different val");
+            Assert.False(ii0 == ii2, "== false by different val");
+            Assert.False(ii1.Equals(ii3), ".Equals false by missing key");
+            Assert.False(ii1 == ii3, "== false by missing key");
 
-            Assert.IsFalse(ii0.GetHashCode() == ii2.GetHashCode(), "hash code by val");
-            Assert.IsFalse(ii1.GetHashCode() == ii3.GetHashCode(), "hash code by missing key");
+            Assert.False(ii0.GetHashCode() == ii2.GetHashCode(), "hash code by val");
+            Assert.False(ii1.GetHashCode() == ii3.GetHashCode(), "hash code by missing key");
 
-            Assert.IsTrue(ii3 == ii4, "== ignore null value");
-            Assert.IsTrue(ii3.GetHashCode() == ii4.GetHashCode(), "hash code ignore null value");
+            Assert.True(ii3 == ii4, "== ignore null value");
+            Assert.True(ii3.GetHashCode() == ii4.GetHashCode(), "hash code ignore null value");
 
-            Assert.IsTrue(ii5 == ii4, "== compare null value");
-            Assert.IsTrue(ii5.GetHashCode() == ii4.GetHashCode(), "hash code compare null value");
+            Assert.True(ii5 == ii4, "== compare null value");
+            Assert.True(ii5.GetHashCode() == ii4.GetHashCode(), "hash code compare null value");
         }
 
-        [Test]
+        [Fact]
         public void ItemVersionConstructors()
         {
             var iv0 = new ItemVersion();
 
             var cont = new TestContainer { ContentType = typeof(HeaderContent), IsPubVersion = true, Locale = "en-GB" };
             var iv1 = new ItemVersion(cont);
-            Assert.AreEqual(true, iv1["Published"]);
-            Assert.AreEqual("en-GB", iv1["Locale"]);
+            Assert.Equal(true, iv1["Published"]);
+            Assert.Equal("en-GB", iv1["Locale"]);
 
             var iv2 = new ItemVersion(iv1.ToString());
-            Assert.AreEqual(iv2["Published"], iv1["Published"]);
-            Assert.AreEqual(iv2["Locale"], iv1["Locale"]);
-            Assert.AreEqual(iv2, iv1);
+            Assert.Equal(iv2["Published"], iv1["Published"]);
+            Assert.Equal(iv2["Locale"], iv1["Locale"]);
+            Assert.Equal(iv2, iv1);
 
             var iv3 = new ItemVersion(iv2);
-            Assert.AreEqual(iv3, iv2);
+            Assert.Equal(iv3, iv2);
             iv3["Published"] = false;
-            Assert.AreNotEqual(iv3, iv2);
+            Assert.NotEqual(iv3, iv2);
 
             var iv4 = new ItemVersion(new Dictionary<string, object> { { "sval", "abc" }, { "ival", 15 } });
             var json = JsonConvert.SerializeObject(iv4);
             var iv5 = JsonConvert.DeserializeObject<ItemVersion>(json);
-            Assert.AreEqual((int)15, iv5["ival"]);
+            Assert.Equal((int)15, iv5["ival"]);
 
             // can construct using dictionary initializer
             var iv6 = new ItemVersion { { "A", 1 }, { "B", false } };
         }
 
-        [Test]
+        [Fact]
         public void ItemVersionOperations()
         {
             // means published English vsn
@@ -491,31 +497,31 @@ namespace LyniconANC.Test
             var iv3 = new ItemVersion { { "Locale", "es-ES" } };
 
             var iv4 = iv1.GetAddressablePart();
-            Assert.AreEqual(new ItemVersion { { "Locale", "en-GB" } }, iv4);
+            Assert.Equal(new ItemVersion { { "Locale", "en-GB" } }, iv4);
 
             var iv5 = iv1.GetUnaddressablePart();
-            Assert.AreEqual(new ItemVersion { { "Published", true } }, iv5);
+            Assert.Equal(new ItemVersion { { "Published", true } }, iv5);
 
             var iv6 = iv1.GetApplicablePart(typeof(TestContent));
-            Assert.AreEqual(new ItemVersion { { "Locale", "en-GB" } }, iv6);
+            Assert.Equal(new ItemVersion { { "Locale", "en-GB" } }, iv6);
 
             var iv7 = iv1.Superimpose(new ItemVersion { { "Published", false }, { "A", "x" } });
-            Assert.AreEqual(true, iv1["Published"]); // does not mutate iv1
-            Assert.AreEqual(new ItemVersion { { "Published", false }, { "Locale", "en-GB" }, { "A", "x" } }, iv7);
+            Assert.Equal(true, iv1["Published"]); // does not mutate iv1
+            Assert.Equal(new ItemVersion { { "Published", false }, { "Locale", "en-GB" }, { "A", "x" } }, iv7);
 
             var iv9 = new ItemVersion(iv1);
             iv9.Add("X", null);
 
             var iv8 = iv9.Overlay(new ItemVersion { { "Published", false }, { "Locale", null } });
-            Assert.AreEqual(new ItemVersion { { "Published", false }, { "Locale", null }, { "X", null } }, iv8);
-            Assert.AreEqual("en-GB", iv9["Locale"]); // does not mutate iv1
+            Assert.Equal(new ItemVersion { { "Published", false }, { "Locale", null }, { "X", null } }, iv8);
+            Assert.Equal("en-GB", iv9["Locale"]); // does not mutate iv1
 
             var iv10 = iv9.Mask(new ItemVersion { { "Published", null }, { "Locale", "es-ES" } });
-            Assert.AreEqual(new ItemVersion { { "Published", true }, { "Locale", "es-ES" } }, iv10);
-            Assert.AreEqual("es-ES", iv10["Locale"]);
+            Assert.Equal(new ItemVersion { { "Published", true }, { "Locale", "es-ES" } }, iv10);
+            Assert.Equal("es-ES", iv10["Locale"]);
         }
 
-        [Test]
+        [Fact]
         public void ItemVersionSerialization()
         {
             var iv1 = new ItemVersion { { "Published", true }, { "Locale", "en-GB" } };
@@ -525,12 +531,12 @@ namespace LyniconANC.Test
             string ser = JsonConvert.SerializeObject(dict);
             var dictOut = JsonConvert.DeserializeObject<Dictionary<ItemVersion, string>>(ser);
 
-            Assert.AreEqual("hello", dictOut[iv1]);
+            Assert.Equal("hello", dictOut[iv1]);
 
             ser = JsonConvert.SerializeObject(iv1);
             var ivOut = JsonConvert.DeserializeObject<ItemVersion>(ser);
 
-            Assert.AreEqual(iv1, ivOut);
+            Assert.Equal(iv1, ivOut);
         }
     }
 }

@@ -6,7 +6,7 @@ using Lynicon.Extensibility;
 using Lynicon.Linq;
 using Lynicon.Models;
 using Lynicon.Repositories;
-using NUnit.Framework;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -15,7 +15,6 @@ using NUnit.Framework;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
     public class FacadeTests
     {
         private class C0
@@ -40,7 +39,7 @@ namespace LyniconANC.Test
             public string Z { get; set; }
         }
 
-        [Test]
+        [Fact]
         public void TestAsFacade()
         {
             var l1 = new List<C0>();
@@ -64,13 +63,13 @@ namespace LyniconANC.Test
             IQueryable l1Q = l1.AsQueryable();
             IQueryable l2Q = l2.AsQueryable();
             var out0 = l1Q.AsFacade<C0>().Where(x => x.X == 1).ToList();
-            Assert.AreEqual(out0.Count, 2);
+            Assert.Equal(out0.Count, 2);
             var out1 = l2Q.AsFacade<C0>().Where(x => x.X == 1).ToList();
-            Assert.AreEqual(out1.Count, 1);
+            Assert.Equal(out1.Count, 1);
 
             IQueryable l3Q = l3.AsQueryable();
             var out3 = l3Q.AsFacade<IHasZ>().Where(x => x.Z == "abc").ToList();
-            Assert.AreEqual(out3.Count, 2);
+            Assert.Equal(out3.Count, 2);
         }
 
     }

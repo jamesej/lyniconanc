@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using Lynicon.Collation;
 using Lynicon.Repositories;
 using Lynicon.Extensibility;
-using NUnit.Framework;
 using LyniconANC.Test.Models;
+using Xunit;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -14,14 +14,21 @@ using LyniconANC.Test.Models;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
+    [Collection("Lynicon System")]
     public class RepositoryTest
     {
-        [Test]
+        LyniconSystemFixture sys;
+
+        public RepositoryTest(LyniconSystemFixture sys)
+        {
+            this.sys = sys;
+        }
+
+        [Fact]
         public void WriteRead()
         {
             var ci = Repository.Instance.New<ContentItem>();
-            Assert.AreEqual(ci.Id, Guid.Empty, "Content item id not initialised to empty guid");
+            Assert.Equal(ci.Id, Guid.Empty);
 
             var hc = new HeaderContent();
             hc.Title = "Header A";
@@ -29,21 +36,21 @@ namespace LyniconANC.Test
             hc.HeaderBody = "xyz";
             ci.SetContent(hc);
             ci.Path = "rt-a";
-            Assert.AreEqual(ci.Title, "Header A", "Title not built on SetContent");
-            Assert.AreEqual(((HeaderSummary)ci.GetSummary()).Image.Url, "/abc.gif", "Summary not built on SetContent");
+            Assert.Equal(ci.Title, "Header A");
+            Assert.Equal(((HeaderSummary)ci.GetSummary()).Image.Url, "/abc.gif");
 
             Repository.Instance.Set(ci);
 
             var cont = Repository.Instance.GetByPath(typeof(HeaderContent), new List<string> { "rt-a" }).FirstOrDefault();
-            Assert.IsNotNull(cont, "Get by path");
+            Assert.NotNull(cont);
 
             var itemId = new ItemId(cont);
             var cont2 = Repository.Instance.Get<ContentItem>(new ItemId[] { itemId }).FirstOrDefault();
-            Assert.IsNotNull(cont2, "Get by Id");
-            Assert.AreEqual(cont2.Id, cont.Id, "Get right item by Id");
+            Assert.NotNull(cont2);
+            Assert.Equal(cont2.Id, cont.Id);
         }
 
-        [Test]
+        [Fact]
         public void WriteReadBasic()
         {
             var td = Repository.Instance.New<TestData>();
@@ -54,16 +61,16 @@ namespace LyniconANC.Test
 
             var cont = Repository.Instance.Get<TestData>(typeof(TestData),
                 iq => iq.Where(x => x.Path == "rt-x")).FirstOrDefault();
-            Assert.IsNotNull(cont, "GetByPath");
+            Assert.NotNull(cont);
 
             var itemId = new ItemId(cont);
             var cont2 = Repository.Instance.Get<TestData>(new ItemId[] { itemId }).FirstOrDefault();
-            Assert.IsNotNull(cont2, "Get by Id");
-            Assert.AreEqual(cont2.Id, cont.Id, "Get right item by Id");
+            Assert.NotNull(cont2);
+            Assert.Equal(cont2.Id, cont.Id);
 
             var cont3 = Repository.Instance.Get<TestData>(typeof(TestData), new Address(typeof(TestData), "rt-x")).FirstOrDefault();
-            Assert.IsNotNull(cont3, "Get by Address");
-            Assert.AreEqual(cont3.Id, cont.Id, "Get right item by Address");
+            Assert.NotNull(cont3);
+            Assert.Equal(cont3.Id, cont.Id);
         }
     }
 }

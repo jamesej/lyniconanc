@@ -3,19 +3,26 @@ using Lynicon.Map;
 using Lynicon.Routing;
 using LyniconANC.Test.Models;
 using Microsoft.AspNetCore.Routing;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
+    [Collection("Lynicon System")]
     public class RoutingTest
     {
-        [Test]
+        LyniconSystemFixture sys;
+
+        public RoutingTest(LyniconSystemFixture sys)
+        {
+            this.sys = sys;
+        }
+
+        [Fact]
         public void DataRouter()
         {
             var hc = Collator.Instance.GetNew<HeaderContent>(new Address(typeof(HeaderContent), "pqp"));
@@ -24,10 +31,10 @@ namespace LyniconANC.Test
             var rc = new RouteContext(new MockHttpContext("http://www.test.com/header/pqp"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             Route r0 = rc.RouteData.Routers[0] as Route;
-            Assert.IsNotNull(rc.Handler);
-            Assert.AreEqual("header/{_0}", r0.RouteTemplate);
-            Assert.AreEqual("pqp", rc.RouteData.Values["_0"]);
-            Assert.AreEqual(typeof(HeaderContent), rc.RouteData.Values["data"].GetType());
+            Assert.NotNull(rc.Handler);
+            Assert.Equal("header/{_0}", r0.RouteTemplate);
+            Assert.Equal("pqp", rc.RouteData.Values["_0"]);
+            Assert.Equal(typeof(HeaderContent), rc.RouteData.Values["data"].GetType());
 
             var chf = Collator.Instance.GetNew<ChefContent>(new Address(typeof(ChefContent), "zyz"));
             chf.PageTitle = "ZYZ";
@@ -35,10 +42,10 @@ namespace LyniconANC.Test
             rc = new RouteContext(new MockHttpContext("http://www.test.com/header/zyz"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             r0 = rc.RouteData.Routers[0] as Route;
-            Assert.IsNotNull(rc.Handler);
-            Assert.AreEqual("header/{_0}", r0.RouteTemplate);
-            Assert.AreEqual("zyz", rc.RouteData.Values["_0"]);
-            Assert.AreEqual(typeof(ChefContent), rc.RouteData.Values["data"].GetType());
+            Assert.NotNull(rc.Handler);
+            Assert.Equal("header/{_0}", r0.RouteTemplate);
+            Assert.Equal("zyz", rc.RouteData.Values["_0"]);
+            Assert.Equal(typeof(ChefContent), rc.RouteData.Values["data"].GetType());
 
             var h2 = Collator.Instance.GetNew<HeaderContent2>(new Address(typeof(HeaderContent2), ""));
             h2.Title = "MNM";
@@ -46,9 +53,9 @@ namespace LyniconANC.Test
             rc = new RouteContext(new MockHttpContext("http://www.test.com/header2"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             r0 = rc.RouteData.Routers[0] as Route;
-            Assert.IsNotNull(rc.Handler);
-            Assert.AreEqual("header2", r0.RouteTemplate);
-            Assert.AreEqual(typeof(HeaderContent2), rc.RouteData.Values["data"].GetType());
+            Assert.NotNull(rc.Handler);
+            Assert.Equal("header2", r0.RouteTemplate);
+            Assert.Equal(typeof(HeaderContent2), rc.RouteData.Values["data"].GetType());
 
             var rfc = Collator.Instance.GetNew<RefContent>(new Address(typeof(RefContent), "ab&cd"));
             rfc.Title = "AB.CD";
@@ -56,17 +63,17 @@ namespace LyniconANC.Test
             rc = new RouteContext(new MockHttpContext("http://www.test.com/ref/ab/cd"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             r0 = rc.RouteData.Routers[0] as Route;
-            Assert.IsNotNull(rc.Handler);
-            Assert.AreEqual("ref/{_0}/{_1}", r0.RouteTemplate);
-            Assert.AreEqual(typeof(RefContent), rc.RouteData.Values["data"].GetType());
+            Assert.NotNull(rc.Handler);
+            Assert.Equal("ref/{_0}/{_1}", r0.RouteTemplate);
+            Assert.Equal(typeof(RefContent), rc.RouteData.Values["data"].GetType());
 
             rc = new RouteContext(new MockHttpContext("http://www.test.com/ref/ab/dd"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
-            Assert.AreEqual(0, rc.RouteData.Routers.Count);
+            Assert.Equal(0, rc.RouteData.Routers.Count);
 
             rc = new RouteContext(new MockHttpContext("http://www.test.com/header2/dd"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
-            Assert.AreEqual(0, rc.RouteData.Routers.Count);
+            Assert.Equal(0, rc.RouteData.Routers.Count);
         }
     }
 }

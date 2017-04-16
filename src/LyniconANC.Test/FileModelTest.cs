@@ -1,17 +1,16 @@
 ﻿using Lynicon.Commands;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace LyniconANC.Test
 {
-    [TestFixture]
     public class FileModelTests
     {
-        [Test]
+        [Fact]
         public void TestStripLineComments()
         {
             var doc = new List<string>
@@ -21,12 +20,12 @@ namespace LyniconANC.Test
                 "// ghi"
             };
             var fms = new FileModelStripper(doc);
-            Assert.AreEqual("", fms.StrippedLines[0]);
-            Assert.AreEqual("def", fms.StrippedLines[1]);
-            Assert.AreEqual("", fms.StrippedLines[2]);
+            Assert.Equal("", fms.StrippedLines[0]);
+            Assert.Equal("def", fms.StrippedLines[1]);
+            Assert.Equal("", fms.StrippedLines[2]);
         }
 
-        [Test]
+        [Fact]
         public void TestStripFlowComments()
         {
             var doc = new List<string>
@@ -36,12 +35,12 @@ namespace LyniconANC.Test
                 "ghi"
             };
             var fms = new FileModelStripper(doc);
-            Assert.AreEqual("", fms.StrippedLines[0]);
-            Assert.AreEqual(" qqq", fms.StrippedLines[1]);
-            Assert.AreEqual("ghi", fms.StrippedLines[2]);
+            Assert.Equal("", fms.StrippedLines[0]);
+            Assert.Equal(" qqq", fms.StrippedLines[1]);
+            Assert.Equal("ghi", fms.StrippedLines[2]);
         }
 
-        [Test]
+        [Fact]
         public void TestStripFlowString()
         {
             var doc = new List<string>
@@ -51,12 +50,12 @@ namespace LyniconANC.Test
                 "ghi\" xxx"
             };
             var fms = new FileModelStripper(doc);
-            Assert.AreEqual("var xyz = ", fms.StrippedLines[0]);
-            Assert.AreEqual("var ddd = @", fms.StrippedLines[1]);
-            Assert.AreEqual(" xxx", fms.StrippedLines[2]);
+            Assert.Equal("var xyz = ", fms.StrippedLines[0]);
+            Assert.Equal("var ddd = @", fms.StrippedLines[1]);
+            Assert.Equal(" xxx", fms.StrippedLines[2]);
         }
 
-        [Test]
+        [Fact]
         public void TestStripMixed()
         {
             var doc = new List<string>
@@ -72,18 +71,18 @@ namespace LyniconANC.Test
                 "hello"
             };
             var fms = new FileModelStripper(doc);
-            Assert.AreEqual("", fms.StrippedLines[0]);
-            Assert.AreEqual("", fms.StrippedLines[1]);
-            Assert.AreEqual("var xyz = ", fms.StrippedLines[2]);
-            Assert.AreEqual("var ddd = @", fms.StrippedLines[3]);
-            Assert.AreEqual(" xxx", fms.StrippedLines[4]);
-            Assert.AreEqual("", fms.StrippedLines[5]);
-            Assert.AreEqual("", fms.StrippedLines[6]);
-            Assert.AreEqual(" x", fms.StrippedLines[7]);
-            Assert.AreEqual("hello", fms.StrippedLines[8]);
+            Assert.Equal("", fms.StrippedLines[0]);
+            Assert.Equal("", fms.StrippedLines[1]);
+            Assert.Equal("var xyz = ", fms.StrippedLines[2]);
+            Assert.Equal("var ddd = @", fms.StrippedLines[3]);
+            Assert.Equal(" xxx", fms.StrippedLines[4]);
+            Assert.Equal("", fms.StrippedLines[5]);
+            Assert.Equal("", fms.StrippedLines[6]);
+            Assert.Equal(" x", fms.StrippedLines[7]);
+            Assert.Equal("hello", fms.StrippedLines[8]);
         }
 
-        [Test]
+        [Fact]
         public void TestModelOps()
         {
             var doc = new List<string>
@@ -116,28 +115,28 @@ namespace LyniconANC.Test
             var fm = new FileModel(doc);
 
             bool found = fm.FindLineContains("Startup(");
-            Assert.AreEqual(7, fm.LineNum);
+            Assert.Equal(7, fm.LineNum);
 
             fm.Jump(1);
             string wordFound = fm.FindLineContainsAny(new string[] { "public", "private", "protected" });
-            Assert.AreEqual(18, fm.LineNum);
-            Assert.AreEqual("public", wordFound);
+            Assert.Equal(18, fm.LineNum);
+            Assert.Equal("public", wordFound);
 
             fm.FindPrevLineIs("}");
-            Assert.AreEqual(16, fm.LineNum);
+            Assert.Equal(16, fm.LineNum);
 
             fm.ToTop();
 
             fm.FindLineContains("Startup(");
             fm.FindEndOfMethod();
-            Assert.AreEqual(15, fm.LineNum);
+            Assert.Equal(15, fm.LineNum);
 
             fm.FindLineContains("Thingy(");
             fm.FindEndOfMethod();
-            Assert.AreEqual(19, fm.LineNum);
+            Assert.Equal(19, fm.LineNum);
         }
 
-        [Test]
+        [Fact]
         public void TestModelBracketInsert()
         {
             var doc = new List<string>
@@ -153,14 +152,14 @@ namespace LyniconANC.Test
 
             fm.FindLineContains("Func1(");
             bool succeed = fm.InsertTextAfterMatchingBracket("Func1(", ".qqq()");
-            Assert.IsTrue(succeed, "Insert Text failed");
-            Assert.AreEqual("\t(isZ ? 0 : 1)).qqq();", doc[3]);
+            Assert.True(succeed, "Insert Text failed");
+            Assert.Equal("\t(isZ ? 0 : 1)).qqq();", doc[3]);
 
             fm.ToTop();
             fm.FindLineIs("{");
             succeed = fm.InsertTextAfterMatchingBracket("{", "bbb", '{', '}');
-            Assert.IsTrue(succeed, "Insert text after } failed");
-            Assert.AreEqual("}bbb", doc[4]);
+            Assert.True(succeed, "Insert text after } failed");
+            Assert.Equal("}bbb", doc[4]);
         }
     }
 }
