@@ -74,7 +74,7 @@ namespace LyniconANC.Release
                     .UseModule<ContentSchemaModule>()
                     .UseTypeSetup(tsr =>
                         {
-                            tsr.SetupType(typeof(TestData), new BasicCollator(null), new BasicRepository(new CoreDataSourceFactory()), DataDiverter.Instance.NullDivert);
+                            tsr.SetupType(typeof(TestData), new BasicCollator(tsr.System), new BasicRepository(tsr.System, new CoreDataSourceFactory(tsr.System)), DataDiverter.Instance.NullDivert);
                         }
                     ))
                 .AddLyniconIdentity();

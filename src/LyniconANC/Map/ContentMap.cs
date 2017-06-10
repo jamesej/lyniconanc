@@ -11,6 +11,7 @@ using Lynicon.Routing;
 using Lynicon.Utility;
 using Microsoft.AspNetCore.Routing;
 using System.Reflection;
+using Lynicon.Services;
 
 namespace Lynicon.Map
 {
@@ -73,7 +74,7 @@ namespace Lynicon.Map
             if (transform)
             {
                 var container = Collator.Instance.GetContainer(o);
-                ItemVersion iv = new ItemVersion(container);
+                ItemVersion iv = new ItemVersion(LyniconSystem.Instance, container);
                 urls = urls.Select(url => transform ? UrlTransform(url, iv) : url);
             }
 

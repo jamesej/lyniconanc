@@ -4,6 +4,7 @@
 @using System.Collections.ObjectModel
 @using System.Linq.Expressions
 @using Lynicon.Attributes
+@using Lynicon.Extensibility
 @using Lynicon.Utility
 @using Lynicon.Models
 @{
@@ -30,7 +31,7 @@
     ViewData["indent"] = ind;
     int count = Model == null ? 0 : (Model as IEnumerable).Cast<object>().Count();
     Type itemType = ReflectionX.ElementType(Model == null ? ViewData.ModelMetadata.ModelType : Model.GetType());
-    string itemHeading = BaseContent.ContentClassDisplayName(itemType);
+    string itemHeading = LyniconUi.ContentClassDisplayName(itemType);
     string propName = ViewData.ModelMetadata.PropertyName ?? (string)ViewData["propertyPath"];
     if (propName != null && propName.EndsWith("s"))
     {

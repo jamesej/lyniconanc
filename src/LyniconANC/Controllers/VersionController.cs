@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 using Lynicon.Extensibility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
+using Lynicon.Services;
 
 namespace Lynicon.Controllers
 {
     public class VersionController : Controller
     {
+        LyniconSystem sys;
+
+        public VersionController(LyniconSystem sys)
+        {
+            this.sys = sys;
+        }
         /// <summary>
         /// Change the current UI version where this is permitted
         /// </summary>
@@ -20,7 +27,7 @@ namespace Lynicon.Controllers
         public IActionResult ChangeVersion(Dictionary<string, string[]> version)
         {
             ItemVersion iv = new ItemVersion(version.ToDictionary(kvp => kvp.Key, kvp => JsonConvert.DeserializeObject(kvp.Value[0])));
-            VersionManager.Instance.ClientVersionOverride = iv;
+            sys.Versions.ClientVersionOverride = iv;
             return Content("OK");
         }
 
@@ -30,7 +37,7 @@ namespace Lynicon.Controllers
         /// <returns>Data on current and stacked versions</returns>
         public ActionResult Show()
         {
-            VersioningMode vm = VersionManager.Instance.Mode;
+            VersioningMode vm = sys.Versions.Mode;
             string mode = "";
             switch (vm)
             {
@@ -44,11 +51,11 @@ namespace Lynicon.Controllers
                     mode = "public";
                     break;
                 case VersioningMode.Specific:
-                    mode = "specific = " + VersionManager.Instance.SpecificVersion.ToString();
+                    mode = "specific = " + sys.Versions.SpecificVersion.ToString();
                     break;
             }
 
-            return Content(string.Format("Currently: {0}, Stack: {1}", mode, VersionManager.Instance.StackDescribe()));
+            return Content(string.Format("Currently: {0}, Stack: {1}", mode, sys.Versions.StackDescribe()));
         }
     }
 }

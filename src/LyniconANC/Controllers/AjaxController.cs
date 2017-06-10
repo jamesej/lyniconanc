@@ -25,10 +25,12 @@ namespace Lynicon.Controllers
     public class AjaxController : Controller
     {
         private readonly IHostingEnvironment hosting;
+        private readonly LyniconSystem sys;
 
-        public AjaxController(IHostingEnvironment hosting)
+        public AjaxController(IHostingEnvironment hosting, LyniconSystem sys)
         {
             this.hosting = hosting;
+            this.sys = sys;
         }
         /// <summary>
         /// Get the folders in a folder in the file manager
@@ -237,10 +239,10 @@ namespace Lynicon.Controllers
             if (!string.IsNullOrEmpty(allowedVsn))
             {
                 maskVsn = new ItemVersion(allowedVsn);
-                ItemVersion curr = VersionManager.Instance.CurrentVersion;
+                ItemVersion curr = sys.Versions.CurrentVersion;
                 ItemVersion vsn = curr.Superimpose(maskVsn);
                 currMaskedVsn = curr.Mask(maskVsn);
-                VersionManager.Instance.PushState(VersioningMode.Specific, vsn);
+                sys.Versions.PushState(VersioningMode.Specific, vsn);
                 versioned = true;
             }
 
@@ -260,8 +262,8 @@ namespace Lynicon.Controllers
                         iq => iq.Where(s => qWords.All(w => ((s.Title ?? "").ToLower() + " " + s.Type.Name.ToLower()).Contains(w))).Take(30))                
                         .Select(summ => new
                         {
-                            label = summ.Title + (showType ? " (" + BaseContent.ContentClassDisplayName(summ.Type) + ")" : "")
-                                    + (versioned && !currMaskedVsn.ContainedBy(summ.Version.Mask(maskVsn)) ? " [" + VersionManager.Instance.DisplayVersion(summ.Version.Mask(maskVsn)).Select(dv => dv.Text).Join(" ") + "]" : ""),
+                            label = summ.Title + (showType ? " (" + LyniconUi.ContentClassDisplayName(summ.Type) + ")" : "")
+                                    + (versioned && !currMaskedVsn.ContainedBy(summ.Version.Mask(maskVsn)) ? " [" + sys.Versions.DisplayVersion(summ.Version.Mask(maskVsn)).Select(dv => dv.Text).Join(" ") + "]" : ""),
                             value = versioned ? summ.ItemVersionedId.Mask(maskVsn).ToString() : summ.ItemId.ToString()
                         })
                         .OrderBy(s => s.label));
@@ -272,7 +274,7 @@ namespace Lynicon.Controllers
             finally
             {
                 if (versioned)
-                    VersionManager.Instance.PopState();
+                    sys.Versions.PopState();
             }
         }
     }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
+using Lynicon.Services;
 
 namespace Lynicon.Modules
 {
@@ -28,8 +29,8 @@ namespace Lynicon.Modules
 
         IHostingEnvironment hosting;
 
-        public ContentSchemaModule([FromServices] IHostingEnvironment hosting, params string[] dependentOn)
-            : base("ContentSchema", dependentOn)
+        public ContentSchemaModule([FromServices] LyniconSystem sys, [FromServices] IHostingEnvironment hosting, params string[] dependentOn)
+            : base(sys, "ContentSchema", dependentOn)
         {
             this.hosting = hosting;
         }

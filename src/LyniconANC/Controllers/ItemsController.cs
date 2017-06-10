@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Lynicon.Services;
 
 namespace Lynicon.Controllers
 {
@@ -24,6 +25,12 @@ namespace Lynicon.Controllers
     [Area("Lynicon")]
     public class ItemsController : Controller
     {
+        LyniconSystem sys;
+
+        public ItemsController(LyniconSystem sys)
+        {
+            this.sys = sys;
+        }
         /// <summary>
         /// Serve the List page of all content items by type with search and paging
         /// </summary>
@@ -88,8 +95,8 @@ namespace Lynicon.Controllers
         public IActionResult ItemLister()
         {
             var u = SecurityManager.Current.User;
-            var v = VersionManager.Instance.CurrentVersion;
-            ViewData["VersionSelector"] = VersionManager.Instance.SelectionViewModel(u, v);
+            var v = sys.Versions.CurrentVersion;
+            ViewData["VersionSelector"] = sys.Versions.SelectionViewModel(u, v);
             return PartialView(new ItemListerViewModel());
         }
 

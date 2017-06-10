@@ -165,17 +165,19 @@ namespace Lynicon.Models
             if (filters == null)
                 filters = new List<ListFilter>();
 
-            var reqVersion = new ItemVersion();
             var u = SecurityManager.Current.User;
             var v = VersionManager.Instance.CurrentVersion;
             var vsvms = VersionManager.Instance.SelectionViewModel(u, v);
             int vIdx = 0;
+
+            var dict = new Dictionary<string, object>();
             foreach (var vsvm in vsvms)
             {
                 object vVal = JsonConvert.DeserializeObject(versionFilter[vIdx]);
-                reqVersion.Add(vsvm.VersionKey, vVal is Int64 ? Convert.ToInt32(vVal) : vVal);
+                dict.Add(vsvm.VersionKey, vVal is Int64 ? Convert.ToInt32(vVal) : vVal);
                 vIdx++;
             }
+            var reqVersion = new ItemVersion(dict);
 
             VersionManager.Instance.PushState(VersioningMode.Specific, reqVersion);
 
@@ -229,7 +231,7 @@ namespace Lynicon.Models
             StringBuilder sb = new StringBuilder();
             foreach (var row in results)
             {
-                sb.AppendFormat("\"{0}\"", BaseContent.ContentClassDisplayName(row.Item2.Type));
+                sb.AppendFormat("\"{0}\"", LyniconUi.ContentClassDisplayName(row.Item2.Type));
                 sb.AppendFormat(",\"{0}\"", row.Item2.DisplayTitle().Replace("\"", ""));
                 sb.AppendFormat(",\"{0}\"", row.Item2.Url);
                 foreach (var filt in filters.Where(f => f.Show))

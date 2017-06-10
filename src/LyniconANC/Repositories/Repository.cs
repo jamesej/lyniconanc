@@ -14,6 +14,7 @@ using Lynicon.Models;
 using Lynicon.Utility;
 using Lynicon.Attributes;
 using Lynicon.DataSources;
+using Lynicon.Services;
 
 namespace Lynicon.Repositories
 {
@@ -31,8 +32,16 @@ namespace Lynicon.Repositories
     /// </summary>
     public class Repository : TypeRegistry<IRepository>, IRepository
     {
-        static readonly Repository instance = new Repository();
-        public static Repository Instance { get { return instance; } }
+        static Repository instance = null;  
+        public static Repository Instance {
+            get
+            {
+                if (instance == null)
+                    instance = new Repository(LyniconSystem.Instance);
+                return instance;
+            }
+            internal set { instance = value; }
+        }
 
         static Repository() { }
 
@@ -41,9 +50,13 @@ namespace Lynicon.Repositories
 
         public IDataSourceFactory DataSourceFactory { get { return null; } }
 
-        public Repository()
+        public LyniconSystem System { get; set; }
+
+        public Repository(LyniconSystem sys)
         {
-            this.DefaultHandler = new ContentRepository(this, new CoreDataSourceFactory());
+            this.System = sys;
+            sys.Repository = this;
+            this.DefaultHandler = new ContentRepository(sys, new CoreDataSourceFactory(sys));
             this.NoTypeProxyingInScope = true;
             this.QueryTimeoutSecs = null;
             this.AvoidConnection = false;
@@ -185,13 +198,14 @@ namespace Lynicon.Repositories
 
             // get versioned ids in list, group by version and fix version manager to that version
 
-            var versionGroups = ids.OfType<ItemVersionedId>().GroupBy(ivi => ivi.Version).ToList(); // may want to know current version for unassigned ivid versions
-            VersionManager.Instance.PushState(VersioningMode.Specific);
+            var currV = System.Versions.CurrentVersion;
+            var versionGroups = ids.OfType<ItemVersionedId>().GroupBy(ivi => ivi.Version ?? currV).ToList(); // may want to know current version for unassigned ivid versions
+            System.Versions.PushState(VersioningMode.Specific);
             try
             {
                 foreach (var idGp in versionGroups)
                 {
-                    VersionManager.Instance.SpecificVersion = idGp.Key;
+                    System.Versions.SpecificVersion = idGp.Key;
                     foreach (var idTg in idGp.GroupBy(ivi => Registered(ivi.Type)))
                         foreach (var res in idTg.Key.Get<T>(targetType, idGp))
                             yield return res;
@@ -199,7 +213,7 @@ namespace Lynicon.Repositories
             }
             finally
             {
-                VersionManager.Instance.PopState();
+                System.Versions.PopState();
             }
 
         }

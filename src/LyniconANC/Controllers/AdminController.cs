@@ -16,6 +16,7 @@ using Lynicon.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Lynicon.DataSources;
+using Lynicon.Services;
 
 namespace Lynicon.Controllers
 {
@@ -58,7 +59,7 @@ namespace Lynicon.Controllers
 
             // create a new ContentRepository so we can bypass any block to writing caused by existing data problems
             // on the global data api
-            var repo = new ContentRepository(new CoreDataSourceFactory());
+            var repo = new ContentRepository(new CoreDataSourceFactory(LyniconSystem.Instance));
             repo.BypassChangeProblems = true;
 
             foreach (ContentItem ci in repo.Get<ContentItem>(contentType, new Type[] { contentType }, iq => iq))

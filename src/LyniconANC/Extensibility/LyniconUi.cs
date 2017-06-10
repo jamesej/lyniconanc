@@ -16,6 +16,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Extensibility
 {
@@ -39,6 +41,24 @@ namespace Lynicon.Extensibility
         public static LyniconUi Instance { get { return instance; } }
 
         static LyniconUi() { }
+
+        /// <summary>
+        /// Take a content type and display its name in a user-friendly way
+        /// </summary>
+        /// <param name="t">The content type</param>
+        /// <returns>Friendly display of its name</returns>
+        public static string ContentClassDisplayName(Type t)
+        {
+            if (t == null)
+                return "";
+            if (t.Name == "Reference`1")
+                t = t.GenericTypeArguments[0];
+            var attr = t.GetCustomAttribute<ContentTypeDisplayNameAttribute>();
+            if (attr != null)
+                return attr.DisplayName;
+            string name = t.Name.UpToLast("Content").ExpandCamelCase();
+            return name.UpTo("`").Trim();
+        }
 
         private List<FuncPanelButton> funcPanelButtons = new List<FuncPanelButton>();
         /// <summary>
@@ -181,7 +201,7 @@ namespace Lynicon.Extensibility
             }
             
             // Get filters on container extension types
-            foreach (Type extT in CompositeTypeManager.Instance.ExtensionTypes)
+            foreach (Type extT in LyniconSystem.Instance.Extender.ExtensionTypes())
             {
                 Type baseT = extT.BaseType();
                 foreach (PropertyInfo pi in extT.GetProperties(BindingFlags.DeclaredOnly |
@@ -191,7 +211,7 @@ namespace Lynicon.Extensibility
                     var lfa = pi.GetCustomAttribute<FieldFilterAttribute>();
                     if (lfa != null)
                     {
-                        PropertyInfo mappedPi = CompositeTypeManager.Instance.ExtendedTypes[baseT]
+                        PropertyInfo mappedPi = LyniconSystem.Instance.Extender[baseT]
                             .GetProperty(pi.Name);
                         Filters.Add(FieldFilter.Create(lfa, mappedPi));
                     }

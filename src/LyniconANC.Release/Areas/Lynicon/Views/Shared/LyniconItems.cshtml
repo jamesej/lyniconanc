@@ -1,4 +1,5 @@
 ﻿@using Lynicon.Attributes
+@using Lynicon.Extensibility
 @using Lynicon.Models
 @using Lynicon.Map
 @using Lynicon.Collation
@@ -27,7 +28,7 @@
                     if (!patts.Any()) { continue; }
                     <div class="editor-unit parent-unit level-0">
                         <div class="editor-label indent-0 parent child-closed">
-                            <label>@BaseContent.ContentClassDisplayName(type)</label>
+                            <label>@LyniconUi.ContentClassDisplayName(type)</label>
                             @Html.Hidden(type.FullName + "-name", type.FullName, new { @class = "type-name" })
                         </div>
                         <div class="editor-field indent-0">

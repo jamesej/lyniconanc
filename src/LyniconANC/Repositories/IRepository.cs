@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Lynicon.Collation;
 using Lynicon.Extensibility;
 using Lynicon.DataSources;
+using Lynicon.Services;
 
 namespace Lynicon.Repositories
 {
@@ -15,6 +16,7 @@ namespace Lynicon.Repositories
     /// </summary>
     public interface IRepository
     {
+        LyniconSystem System { get; set; }
         /// <summary>
         /// The data source factory which the repository uses to get a scoped data source
         /// </summary>

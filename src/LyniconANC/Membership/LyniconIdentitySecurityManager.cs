@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Lynicon.Extensibility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Lynicon.Services;
 
 namespace Lynicon.Membership
 {
@@ -43,11 +44,11 @@ namespace Lynicon.Membership
         public virtual void InitialiseDataApi()
         {
             ContentTypeHierarchy.RegisterType(typeof(User));
-            CompositeTypeManager.Instance.RegisterType(typeof(User));
-            CompositeTypeManager.Instance.RegisterExtensionType(typeof(LyniconIdentityUser));
+            var sys = LyniconSystem.Instance;
+            sys.Extender.RegisterForExtension(typeof(User));
 
-            Collator.Instance.Register(typeof(User), new BasicCollator(Repository.Instance));
-            Repository.Instance.Register(typeof(User), new BasicRepository(new CoreDataSourceFactory()));
+            Collator.Instance.Register(typeof(User), new BasicCollator(sys));
+            Repository.Instance.Register(typeof(User), new BasicRepository(sys, new CoreDataSourceFactory(sys)));
         }
 
         /// <summary>
@@ -57,6 +58,9 @@ namespace Lynicon.Membership
         {
             get
             {
+                if (RequestContextManager.Instance?.CurrentContext == null)
+                    return null;
+
                 var reqItems = RequestContextManager.Instance.CurrentContext.Items;
                 if (reqItems[CurrentUserKey] == null)
                 {

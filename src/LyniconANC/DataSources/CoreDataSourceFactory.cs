@@ -1,5 +1,6 @@
 ﻿using Lynicon.Extensibility;
 using Lynicon.Repositories;
+using Lynicon.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,16 @@ namespace Lynicon.DataSources
 
         public int? QueryTimeoutSecs { get; set; }
 
+        public LyniconSystem System { get; set; }
+
+        public CoreDataSourceFactory(LyniconSystem sys)
+        {
+            System = sys;
+        }
+
         public IDataSource Create(bool forSummaries)
         {
-            return new CoreDataSource(ContextLifetimeMode, forSummaries);
+            return new CoreDataSource(System, ContextLifetimeMode, forSummaries);
         }
 
         ContextLifetimeMode contextLifetimeMode = ContextLifetimeMode.PerCall;

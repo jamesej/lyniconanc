@@ -12,6 +12,7 @@ using Lynicon.Attributes;
 //using Lynicon.Collation;
 using Lynicon.Utility;
 using Lynicon.Collation;
+using LyniconANC.Extensibility;
 
 namespace Lynicon.Repositories
 {
@@ -58,7 +59,7 @@ namespace Lynicon.Repositories
         /// Initialise the composite class factory
         /// </summary>
         /// <param name="baseTypes">the base types to build composites for</param>
-        public void Initialise(List<Type> baseTypes)
+        public Dictionary<Type, TypeBuilder> Initialise(List<Type> baseTypes)
         {
             rwLock.EnterWriteLock();
 
@@ -74,12 +75,16 @@ namespace Lynicon.Repositories
                             TypeAttributes.Public, baseType);
                     typeBuilders.Add(baseType, tb);
                     classCount++;
+
+                    return typeBuilders;
                 }
             }
             finally
             {
                 rwLock.ExitWriteLock();
             }
+
+            return null;
         }
 
         /// <summary>
@@ -117,7 +122,39 @@ namespace Lynicon.Repositories
                 .Distinct(typeComparer)
                 .Where(i => i.GetMethods().All(mi => mi.IsSpecialName) && i.GetProperties().All(p => allProperties.Any(dp => dp.Name == p.Name)))
                 .ToArray();
-            Type composite = GetCompositeClass(baseType, dynamicProperties, interfaces);
+            Type composite = GetCompositeClass(typeBuilders, baseType, dynamicProperties, interfaces);
+            return composite;
+        }
+
+        /// <summary>
+        /// Dynamically generate a composite class which inherits from a base type and includes all the properties from a
+        /// list of interfaces, and which implements those interfaces
+        /// </summary>
+        /// <param name="baseType">The base type</param>
+        /// <param name="interfaces">List of interfaces</param>
+        /// <returns>Dynamically created composite of the base type and interfaces</returns>
+        public Type GetCompositeClassByInterfaces(Dictionary<Type, TypeBuilder> typeBuilders, Type baseType, List<Type> interfaces)
+        {
+            if (baseType.IsSealed() || baseType.GetCustomAttribute<NonCompositeAttribute>() != null || interfaces.Count == 0)
+                return baseType;
+
+            var dpComparer = new StringSelectorComparer<DynamicProperty>(dp => dp.Name, false);
+
+            var dynamicProperties =
+                interfaces
+                .Recurse(i => i.GetInterfaces()) // GetProperties only return properties on top level interface type
+                .SelectMany(t => t
+                    .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
+                    .Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null && p.GetCustomAttribute<NonCompositeAttribute>() == null)
+                    .Select(p => new DynamicProperty(p.Name, p.PropertyType)))
+                .Distinct(dpComparer)
+                .ToArray();
+            var allProperties = dynamicProperties.Concat(
+                baseType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null && p.GetCustomAttribute<NonCompositeAttribute>() == null)
+                .Select(p => new DynamicProperty(p.Name, p.PropertyType)))
+                .ToList();
+            Type composite = GetCompositeClass(typeBuilders, baseType, dynamicProperties, interfaces.ToArray());
             return composite;
         }
 
@@ -127,12 +164,12 @@ namespace Lynicon.Repositories
         /// </summary>
         /// <param name="extendedType">The composite class</param>
         /// <returns>The summarised type</returns>
-        public Type GetSummarisedType(Type extendedType)
+        public Type GetSummarisedType(Collator coll, Dictionary<Type, TypeBuilder> typeBuilders, Type extendedType)
         {
-            var dynamicProperties = Collator.Instance.ContainerSummaryFields(extendedType)
+            var dynamicProperties = coll.ContainerSummaryFields(extendedType)
                 .Select(p => new DynamicProperty(p.Name, p.PropertyType))
                 .ToArray();
-            return GetCompositeClass(typeof(object), dynamicProperties);
+            return GetCompositeClass(typeBuilders, typeof(object), dynamicProperties);
         }
 
         /// <summary>
@@ -141,9 +178,9 @@ namespace Lynicon.Repositories
         /// <param name="baseType">Base type</param>
         /// <param name="properties">properties needed</param>
         /// <returns>Dynamically built composite type</returns>
-        public Type GetCompositeClass(Type baseType, IEnumerable<DynamicProperty> properties)
+        public Type GetCompositeClass(Dictionary<Type, TypeBuilder> typeBuilders, Type baseType, IEnumerable<DynamicProperty> properties)
         {
-            return GetCompositeClass(baseType, properties, null);
+            return GetCompositeClass(typeBuilders, baseType, properties, null);
         }
         /// <summary>
         /// Get a composite class from the base type, all the properties and interfaces needed
@@ -152,7 +189,7 @@ namespace Lynicon.Repositories
         /// <param name="properties">properties needed</param>
         /// <param name="interfaces">interfaces needed</param>
         /// <returns>Dynamically built composite type</returns>
-        public Type GetCompositeClass(Type baseType, IEnumerable<DynamicProperty> properties, IEnumerable<Type> interfaces)
+        public Type GetCompositeClass(Dictionary<Type, TypeBuilder> typeBuilders, Type baseType, IEnumerable<DynamicProperty> properties, IEnumerable<Type> interfaces)
         {
             rwLock.EnterUpgradeableReadLock();
             try
@@ -161,7 +198,7 @@ namespace Lynicon.Repositories
                 Type type;
                 //if (!classes.TryGetValue(signature, out type))
                 //{
-                    type = CreateDynamicClass(baseType, signature.properties, interfaces);
+                    type = CreateDynamicClass(typeBuilders, baseType, signature.properties, interfaces);
                 //    classes.Add(signature, type);
                 //}
                 return type;
@@ -172,7 +209,7 @@ namespace Lynicon.Repositories
             }
         }
 
-        Type CreateDynamicClass(Type baseType, DynamicProperty[] properties, IEnumerable<Type> interfaces)
+        Type CreateDynamicClass(Dictionary<Type, TypeBuilder> typeBuilders, Type baseType, DynamicProperty[] properties, IEnumerable<Type> interfaces)
         {
             rwLock.EnterWriteLock();
             try
@@ -246,10 +283,14 @@ namespace Lynicon.Repositories
 
                 if (interfaces != null)
                 {
-                    // Set up implementation of interfaces
+                    // If this property belongs to an interface set it up as implementing that interface
                     var implProperties = interfaces.Select(itf => itf.GetProperty(dp.Name)).Where(pi => pi != null).ToList();
                     foreach (var implProp in implProperties)
                     {
+                        foreach (var attr in CustomAttributeData.GetCustomAttributes(implProp))
+                        {
+                            pb.SetCustomAttribute(ToAttributeBuilder(attr));
+                        }
                         MethodInfo miGet = implProp.GetGetMethod();
                         if (miGet != null)
                             tb.DefineMethodOverride(mbGet, miGet);
@@ -260,6 +301,49 @@ namespace Lynicon.Repositories
                 }
             }
             return fields;
+        }
+
+        public CustomAttributeBuilder ToAttributeBuilder(CustomAttributeData data)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException("data");
+            }
+
+            var constructorArguments = new List<object>();
+            foreach (var ctorArg in data.ConstructorArguments)
+            {
+                constructorArguments.Add(ctorArg.Value);
+            }
+
+            var propertyArguments = new List<PropertyInfo>();
+            var propertyArgumentValues = new List<object>();
+            var fieldArguments = new List<FieldInfo>();
+            var fieldArgumentValues = new List<object>();
+            foreach (var namedArg in data.NamedArguments)
+            {
+                string argName = namedArg.MemberName;
+                var fi = data.AttributeType.GetField(argName);
+                var pi = data.AttributeType.GetProperty(argName);
+
+                if (fi != null)
+                {
+                    fieldArguments.Add(fi);
+                    fieldArgumentValues.Add(namedArg.TypedValue.Value);
+                }
+                else if (pi != null)
+                {
+                    propertyArguments.Add(pi);
+                    propertyArgumentValues.Add(namedArg.TypedValue.Value);
+                }
+            }
+            return new CustomAttributeBuilder(
+              data.Constructor,
+              constructorArguments.ToArray(),
+              propertyArguments.ToArray(),
+              propertyArgumentValues.ToArray(),
+              fieldArguments.ToArray(),
+              fieldArgumentValues.ToArray());
         }
 
         void GenerateEquals(TypeBuilder tb, FieldInfo[] fields)

@@ -1,5 +1,7 @@
 ﻿using Lynicon.DataSources;
 using Lynicon.Repositories;
+using Lynicon.Services;
+using LyniconANC.Extensibility;
 using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
@@ -12,9 +14,9 @@ namespace Lynicon.Collation
     public interface ITypeSystemRegistrar
     {
         /// <summary>
-        /// The Repository registery to be used by this type system registrar
+        /// The Lynicon data system in which this type system registrar exists
         /// </summary>
-        Repository Repository { get; }
+        LyniconSystem System { get; set; }
 
         /// <summary>
         /// Initialise the type system, the collator, the repository and the editor redirect for a content type
@@ -82,7 +84,7 @@ namespace Lynicon.Collation
         /// <typeparam name="T">content type</typeparam>
         public static void SetupTypeForBasic<T>(this ITypeSystemRegistrar regr)
         {
-            regr.SetupType(typeof(T), new BasicCollator(regr.Repository), new BasicRepository(new CoreDataSourceFactory()));
+            regr.SetupType(typeof(T), new BasicCollator(regr.System), new BasicRepository(regr.System, new CoreDataSourceFactory(regr.System)));
         }
    
     }

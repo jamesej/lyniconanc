@@ -17,6 +17,7 @@ using Lynicon.Membership;
 using Lynicon.Attributes;
 using Lynicon.DataSources;
 using Lynicon.Exceptions;
+using Lynicon.Services;
 
 namespace Lynicon.Repositories
 {
@@ -44,14 +45,17 @@ namespace Lynicon.Repositories
 
         public IDataSourceFactory DataSourceFactory { get; set; }
 
+        public LyniconSystem System { get; set; }
+
         public ContentRepository(IDataSourceFactory dataSourceFactory)
-            : this(Repository.Instance, dataSourceFactory)
+            : this(LyniconSystem.Instance, dataSourceFactory)
         { }
-        public ContentRepository(Repository repository, IDataSourceFactory dataSourceFactory)
+        public ContentRepository(LyniconSystem sys, IDataSourceFactory dataSourceFactory)
         {
             BypassChangeProblems = false;
             DataSourceFactory = dataSourceFactory;
-            repository.Register(typeof(ContentItem), this);
+            System = sys;
+            System.Repository.Register(typeof(ContentItem), this);
         }
 
         #region IRepository Members
@@ -71,7 +75,7 @@ namespace Lynicon.Repositories
                     throw new ArgumentException("Content repository can only return ContentItem assignable type");
             }
                 
-            object newT = Activator.CreateInstance(CompositeTypeManager.Instance.ExtendedTypes[typeof(ContentItem)]);
+            object newT = Activator.CreateInstance(System.Extender[typeof(ContentItem)]);
             ContentItem ci = (ContentItem)newT;
             ci.Identity = Guid.NewGuid();
             newT = EventHub.Instance.ProcessEvent("Repository.New", this, newT).Data;

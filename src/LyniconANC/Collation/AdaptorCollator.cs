@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Lynicon.Linq;
 using Microsoft.AspNetCore.Routing;
 using System.Reflection;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
@@ -52,14 +53,18 @@ namespace Lynicon.Collation
         /// <param name="baseCollator">Collator this adaptor wraps</param>
         /// <param name="readConvert">Conversion from data read from inner collator to type of outer adaptor</param>
         /// <param name="writeConvert">Conversion for data being written from outer adaptor to inner collator</param>
-        public AdaptorCollator(ICollator baseCollator, Func<TFrom, TTo> readConvert, Func<TTo, TFrom, TFrom> writeConvert)
+        public AdaptorCollator(ICollator baseCollator, Func<TFrom, TTo> readConvert, Func<TTo, TFrom, TFrom> writeConvert) : base(baseCollator.System)
         {
             this.baseCollator = baseCollator;
             this.readConvert = readConvert;
             this.writeConvert = writeConvert;
             IdWriteConvert = x => x;
             PropertyMap = new Dictionary<string, string>();
-            this.Repository = baseCollator.Repository;
+        }
+
+        public override void BuildForTypes(IEnumerable<Type> types)
+        {
+            baseCollator.BuildForTypes(types);
         }
 
         #region ICollator Members
@@ -106,7 +111,7 @@ namespace Lynicon.Collation
                 throw new ArgumentException("AdaptorCollator can only do queries in types assignable to the output type");
 
             Func<IQueryable<TFrom>, IQueryable<TFrom>> transQueryBody = iq => queryBodyCount(iq.AsFacade<TQuery>()).AsFacade<TFrom>(PropertyMap);
-            return baseCollator.Repository.GetCount<TFrom>(new Type[] { typeof(TFrom) }, transQueryBody);
+            return System.Repository.GetCount<TFrom>(new Type[] { typeof(TFrom) }, transQueryBody);
         }
         /// <inheritdoc/>
         public override T GetNew<T>(Address a)
@@ -132,7 +137,7 @@ namespace Lynicon.Collation
         {
             if (data is TTo)
             {
-                ItemVersionedId ivid = new ItemVersionedId(data);
+                ItemVersionedId ivid = new ItemVersionedId(System, data);
                 var current = baseCollator.Get<TFrom>(new ItemId[] { WriteConvertVersionedId(ivid) }).FirstOrDefault();
                 return SetInner(a, current, data as TTo, setOptions);
             }
@@ -158,7 +163,7 @@ namespace Lynicon.Collation
         {
             if (data is TTo)
             {
-                ItemVersionedId ivid = new ItemVersionedId(data);
+                ItemVersionedId ivid = new ItemVersionedId(System, data);
                 var current = baseCollator.Get<TFrom>(new ItemId[] { WriteConvertVersionedId(ivid) }).FirstOrDefault();
                 baseCollator.Delete(a, writeConvert(data as TTo, current), bypassChecks);
             }

@@ -11,10 +11,12 @@ namespace Lynicon.Extensibility
     public class VersioningContext : IDisposable
     {
         public ItemVersion CurrentVersion { get; private set; }
+        public VersionManager VersionManager { get; private set; }
 
-        internal VersioningContext(ItemVersion contextVsn)
+        internal VersioningContext(VersionManager vm)
         {
-            CurrentVersion = contextVsn;
+            CurrentVersion = vm.CurrentVersion;
+            VersionManager = vm;
         }
 
         #region IDisposable Support
@@ -26,7 +28,7 @@ namespace Lynicon.Extensibility
             {
                 if (disposing)
                 {
-                    VersionManager.Instance.PopState();
+                    VersionManager.PopState();
                 }
 
                 disposedValue = true;

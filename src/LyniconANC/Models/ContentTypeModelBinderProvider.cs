@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Internal;
+﻿using Lynicon.Services;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,9 +16,12 @@ namespace Lynicon.Models
     {
         public IModelBinder GetBinder(ModelBinderProviderContext context)
         {
+            var extender = LyniconSystem.Instance.Extender;
             if ((context.BindingInfo.BindingSource == null || context.BindingInfo.BindingSource == BindingSource.Body)
                 && context.Metadata.IsComplexType && !context.Metadata.IsCollectionType
-                && ContentTypeHierarchy.AllContentTypes.Any(ct => context.Metadata.ModelType.IsAssignableFrom(ct))
+                && ContentTypeHierarchy.AllContentTypes
+                    .Any(ct => context.Metadata.ModelType.IsAssignableFrom(ct)
+                               || context.Metadata.ModelType.IsAssignableFrom(extender[ct]))
                 )
             {
                 var propertyBinders = new Dictionary<ModelMetadata, IModelBinder>();
@@ -30,7 +34,8 @@ namespace Lynicon.Models
 
             if (context.Metadata.IsCollectionType
                 && (context.BindingInfo.BindingSource == null || context.BindingInfo.BindingSource == BindingSource.Body)
-                && ContentTypeHierarchy.AllContentTypes.Any(ct => context.Metadata.ElementType.IsAssignableFrom(ct)))
+                && ContentTypeHierarchy.AllContentTypes
+                    .Any(ct => context.Metadata.ElementType.IsAssignableFrom(ct)))
             {
                 return new RouteModelBinder(null);
             }

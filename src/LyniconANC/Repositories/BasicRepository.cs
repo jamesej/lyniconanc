@@ -18,6 +18,7 @@ using System.Data;
 using Lynicon.Collation;
 using Lynicon.Membership;
 using Lynicon.DataSources;
+using Lynicon.Services;
 
 namespace Lynicon.Repositories
 {
@@ -38,14 +39,17 @@ namespace Lynicon.Repositories
 
         public IDataSourceFactory DataSourceFactory { get; set; }
 
+        public LyniconSystem System { get; set; }
+
         /// <summary>
         /// Create a new BasicRepository
         /// </summary>
-        public BasicRepository(IDataSourceFactory dataSourceFactory)
+        public BasicRepository(LyniconSystem sys, IDataSourceFactory dataSourceFactory)
         {
             IdName = null;
             this.DataSourceFactory = dataSourceFactory;
             QueryTimeoutSecs = null;
+            System = sys;
         }
 
         #region IRepository Members
@@ -57,14 +61,7 @@ namespace Lynicon.Repositories
         /// <returns>New instance</returns>
         public virtual object New(Type createType)
         {
-            if (!CompositeTypeManager.Instance.ExtendedTypes.ContainsValue(createType))
-            {
-                if (CompositeTypeManager.Instance.ExtendedTypes.ContainsKey(createType))
-                    createType = CompositeTypeManager.Instance.ExtendedTypes[createType];
-                // -- below is unnecessary as the type may not be in CompositeTypeManager
-                //else
-                //    throw new Exception("Type " + createType.FullName + " not registered in coredb");
-            }
+            createType = System.Extender[createType] ?? createType;
             object newT = Activator.CreateInstance(createType);
             newT = EventHub.Instance.ProcessEvent("Repository.New", this, newT).Data;
             return newT;
@@ -294,7 +291,7 @@ namespace Lynicon.Repositories
             }
         }
 
-        private void DoAdd(IDataSource dataSource, object item, PropertyInfo idProp, bool wasHandled)
+        protected virtual void DoAdd(IDataSource dataSource, object item, PropertyInfo idProp, bool wasHandled)
         {
             if (idProp.PropertyType == typeof(Guid) && (Guid)idProp.GetValue(item) == Guid.Empty)
                 idProp.SetValue(item, Guid.NewGuid());
@@ -320,7 +317,6 @@ namespace Lynicon.Repositories
             using (var dataSource = DataSourceFactory.Create(false))
             {
                 var idProp = LinqX.GetIdProp(o.GetType(), this.IdName);
-                object noId = ReflectionX.GetDefault(idProp.PropertyType);
                 var eventData = new RepositoryEventData(o, bypassChecks);
                 var eventResult = EventHub.Instance.ProcessEvent("Repository.Set.Delete", this, eventData);
                 var itemDel = ((RepositoryEventData)eventResult.Data).Container;

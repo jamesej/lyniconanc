@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Routing;
 using Lynicon.Extensibility;
 using Microsoft.Extensions.Primitives;
 using System.Reflection;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
@@ -27,12 +29,23 @@ namespace Lynicon.Collation
         /// <summary>
         /// The repository to be used by this collator
         /// </summary>
-        public Repository Repository { get; set; }
+        public Repository Repository { get { return System.Repository; } }
+
+        public TypeExtender Extender { get { return System.Extender; } }
+
+        public LyniconSystem System { get; set; }
 
         /// <summary>
         /// The container type this repository uses (or null if its just the content type)
         /// </summary>
         public abstract Type AssociatedContainerType { get; }
+
+        public BaseCollator(LyniconSystem sys)
+        {
+            System = sys;
+        }
+
+        public abstract void BuildForTypes(IEnumerable<Type> types);
 
         /// <summary>
         /// Get data items via a list of data addresses
@@ -184,8 +197,7 @@ namespace Lynicon.Collation
         {
             // if ct is already extended, must pass it unchanged
             Type ct = typeof(IContentContainer).IsAssignableFrom(contentType) ? contentType : UnextendedContainerType(contentType);
-            if (CompositeTypeManager.Instance.ExtendedTypes.ContainsKey(ct))
-                ct = CompositeTypeManager.Instance.ExtendedTypes[ct];
+            ct = Extender[ct] ?? ct;
             return ct;
         }
 

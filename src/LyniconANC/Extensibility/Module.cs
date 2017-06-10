@@ -8,6 +8,7 @@ using Lynicon.Repositories;
 using Lynicon.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Routing;
+using Lynicon.Services;
 
 namespace Lynicon.Extensibility
 {
@@ -58,15 +59,20 @@ namespace Lynicon.Extensibility
         /// List of type the module never applies to (overrides AppliesToType)
         /// </summary>
         public List<Type> NeverAppliesTo { get; set; }
+        /// <summary>
+        /// The event hub manager which controls events for the module
+        /// </summary>
+        public LyniconSystem System { get; set; }
 
         /// <summary>
         /// Create a module supplying its name and the names of any modules on which it is dependent.
         /// </summary>
         /// <param name="name">Name of the module</param>
         /// <param name="dependentOn">Names (if any) of modules on which it is dependent</param>
-        public Module(string name, params string[] dependentOn)
+        public Module(LyniconSystem system, string name, params string[] dependentOn)
         {
             Name = name;
+            System = system;
             DependentOn = dependentOn == null ? new List<string>() : dependentOn.ToList();
             MustFollow = DependentOn;
             MustPrecede = new List<string>();
@@ -113,33 +119,6 @@ namespace Lynicon.Extensibility
         public bool CheckType(Type t)
         {
             return AppliesToType(t) && !NeverAppliesTo.Contains(t);
-        }
-
-        /// <summary>
-        /// Called in order to check that a given database schema change record is present, to ensure
-        /// the database schema fits the requirements of the module
-        /// </summary>
-        /// <param name="changePresent">The string describing the change to check for</param>
-        /// <returns></returns>
-        protected bool VerifyDbState(string changePresent)
-        {
-            bool verified = false;
-            if (LyniconModuleManager.Instance.SkipDbStateCheck)
-                return true;
-            try
-            {
-                var db = new PreloadDb();
-                verified = db.DbChanges.Any(dbc => dbc.Change == changePresent);
-                if (!verified)
-                    log.Warn("Failed to verify database in correct state for: " + changePresent);
-            }
-            catch (Exception ex)
-            {
-                log.Fatal("Failed to connect to database", ex);
-                throw new Exception("Failed to connect to database", ex);
-            }
-            return verified;
-
         }
     }
 }

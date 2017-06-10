@@ -17,15 +17,15 @@ using Lynicon.Linq;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Exceptions;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
     public class BasicCollator : BaseCollator, ICollator
     {
-        public BasicCollator(Repository repository)
-        {
-            this.Repository = repository;
-        }
+        public BasicCollator(LyniconSystem sys) : base(sys)
+        { }
 
         #region ICollator Members
 
@@ -40,6 +40,11 @@ namespace Lynicon.Collation
 
         /// <inheritdoc/>
         public override Type AssociatedContainerType { get { return null; } }
+
+        public override void BuildForTypes(IEnumerable<Type> types)
+        {
+            
+        }
 
         /// <inheritdoc/>
         public override IEnumerable<T> Get<T>(IEnumerable<Address> addresses)
@@ -135,7 +140,7 @@ namespace Lynicon.Collation
             var summary = summ as Summary;
             summary.Type = itemType;
             summary.Url = ContentMap.Instance.GetUrl(item);
-            summary.Version = VersionManager.Instance.GetVersion(item);
+            summary.Version = System.Versions.GetVersion(item);
             summary.UniqueId = LinqX.GetIdProp(item.GetType(), null).GetValue(item);
 
             return summ;
@@ -151,7 +156,7 @@ namespace Lynicon.Collation
                 a.SetAddressFields(newT);
 
             // ensure it is created in the current version
-            VersionManager.Instance.SetVersion(VersionManager.Instance.CurrentVersion, newT);
+            System.Versions.SetVersion(VersionManager.Instance.CurrentVersion, newT);
 
             return newT;
         }

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Lynicon.Extensibility;
 using System.Security.Claims;
 using Lynicon.DataSources;
+using Lynicon.Services;
 
 namespace Lynicon.AspNetCore.Identity
 {
@@ -35,6 +36,7 @@ namespace Lynicon.AspNetCore.Identity
         Func<TContext> getContext;
 
         public IdentityAdaptorSecurityManager(
+            LyniconSystem sys,
             Func<TContext> getContext,
             Func<UserManager<TUser>> getUserManager,
             Func<SignInManager<TUser>> getSignInManager)
@@ -51,23 +53,25 @@ namespace Lynicon.AspNetCore.Identity
         {
             ContentTypeHierarchy.RegisterType(typeof(User));
             ContentTypeHierarchy.RegisterType(typeof(TUser));
-            
-            CompositeTypeManager.Instance.RegisterType(typeof(User));
-            CompositeTypeManager.Instance.RegisterExtensionType(typeof(LyniconIdentityUser));
 
-            var efDSFactory = new EFDataSourceFactory<TContext>();
-            var appDbRepository = new BasicRepository(efDSFactory);
+            var sys = LyniconSystem.Instance;
+
+            var extender = LyniconSystem.Instance.Extender;
+            extender.RegisterForExtension(typeof(User));
+            //extender.RegisterExtensionType(typeof(LyniconIdentityUser));
+
+            var efDSFactory = new EFDataSourceFactory<TContext>(sys);
+            var appDbRepository = new BasicRepository(sys, efDSFactory);
             efDSFactory.DbSetSelectors[typeof(TUser)] = db => db.Users.AsNoTracking().Include(u => u.Roles);
             efDSFactory.ContextLifetimeMode = ContextLifetimeMode.PerCall;
 
             // We DON'T want to register TUser with CompositeTypeManager
-            var basicCollator = new BasicCollator(Repository.Instance);
-            Collator.Instance.Register(typeof(TUser), new BasicCollator(Repository.Instance));
+            var basicCollator = new BasicCollator(sys);
+            Collator.Instance.Register(typeof(TUser), new BasicCollator(sys));
             Repository.Instance.Register(typeof(TUser), appDbRepository);
 
             // override existing collator registration for User
-            var identityAdaptorCollator = new IdentityAdaptorCollator<TUser, TUserManager>(Repository.Instance);
-            identityAdaptorCollator.Repository = Repository.Instance;
+            var identityAdaptorCollator = new IdentityAdaptorCollator<TUser, TUserManager>(sys);
             Collator.Instance.Register(typeof(User), identityAdaptorCollator);
             //Repository.Instance.Register(typeof(User), new BasicRepository());
         }
@@ -104,6 +108,9 @@ namespace Lynicon.AspNetCore.Identity
         {
             get
             {
+                if (RequestContextManager.Instance?.CurrentContext == null)
+                    return null;
+
                 var reqItems = RequestContextManager.Instance.CurrentContext.Items;
                 if (reqItems[CurrentUserKey] == null)
                 {

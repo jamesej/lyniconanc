@@ -24,7 +24,7 @@ namespace Lynicon.Models
             get
             {
                 return GetContentTypes()
-                    .Select(ct => new SelectListItem { Text = BaseContent.ContentClassDisplayName(ct), Value = ct.FullName })
+                    .Select(ct => new SelectListItem { Text = LyniconUi.ContentClassDisplayName(ct), Value = ct.FullName })
                     .ToList();
             }
         }

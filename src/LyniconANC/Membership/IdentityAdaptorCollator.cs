@@ -10,6 +10,8 @@ using System.Linq;
 using System.Reflection;
 using Lynicon.Extensibility;
 using System.Threading.Tasks;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Membership
 {
@@ -32,7 +34,7 @@ namespace Lynicon.Membership
         /// Create a new IdentityAdaptorCollator
         /// </summary>
         /// <param name="userManager">A function which returns the current UserManager</param>
-        public IdentityAdaptorCollator(Repository repository) : base(new BasicCollator(repository), null, null)
+        public IdentityAdaptorCollator(LyniconSystem sys) : base(new BasicCollator(sys), null, null)
         {
             this.PropertyMap = new Dictionary<string, string>();
             this.IdWriteConvert = id => "'" + id.ToString() + "'"; // single quotes stop guid as string being converted to guid in ItemId
@@ -40,9 +42,7 @@ namespace Lynicon.Membership
             this.writeConvert = WriteConvert;
             this.userManager = () => null; // RequestContextManager.Instance.CurrentContext.Request..GetOwinContext().GetUserManager<TUserManager>();
 
-            extUserType = CompositeTypeManager.Instance.ExtendedTypes.ContainsKey(typeof(User))
-                ? CompositeTypeManager.Instance.ExtendedTypes[typeof(User)]
-                : typeof(User);
+            extUserType = System.Extender[typeof(User)] ?? typeof(User);
 
             propertyInfos = new List<Tuple<PropertyInfo, PropertyInfo>>();
             foreach (PropertyInfo innerPi in typeof(TUser).GetPersistedProperties())

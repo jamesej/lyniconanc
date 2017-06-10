@@ -15,6 +15,8 @@ using Lynicon.Utility;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Editors;
 using Lynicon.DataSources;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
@@ -24,23 +26,22 @@ namespace Lynicon.Collation
     /// </summary>
     public class Collator : TypeRegistry<ICollator>, ICollator, ITypeSystemRegistrar
     {
-        static readonly Collator instance = new Collator(Repository.Instance);
+        static Collator instance = null;
         /// <summary>
         /// The global collator
         /// </summary>
-        public static Collator Instance { get { return instance; } }
-
-        /// <summary>
-        /// Get the content contained within an object (which might just be the object itself)
-        /// </summary>
-        /// <param name="o">the container</param>
-        /// <returns>the contained object</returns>
-        public static object GetContent(object o)
+        public static Collator Instance
         {
-            if (o is IContentContainer)
-                return ((IContentContainer)o).GetContent();
-            else
-                return o;
+            get
+            {
+                if (instance == null)
+                    instance = new Collator(LyniconSystem.Instance);
+                return instance;
+            }
+            internal set
+            {
+                instance = value;
+            }
         }
 
         /// <summary>
@@ -56,32 +57,6 @@ namespace Lynicon.Collation
                 return o.GetType().UnextendedType();
         }
 
-        /// <summary>
-        /// Registers a type that extends the fields of a base content type
-        /// </summary>
-        /// <param name="t">type deriving from a base content type, extending it</param>
-        public static void RegisterExtensionType(Type t)
-        {
-            var flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public;
-            if (t.GetMethods(flags).Any(m => !m.IsSpecialName)
-                || t.GetFields(flags).Any(f => !f.IsSpecialName))
-                throw new ArgumentException("Cannot register extension type " + t.FullName + " as it has methods or fields, it should only have properties");
-
-            CompositeTypeManager.Instance.ExtensionTypes.Add(t);
-        }
-
-        /// <summary>
-        /// Get the composite type from its base type
-        /// </summary>
-        /// <param name="t">The base type</param>
-        /// <returns>The composite type constructed from the base type adding in all necessary extra custom properties</returns>
-        public static Type GetExtendedType(Type t)
-        {
-            if (CompositeTypeManager.Instance.ExtendedTypes.ContainsKey(t))
-                return CompositeTypeManager.Instance.ExtendedTypes[t];
-            return t;
-        }
-
         static Collator() { }
 
         /// <summary>
@@ -89,25 +64,24 @@ namespace Lynicon.Collation
         /// </summary>
         public bool RepositoryBuilt { get; set; }
 
-        /// <summary>
-        /// The global repository associated with this global collator
-        /// </summary>
-        public Repository Repository { get; set; }
+        public LyniconSystem System { get; set; }
 
         /// <summary>
         /// Construct a general collator from its associated global repository
         /// </summary>
         /// <param name="repository"></param>
-        public Collator(Repository repository)
+        public Collator(LyniconSystem sys)
         {
             RepositoryBuilt = false;
-            this.Repository = repository;
-            this.DefaultHandler = new ContentCollator(repository) as ICollator;
-            this.DefaultHandler.Repository = repository;
+            System = sys;
+            sys.Collator = this;
+
+            this.DefaultHandler = new ContentCollator(sys) as ICollator;
         }
 
         public Collator()
         {
+            System = LyniconSystem.Instance;
         }
 
         /// <summary>
@@ -122,10 +96,23 @@ namespace Lynicon.Collation
         /// <param name="typeHandler">The associated collator</param>
         public override void Register(Type type, ICollator typeHandler)
         {
-            typeHandler.Repository = this.Repository;
+            typeHandler.System = this.System;
             if (typeHandler.AssociatedContainerType != null)
                 base.Register(typeHandler.AssociatedContainerType, typeHandler);
             base.Register(type, typeHandler);
+        }
+
+        /// <summary>
+        /// Get the content contained within an object (which might just be the object itself)
+        /// </summary>
+        /// <param name="o">the container</param>
+        /// <returns>the contained object</returns>
+        public object GetContent(object o)
+        {
+            if (o is IContentContainer)
+                return ((IContentContainer)o).GetContent(System.Extender);
+            else
+                return o;
         }
 
         /// <summary>
@@ -137,20 +124,20 @@ namespace Lynicon.Collation
         /// <param name="redir">the editor redirect</param>
         public void SetupType(Type t, ICollator coll, IRepository repo, Func<IRouter, RouteContext, object, IRouter> divert)
         {
-            if ((coll ?? this.Registered(null)).ContainerType(t) == t)
-                CompositeTypeManager.Instance.RegisterType(t);
+            if ((coll ?? this.Registered(null)).ContainerType(t) == t) // type t is its own container, so it may be extended
+                System.Extender.RegisterForExtension(t);
 
             if (!typeof(IContentContainer).IsAssignableFrom(t))
                 ContentTypeHierarchy.RegisterType(t);
 
             if (coll != null)
             {
-                coll.Repository = this.Repository;
+                coll.System = this.System;
                 this.Register(t, coll);
             }
 
             if (repo != null)
-                Lynicon.Repositories.Repository.Instance.Register(t, repo);
+                System.Repository.Register(t, repo);
 
             if (divert != null)
                 DataDiverter.Instance.Register(t, divert);
@@ -162,13 +149,20 @@ namespace Lynicon.Collation
         public void BuildRepository()
         {
             ContentTypeHierarchy.AllContentTypes.Do(ct =>
-                CompositeTypeManager.Instance.RegisterType(
-                    Collator.Instance.ContainerType(ct)
+                System.Extender.RegisterForExtension(
+                    System.Collator.ContainerType(ct)
                     )
             );
-            CompositeTypeManager.Instance.BuildComposites();
+            BuildForTypes(ContentTypeHierarchy.AllContentTypes);
+            System.Extender.BuildExtensions(this);
             RepositoryBuilt = true;
             EventHub.Instance.ProcessEvent("Repository.Built", this, null);
+        }
+
+        public void BuildForTypes(IEnumerable<Type> types)
+        {
+            types.GroupBy(t => this.Registered(t))
+                .Do(tg => tg.Key.BuildForTypes(tg));
         }
 
         /// <summary>
@@ -433,12 +427,19 @@ namespace Lynicon.Collation
         {
             if (a == null)
             {
-                var inst = Activator.CreateInstance<T>();
+                Type extType = System.Extender[typeof(T)] ?? typeof(T);
+                var inst = Activator.CreateInstance(extType);
                 if (inst is IHasDefaultAddress)
                     a = ((IHasDefaultAddress)inst).GetDefaultAddress();
             }
 
             return Registered(typeof(T)).GetNew<T>(a);
+        }
+
+        public T GetNew<T>(params string[] pathEls) where T : class
+        {
+            var addr = new Address(typeof(T), string.Join("&", pathEls));
+            return GetNew<T>(addr);
         }
 
         /// <summary>

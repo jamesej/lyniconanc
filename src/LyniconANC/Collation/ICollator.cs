@@ -8,15 +8,23 @@ using Lynicon.Relations;
 using Lynicon.Repositories;
 using Microsoft.AspNetCore.Routing;
 using System.Reflection;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
     public interface ICollator
     {
         /// <summary>
-        /// The repository to be used by this collator
+        /// The data system in which this collator exists
         /// </summary>
-        Repository Repository { get; set; }
+        LyniconSystem System { get; set; }
+
+        /// <summary>
+        /// Build extension types and any other actions required to initialise collator based on the types registered for it
+        /// </summary>
+        /// <param name="types">List of types registered to use this collator</param>
+        void BuildForTypes(IEnumerable<Type> types);
 
         /// <summary>
         /// The container type this repository uses (or null if its just the content type)

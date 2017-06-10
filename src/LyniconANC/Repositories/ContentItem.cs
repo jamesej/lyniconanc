@@ -22,6 +22,8 @@ using Lynicon.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Repositories
 {
@@ -29,7 +31,7 @@ namespace Lynicon.Repositories
     /// The container for content item in the Content persistenc model
     /// </summary>
     [Table("ContentItems"), Serializable]
-    public class ContentItem : IContentContainer, IBasicAuditable, ICachesSummary, ICachesContent
+    public class ContentItem : IContentContainer, IBasicAuditable, ICachesSummary, ICachesContent, ICoreMetadata
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ContentItem));
         
@@ -85,23 +87,35 @@ namespace Lynicon.Repositories
         /// </summary>
         /// <param name="item">the item from which to get summary</param>
         /// <returns>summary of item</returns>
-        public static Summary GetSummary(object item)
+        public static Summary GetSummary(LyniconSystem sys, object item)
         {
             if (item is ContentItem)
-                return ((ContentItem)item).GetSummary();
+                return ((ContentItem)item).GetSummary(sys);
             
             Summary summ = new Summary();
-            if (item is BaseContent && ((BaseContent)item).OriginalRecord != null)
-                summ = ((BaseContent)item).OriginalRecord.GetSummary();
+            summ.Type = item.GetType().UnextendedType();
+            //if (item is BaseContent && ((BaseContent)item).OriginalRecord != null)
+            //    summ = ((BaseContent)item).OriginalRecord.GetSummary();
+            //else
+            //{
+            if (item is ICoreMetadata)
+            {
+                var meta = (ICoreMetadata)item;
+                summ.Id = meta.Identity;
+                summ.Url = ContentMap.Instance.GetUrls(new Address(summ.Type, meta.Path)).FirstOrDefault();
+                summ.Version = sys.Versions.GetVersion(meta);
+                summ.UniqueId = meta.Id;
+            }
             else
             {
                 summ.Id = null;
                 summ.Title = null;
-                summ.Type = item.GetType();
+
                 summ.Url = null;
                 summ.Version = null;
                 summ.UniqueId = null;
             }
+            //}
 
             var summMap = GetSummaryProperties(item.GetType());
             Summary newSumm;
@@ -154,19 +168,44 @@ namespace Lynicon.Repositories
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     Formatting = Formatting.None,
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    FloatParseHandling = FloatParseHandling.Double
+                    FloatParseHandling = FloatParseHandling.Double,
+                    ContractResolver = new IgnoreMetadataContractResolver()
                 };
         }
 
+        Guid id = Guid.Empty;
         // properties are marked virtual so that they can work with interfaces in module assemblies
         // when CoreDb is generating a composed type which inherits from this
         [Key]
-        public virtual Guid Id { get; set; }
+        public virtual Guid Id
+        {
+            get { return id; }
+            set
+            {
+                id = value;
+                if (this.contentObject is ICoreMetadata)
+                    ((ICoreMetadata)this.contentObject).Id = value;
+                if (this.summaryObject != null)
+                    summaryObject.UniqueId = value;
+            }
+        }
 
+        Guid identity;
         /// <summary>
         /// An identifier which is the same across all versions of the same content item but otherwise unique
         /// </summary>
-        public virtual Guid Identity { get; set; }
+        public virtual Guid Identity
+        {
+            get { return identity; }
+            set
+            {
+                identity = value;
+                if (this.contentObject is ICoreMetadata)
+                    ((ICoreMetadata)this.contentObject).Identity = value;
+                if (this.summaryObject != null)
+                    summaryObject.Id = value;
+            }
+        }
         /// <summary>
         /// The data type of the content item
         /// </summary>
@@ -183,6 +222,8 @@ namespace Lynicon.Repositories
             set
             {
                 path = value;
+                if (contentObject is ICoreMetadata)
+                    ((ICoreMetadata)contentObject).Path = path;
                 if (summaryObject != null)
                     summaryObject.Url = ContentMap.Instance.GetUrl(this);
             }
@@ -249,24 +290,77 @@ namespace Lynicon.Repositories
             }
         }
 
+        DateTime created;
         /// <summary>
         /// When the item was created
         /// </summary>
-        public virtual DateTime Created { get; set; }
+        public virtual DateTime Created
+        {
+            get { return created; }
+            set
+            {
+                created = value;
+                if (this.contentObject is ICoreMetadata)
+                    ((ICoreMetadata)this.contentObject).Created = value;
+            }
+        }
+
+        string userCreated;
         /// <summary>
         /// The user who created the item
         /// </summary>
-        public virtual string UserCreated { get; set; }
+        public virtual string UserCreated
+        {
+            get { return userCreated; }
+            set
+            {
+                userCreated = value;
+                if (this.contentObject is ICoreMetadata)
+                    ((ICoreMetadata)this.contentObject).UserCreated = value;
+            }
+        }
+
+        DateTime updated;
         /// <summary>
         /// When the item was last updated
         /// </summary>
-        public virtual DateTime Updated { get; set; }
+        public virtual DateTime Updated
+        {
+            get { return updated; }
+            set
+            {
+                updated = value;
+                if (this.contentObject is ICoreMetadata)
+                    ((ICoreMetadata)this.contentObject).Updated = value;
+            }
+        }
+
+        string userUpdated;
         /// <summary>
         /// The user who last updated the item
         /// </summary>
-        public virtual string UserUpdated { get; set; }
+        public virtual string UserUpdated
+        {
+            get { return userUpdated; }
+            set
+            {
+                userUpdated = value;
+                if (this.contentObject is ICoreMetadata)
+                    ((ICoreMetadata)this.contentObject).UserUpdated = value;
+            }
+        }
 
-        private object contentObject = null;
+        private object _contentObject = null;
+        private object contentObject
+        {
+            get
+            {
+                if (_contentObject != null)
+                    TypeExtender.CopyExtensionData(this, _contentObject);
+                return _contentObject;
+            }
+            set { _contentObject = value; }
+        }
         private Summary summaryObject = null;
 
         /// <summary>
@@ -318,17 +412,18 @@ namespace Lynicon.Repositories
         /// Get the content of the item as an object
         /// </summary>
         /// <returns>The contained content item</returns>
-        public object GetContent()
+        public object GetContent(TypeExtender extender)
         {
             if (contentObject != null)
                 return contentObject;
 
             Type type = this.ContentType;
+            Type extType = extender[type] ?? type;
 
             JObject contentJObject = null;
             if (string.IsNullOrEmpty(this.Content))
             {
-                contentObject = Activator.CreateInstance(type);
+                contentObject = Activator.CreateInstance(extType);
                 if (this.Id != Guid.Empty) // shouldn't normally happen
                     log.WarnFormat("Reading content from contentitem {0} with no content: {1}", this.Id, Environment.StackTrace);
             }
@@ -336,9 +431,9 @@ namespace Lynicon.Repositories
             {
                 contentJObject = JObject.Parse(this.Content);
                 var sz = JsonSerializer.Create(GetSerializerSettings(type, this.Id));
-                contentObject = contentJObject.ToObject(type, sz);
+                contentObject = contentJObject.ToObject(extType, sz);
                 if (contentObject == null)
-                    contentObject = Activator.CreateInstance(type);
+                    contentObject = Activator.CreateInstance(extType);
             }
                 
 
@@ -387,11 +482,9 @@ namespace Lynicon.Repositories
                 }
             }
 
-            // Retain metadata if the content type has a place for it
-            if (typeof(BaseContent).IsAssignableFrom(type))
-                ((BaseContent)contentObject).OriginalRecord = this;
-
-            // Set references
+            // Set up metadata if possible
+            if (typeof(ICoreMetadata).IsAssignableFrom(extType))
+                TypeExtender.CopyExtensionData(this, contentObject);
 
             return contentObject;
         }
@@ -399,20 +492,24 @@ namespace Lynicon.Repositories
         /// Get the contained content item of type T
         /// </summary>
         /// <typeparam name="T">The type of the content item</typeparam>
+        /// <param name="extender">Type extender for creating content type</param>
         /// <returns>The contained content item</returns>
-        public T GetContent<T>() where T: class
+        public T GetContent<T>(TypeExtender extender) where T: class
         {
-            return GetContent() as T;
+            return GetContent(extender) as T;
         }
 
         /// <summary>
         /// Get the summary of the contained content item
         /// </summary>
         /// <returns>The summary</returns>
-        public Summary GetSummary()
+        public Summary GetSummary(LyniconSystem sys)
         {
             if (summaryObject != null)
+            {
+                summaryObject.Version = sys.Versions.GetVersion(this);
                 return summaryObject;
+            }
 
             var summType = GetSummaryType(ContentType);
             var summMap = GetSummaryProperties(ContentType);
@@ -429,18 +526,16 @@ namespace Lynicon.Repositories
                 Type contentType = this.ContentType;
                 if (typeof(PageContent).IsAssignableFrom(contentType))
                 {
-                    PageContent pageContent = this.GetContent<PageContent>();
+                    // The call to GetContent with an empty TypeExtender won't create an extended type but this is no problem
+                    PageContent pageContent = this.GetContent<PageContent>(new TypeExtender());
                     summaryObject.Title = pageContent.PageTitle;
                 }
             }
-            else
-            {
-                
-            }
+
             summaryObject.Url = ContentMap.Instance.GetUrl(this);
             summaryObject.Type = ContentType;
             summaryObject.Id = this.Identity;
-            summaryObject.Version = VersionManager.Instance.GetVersion(this);
+            summaryObject.Version = sys.Versions.GetVersion(this);
             if (!string.IsNullOrEmpty(this.Title))
                 summaryObject.Title = this.Title;
             summaryObject.UniqueId = this.Id;
@@ -452,9 +547,12 @@ namespace Lynicon.Repositories
         /// Set the contained content item
         /// </summary>
         /// <param name="value">The content item object</param>
-        public void SetContent(object value)
+        public void SetContent(LyniconSystem sys, object value)
         {
-            DataType = value.GetType().FullName;
+            if (!(value is ICoreMetadata))
+                throw new ArgumentException("Value for ContentItem.SetContent must be ICoreMetadata");
+
+            DataType = value.GetType().UnextendedType().FullName;
 
             var summMap = GetSummaryProperties(ContentType);
             var summType = GetSummaryType(ContentType);
@@ -469,7 +567,7 @@ namespace Lynicon.Repositories
                     jObjectContent.Remove(kvp.Value.Name);
                 });
 
-                var summ = GetSummary(value);
+                var summ = GetSummary(sys, value);
                 JObject jObjectSummary = JObject.FromObject(summ);
                 jObjectSummary.Remove("Url");
                 jObjectSummary.Remove("Type");
@@ -488,8 +586,6 @@ namespace Lynicon.Repositories
             this.Content = jObjectContent.ToString();
 
             this.contentObject = value; // set cached content object
-
-            this.DataType = value.GetType().FullName;
         }
 
         #region ICachesSummary Members
@@ -505,11 +601,11 @@ namespace Lynicon.Repositories
                 this.summaryObject = null;
         }
 
-        public void EnsureSummaryCache()
+        public void EnsureSummaryCache(LyniconSystem sys)
         {
             if (summary != null)
             {
-                this.GetSummary();
+                this.GetSummary(sys);
                 this.summaryObject = null; // no longer needed: save space
             }
         }

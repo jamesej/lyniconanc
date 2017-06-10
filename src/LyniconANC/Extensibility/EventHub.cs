@@ -63,8 +63,8 @@ namespace Lynicon.Extensibility
             public Func<EventHubData, object> Processor { get; set; }
         }
 
-        static readonly EventHub instance = new EventHub();
-        public static EventHub Instance { get { return instance; } }
+        static EventHub instance = new EventHub();
+        public static EventHub Instance { get { return instance; } internal set { instance = value; } }
 
         static EventHub() { }
 

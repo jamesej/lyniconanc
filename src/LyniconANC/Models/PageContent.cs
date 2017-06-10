@@ -24,15 +24,6 @@ namespace Lynicon.Models
         public string PageDescription { get; set; }
 
         /// <summary>
-        /// Get the unique id of the content item (not the Identity)
-        /// </summary>
-        /// <returns>the unique id</returns>
-        public object GetId()
-        {
-            return this.OriginalRecord.Id;
-        }
-
-        /// <summary>
         /// Create a new PageContent
         /// </summary>
         public PageContent()

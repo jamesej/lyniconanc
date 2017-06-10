@@ -58,17 +58,17 @@ namespace LyniconANC.Test
             return this.AllVersionValues.ToList();
         }
 
-        public override void GetItemVersion(object container, ItemVersion version)
+        public override object GetItemValue(object container)
         {
-            version[VersionKey] = "en-GB";
+            return "en-GB";
         }
 
-        public override void SetCurrentVersion(VersioningMode mode, ItemVersion version)
+        public override object CurrentValue(VersioningMode mode)
         {
-            version[VersionKey] = "en-GB";
+            return "en-GB";
         }
 
-        public override void SetItemVersion(ItemVersion version, object container)
+        public override void SetItemValue(object value, object container)
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿using Lynicon.Extensibility;
 using Lynicon.Repositories;
+using Lynicon.Services;
 using Lynicon.Utility;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,8 +22,11 @@ namespace Lynicon.DataSources
 
         public Dictionary<Type, Func<TContext, IQueryable>> DbSetSelectors { get; set; }
 
-        public EFDataSourceFactory()
+        public LyniconSystem System { get; set; }
+
+        public EFDataSourceFactory(LyniconSystem sys)
         {
+            System = sys;
             DbSetSelectors = typeof(TContext).GetProperties()
                 .Where(pi => pi.PropertyType.IsGenericType() && pi.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
                 .ToDictionary(
@@ -39,7 +43,7 @@ namespace Lynicon.DataSources
 
         public IDataSource Create(bool forSummaries)
         {
-            return new EFDataSource<TContext>(DbSetSelectors, ContextLifetimeMode, forSummaries);
+            return new EFDataSource<TContext>(System, DbSetSelectors, ContextLifetimeMode, forSummaries);
         }
 
         ContextLifetimeMode contextLifetimeMode = ContextLifetimeMode.PerCall;

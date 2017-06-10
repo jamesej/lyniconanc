@@ -18,6 +18,8 @@ using Linq2Rest;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Exceptions;
+using LyniconANC.Extensibility;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
@@ -29,13 +31,22 @@ namespace Lynicon.Collation
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ContentCollator));
 
-        public ContentCollator(Repository repository)
-        {
-            this.Repository = repository;
-        }
+        public ContentCollator(LyniconSystem sys) : base(sys)
+        { }
 
         /// <inheritdoc/>
         public override Type AssociatedContainerType { get { return typeof(ContentItem); } }
+
+        public override void BuildForTypes(IEnumerable<Type> types)
+        {
+            System.Extender.RegisterForExtension(typeof(ContentItem));
+            foreach (Type t in types)
+            {
+                System.Extender.RegisterForExtension(t);
+                System.Extender.AddExtensionRule(t, typeof(ICoreMetadata));
+            }
+                
+        }
 
         /// <inheritdoc/>
         public override IEnumerable<T> Get<T>(IEnumerable<Address> addresses)
@@ -47,7 +58,7 @@ namespace Lynicon.Collation
                     var conts = Repository.Get<ContentItem>(typeof(T), ag);
                     foreach (var cont in conts)
                     {
-                        var summ = cont.GetSummary();
+                        var summ = cont.GetSummary(System);
                         if (summ is T)
                             yield return summ as T;
                     }
@@ -74,7 +85,7 @@ namespace Lynicon.Collation
         {
             if (typeof(Summary).IsAssignableFrom(typeof(T)))
                 return Repository.Get<ContentItem>(typeof(T), ids)
-                        .Select(ci => ci.GetSummary() as T)
+                        .Select(ci => ci.GetSummary(System) as T)
                         .Where(s => s != null);
             else
                 //return Repository.Get<ContentItem>(typeof(T), ids)
@@ -108,7 +119,7 @@ namespace Lynicon.Collation
                 results = Repository
                             .Get<ContentItem>(typeof(T), types, iq => iq)
                             .AsEnumerable()
-                            .Select(ci => ci.GetSummary())
+                            .Select(ci => ci.GetSummary(System))
                             .OfType<TQuery>()
                             .AsQueryable();
                 results = queryBody(results);
@@ -159,17 +170,30 @@ namespace Lynicon.Collation
         /// <inheritdoc/>
         public override TTarget GetSummary<TTarget>(object item)
         {
-            return ContentItem.GetSummary(item) as TTarget;
+            return ContentItem.GetSummary(System, item) as TTarget;
         }
 
-        //public override object Summarise(object item)
-        //{
-        //    ContentItem ci = (ContentItem)ReflectionX.CopyEntity(item);
-        //    ci.Content = null;
-        //    var dummy = ci.GetSummary(); // ensure summary is deserialised
-        //    ci.Summary = null; 
-        //    return ci;
-        //}
+        public (Dictionary<VersionedAddress, object>, ItemVersion) ProcessContainers(IEnumerable<object> startContainers)
+        {
+            var containers = new Dictionary<VersionedAddress, object>();
+            ItemVersion containerCommonVersion = null;
+            // Ensure we have the start addresses
+            if (startContainers != null)
+            {
+                foreach (var cont in startContainers)
+                {
+                    var cVersAddr = new VersionedAddress(System, cont);
+                    if (!containers.ContainsKey(cVersAddr))
+                        containers.Add(cVersAddr, cont);
+                    else
+                        log.Error("Duplicate versioned address: " + cVersAddr.ToString());
+
+                    containerCommonVersion = containerCommonVersion == null ? cVersAddr.Version : containerCommonVersion.LeastAbstractCommonVersion(cVersAddr.Version);
+                }
+            }
+
+            return (containers, containerCommonVersion);
+        }
 
         /// <summary>
         /// Starting from a list of addresses and optionally (or only) the containers at those addresses, fetch
@@ -184,96 +208,79 @@ namespace Lynicon.Collation
         public IEnumerable<T> Collate<T>(IEnumerable<object> startContainers, IEnumerable<Address> startAddresses) where T : class
         {
             // place to store all the containers we have currently
-            var containers = new Dictionary<VersionedAddress, object>();
+            Dictionary<VersionedAddress, object> containers;
+            ItemVersion containerCommonVersion;
 
-            ItemVersion containerCommonVersion = null;
-            // Ensure we have the start addresses
-            if (startContainers != null)
+            startAddresses = startAddresses ?? Enumerable.Empty<Address>();
+
+            (containers, containerCommonVersion) = ProcessContainers(startContainers);
+
+            List<Address> fetchAddrs = startAddresses
+                .Where(sa => !containers.Any(kvp => kvp.Key.Address == sa)).ToList();
+
+            var allStartAddressesByType = fetchAddrs.Concat(containers.Keys)
+                .GroupBy(a => a.Type)
+                .Select(ag => new { aType = ag.Key, addrs = ag.ToList() })
+                .ToList();
+
+            // Get all addresses for items to collate (startAddresses plus addresses from startContainers)
+            foreach (var addrTypeG in allStartAddressesByType)
             {
-                var startAddrList = new List<Address>();
-                foreach (var cont in startContainers)
-                {
-                    var cVersAddr = new VersionedAddress(cont);
-                    if (!containers.ContainsKey(cVersAddr))
-                    {
-                        startAddrList.Add(cVersAddr.Address);
-                        containers.Add(cVersAddr, cont);
-                    }
-                    else
-                        log.Error("Duplicate versioned address: " + cVersAddr.ToString());
-
-                    containerCommonVersion = containerCommonVersion == null ? cVersAddr.Version : containerCommonVersion.LeastAbstractCommonVersion(cVersAddr.Version);
-                }
-                startAddresses = startAddrList.Distinct();
-            }
-
-            List<Address> addrs = new List<Address>();
-            var contAddrs = new HashSet<Address>(containers.Keys.Select(va => va.Address));
-            // Get all addresses for items to collate
-            foreach (var addrTypeG in startAddresses.GroupBy(a => a.Type))
-            {
-                Type contentType = addrTypeG.Key;
+                Type contentType = addrTypeG.aType;
                 var rpsAttributes = contentType
                     .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
                     .Cast<RedirectPropertySourceAttribute>()
                     .ToList();
-                List<Address> collAddrs = new List<Address>();
-                foreach (Address addr in addrTypeG)
+                foreach (Address addr in addrTypeG.addrs)
                 {
-                    string path = addr.GetAsContentPath();
-                    if (!contAddrs.Contains(addr))
-                        addrs.Add(addr);
-                    addrs.AddRange(rpsAttributes
-                        .Select(a => new Address(a.ContentType ?? contentType,
-                            PathFunctions.Redirect(path, a.SourceDescriptor))));
+                    fetchAddrs.AddRange(rpsAttributes
+                        .Select(attr => new Address(attr.ContentType ?? contentType,
+                            PathFunctions.Redirect(addr.GetAsContentPath(), attr.SourceDescriptor))));
                 }
             }
-            addrs = addrs.Distinct().ToList();
+            fetchAddrs = fetchAddrs.Distinct().ToList();
 
             bool pushVersion = (startContainers != null);
             if (pushVersion) // Get containers in any version that might be relevant to a start container
-                VersionManager.Instance.PushState(VersioningMode.Specific, containerCommonVersion);
+                System.Versions.PushState(VersioningMode.Specific, containerCommonVersion);
 
             try
             {
                 // Get all the containers for collation (if current version is not fully specified, may be multiple per address)
-                foreach (var cont in Repository.Instance.Get(typeof(object), addrs))
+                foreach (var cont in System.Repository.Get(typeof(object), fetchAddrs))
                 {
-                    var va = new VersionedAddress(cont);
+                    var va = new VersionedAddress(System, cont);
                     if (containers.ContainsKey(va))
                         log.Error("Duplicate versioned address in db: " + va.ToString());
                     else
-                        containers.Add(new VersionedAddress(cont), cont);
+                        containers.Add(new VersionedAddress(System, cont), cont);
                 }
             }
             finally
             {
                 if (pushVersion)
-                    VersionManager.Instance.PopState();
+                    System.Versions.PopState();
             }
 
+            // Create a lookup by (non-versioned) address of all the containers we have
             var contLookup = containers.ToLookup(kvp => kvp.Key.Address.ToString(), kvp => kvp.Value);
 
-            if (startContainers == null)
-            {
-                startContainers = startAddresses.SelectMany(a => contLookup[a.ToString()]);
-            }
-
             // We have the data, now collate it into the content from the startContainers
-            foreach (var addrTypeG in startAddresses.GroupBy(a => a.Type))
+            foreach (var addrTypeG in allStartAddressesByType)
             {
-                // Process all the start addresses of a given type
+                // Process all the start addresses (including those of the start containers) of a given type
 
-                Type contentType = addrTypeG.Key;
+                Type contentType = addrTypeG.aType;
                 var rpsAttributes = contentType
                     .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
                     .Cast<RedirectPropertySourceAttribute>()
                     .ToList();
 
-                foreach (var addr in addrTypeG)
+                foreach (var addrOrVAddr in addrTypeG.addrs)
                 {
+                    var addr = new Address(addrOrVAddr.Type, addrOrVAddr); // convert a VersionedAddress to an Address if necessary
                     var primaryPath = addr.GetAsContentPath();
-                    if (!contLookup.Contains(addr.ToString()))
+                    if (!contLookup.Contains(new Address(addr.Type, addr).ToString()))
                         continue;
 
                     foreach (var cont in contLookup[addr.ToString()])
@@ -282,7 +289,7 @@ namespace Lynicon.Collation
                         JObject jContent = null;
 
                         if (primaryContent is IContentContainer)
-                            primaryContent = ((IContentContainer)primaryContent).GetContent();
+                            primaryContent = ((IContentContainer)primaryContent).GetContent(System.Extender);
                         //jContent = JObject.FromObject(primaryContent);
 
                         foreach (var rpsAttribute in rpsAttributes)
@@ -290,13 +297,13 @@ namespace Lynicon.Collation
                             var refAddress = new VersionedAddress(
                                 rpsAttribute.ContentType ?? contentType,
                                 PathFunctions.Redirect(primaryPath, rpsAttribute.SourceDescriptor),
-                                new ItemVersion(cont)
+                                new ItemVersion(System, cont)
                                 );
                             if (refAddress.Address == addr) // redirected to itself, ignore
                                 continue;
                             object refItem = containers.ContainsKey(refAddress) ? containers[refAddress] : null;
                             if (refItem is IContentContainer)
-                                refItem = ((IContentContainer)refItem).GetContent();
+                                refItem = ((IContentContainer)refItem).GetContent(System.Extender);
                             if (refItem != null)
                                 foreach (string propertyPath in rpsAttribute.PropertyPaths)
                                 {
@@ -329,8 +336,8 @@ namespace Lynicon.Collation
             if (updatedData != null)
                 ci = (ContentItem)GetContainer(a, updatedData);
 
-            if (data is BaseContent && ((BaseContent)data).OriginalRecord == null)
-                ((BaseContent)data).OriginalRecord = ci;
+            if (data is ICoreMetadata && !((ICoreMetadata)data).HasMetadata())
+                TypeExtender.CopyExtensionData(ci, data);
 
             var created = Repository.Set(new List<object> { ci }, setOptions);
 
@@ -345,7 +352,7 @@ namespace Lynicon.Collation
 
             var ci = (ContentItem)GetContainer(a, data);
 
-            ci.SetContent(data);
+            ci.SetContent(System, data);
 
             Repository.Delete(ci, bypassChecks);
         }
@@ -363,14 +370,14 @@ namespace Lynicon.Collation
             var contentItem = Repository.Get<ContentItem>(id.Type, id.Id);
 
             // If the address is dependent on data fields, set those fields correspondingly
-            object data = contentItem.GetContent();
+            object data = contentItem.GetContent(System.Extender);
             Address address = new Address(data);
             bool hasAddressFields = address.Count > 0;
             address = moveTo;
             if (hasAddressFields)
             {
                 address.SetAddressFields(data);
-                contentItem.SetContent(data);
+                contentItem.SetContent(System, data);
             }
 
             contentItem.Path = address.GetAsContentPath();
@@ -386,16 +393,18 @@ namespace Lynicon.Collation
             string routePath = null;
             ContentItem contentItem = null;
 
-            // try and get path from data, or else from rvdict
+            // try and get path from data via attributes
             Address address = new Address(data);
             if (address.Count > 0)
                 dataPath = address.GetAsContentPath();
 
+            // Get requested path
             if (a != null)
             {
                 routePath = a.GetAsContentPath();
             }
 
+            // We have path in data and address parameter and they disagree
             if (dataPath != null && routePath != null && dataPath != routePath)
             {
                 // Raise event here for when address is changed via changing addressed mapped fields on data
@@ -408,13 +417,16 @@ namespace Lynicon.Collation
 
             string path = dataPath ?? routePath;
 
-            // if we have a BaseContent, we can use the OriginalRecord if must as we have no path, or if the path is the same
-            if (data is BaseContent)
+            // if we have an extended content object, we can use the OriginalRecord if must as we have no path, or if the path is the same
+            if (data is ICoreMetadata)
             {
-                contentItem = ((BaseContent)data).OriginalRecord;
-                if (contentItem != null && (path == null || path == contentItem.Path))
+                contentItem = (ContentItem)Activator.CreateInstance(System.Extender[typeof(ContentItem)] ?? typeof(ContentItem));
+                TypeExtender.CopyExtensionData(data, contentItem);
+                contentItem.DataType = data.GetType().UnextendedType().FullName;
+                
+                if (path == null || path == contentItem.Path)
                 {
-                    contentItem.SetContent(data);
+                    contentItem.SetContent(System, data);
                     return contentItem;
                 }
             }
@@ -425,7 +437,7 @@ namespace Lynicon.Collation
 
             // Now we have to get the content item from the db so we get the right ids etc
             var findPath = routePath ?? dataPath;
-            var contentItems = Repository.Get<ContentItem>(data.GetType(), iq => iq.Where(ci => ci.Path == findPath)).ToList();
+            var contentItems = System.Repository.Get<ContentItem>(data.GetType(), iq => iq.Where(ci => ci.Path == findPath)).ToList();
             if (contentItems.Count > 1)
                 throw new Exception("Duplicate content items at " + findPath + " of type " + data.GetType().FullName);
 
@@ -439,10 +451,10 @@ namespace Lynicon.Collation
 
             contentItem.Path = path;
 
-            contentItem.SetContent(data);
+            contentItem.SetContent(System, data);
 
-            if (data is BaseContent)
-                ((BaseContent)data).OriginalRecord = contentItem;
+            if (data is ICoreMetadata)
+                TypeExtender.CopyExtensionData(contentItem, data);
 
             return contentItem;
         }
@@ -456,7 +468,7 @@ namespace Lynicon.Collation
         protected virtual object SetRelated(string path, object data, bool bypassChecks)
         {
 
-            VersionManager.Instance.PushState(VersioningMode.Specific, new ItemVersion(data));
+            System.Versions.PushState(VersioningMode.Specific, new ItemVersion(System, data));
 
             try
             {
@@ -464,7 +476,7 @@ namespace Lynicon.Collation
 
                 // Establish the records to fetch and fetch them
 
-                Type contentType = data.GetType();
+                Type contentType = data.GetType().UnextendedType();
                 var rpsAttributes = contentType
                     .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
                     .Cast<RedirectPropertySourceAttribute>()
@@ -507,7 +519,7 @@ namespace Lynicon.Collation
                     object refdRecord = records.FirstOrDefault(r => new Address(r) == address);
                     object refdContent = refdRecord;
                     if (refdRecord is IContentContainer)
-                        refdContent = ((IContentContainer)refdRecord).GetContent();
+                        refdContent = ((IContentContainer)refdRecord).GetContent(System.Extender);
                     if (refdRecord == null) // adding a new record
                     {
                         refdContent = Collator.Instance.GetNew(address);
@@ -530,7 +542,9 @@ namespace Lynicon.Collation
 
                     if (refdRecord is IContentContainer)
                     {
-                        ((IContentContainer)refdRecord).SetContent(refdObject.ToObject(((IContentContainer)refdRecord).ContentType));
+                        Type valType = ((IContentContainer)refdRecord).ContentType;
+                        valType = System.Extender[valType] ?? valType;
+                        ((IContentContainer)refdRecord).SetContent(System, refdObject.ToObject(valType));
                     }
                     else
                         refdRecord = refdObject.ToObject(refdRecord.GetType());
@@ -562,7 +576,7 @@ namespace Lynicon.Collation
             }
             finally
             {
-                VersionManager.Instance.PopState();
+                System.Versions.PopState();
             }
         }
 
@@ -580,18 +594,20 @@ namespace Lynicon.Collation
         }
         protected virtual ContentItem GetNewRecord(Type type, string path)
         {
-            var newCI = Repository.New<ContentItem>();
+            var newCI = System.Repository.New<ContentItem>();
             newCI.Path = path;
             newCI.DataType = type.FullName;
-            var newContent = Activator.CreateInstance(type);
+            Type extType = System.Extender[type] ?? type;
+            var newContent = Activator.CreateInstance(extType);
             var address = new Address(type, path);
             address.SetAddressFields(newContent);
+            if (newContent is ICoreMetadata)
+                TypeExtender.CopyExtensionData(newCI, newContent);
             newContent = EventHub.Instance.ProcessEvent("ContentItem.New", this, newContent).Data;
-            if (newContent is BaseContent)
-                ((BaseContent)newContent).OriginalRecord = newCI;
-            newCI.SetContent(newContent);
+
+            newCI.SetContent(System, newContent);
             // ensure it is created in the current version
-            VersionManager.Instance.SetVersion(VersionManager.Instance.CurrentVersion, newCI);
+            System.Versions.SetVersion(System.Versions.CurrentVersion, newCI);
             return newCI;
         }
 
@@ -617,26 +633,14 @@ namespace Lynicon.Collation
             if (!(o is ContentItem))
                 address = new Address(o);
 
-            // if no such field, try saved path
-            if (address.Count == 0 && (o is ContentItem || o is BaseContent))
+            // if no such field, try path from metadata
+            if (address.Count == 0 && (o is ICoreMetadata))
             {
-                string path = null;
-                if (o is ContentItem)
-                {
-                    path = ((ContentItem)o).Path;
-                    if (path == null)
-                        return null;
-                    else
-                        address = new Address(((ContentItem)o).ContentType, path);
-                }
-                else
-                {
-                    path = ((BaseContent)o).OriginalRecord.Path;
-                    if (path == null)
-                        return null;
-                    else
-                        address = new Address(o.GetType(), path);
-                }
+                string path = ((ICoreMetadata)o).Path;
+                if (path == null)
+                    return null;
+                Type t = o is IContentContainer ? ((IContentContainer)o).ContentType : o.GetType();
+                address = new Address(t, path);
             }
 
             address.FixCase();

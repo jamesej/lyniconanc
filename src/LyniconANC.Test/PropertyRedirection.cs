@@ -39,6 +39,11 @@ namespace LyniconANC.Test
             prc0.ExternalVal = "External";
             Collator.Instance.Set(aaAddr, prc0);
 
+            var commonItem = Collator.Instance.Get<PropertyRedirectContent>(new Address(typeof(PropertyRedirectContent), ""));
+            Assert.NotNull(commonItem);
+            Assert.IsAssignableFrom<ICoreMetadata>(commonItem);
+            Assert.Equal("Common Text", commonItem.Common);
+
             // GetNew should set common values
             var bbAddr = new Address(typeof(PropertyRedirectContent), "bb");
             prc1 = Collator.Instance.GetNew<PropertyRedirectContent>(bbAddr);

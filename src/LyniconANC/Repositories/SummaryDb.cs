@@ -33,7 +33,7 @@ namespace Lynicon.Repositories
     {
         protected static IModel SummaryModel { get; set; }
 
-        public static void BuildModel()
+        public static void BuildModel(LyniconSystem sys)
         {
             //if (!Collator.Instance.RepositoryBuilt)
             //    throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
@@ -42,8 +42,8 @@ namespace Lynicon.Repositories
 
             var requiredBaseTypes = ContentTypeHierarchy.AllContentTypes
                 .Select(ct => Collator.Instance.ContainerType(ct))
-                .Select(crt => CompositeTypeManager.Instance.ExtendedTypes.Values.Contains(crt)
-                               ? CompositeTypeManager.Instance.ExtendedTypes.First(kvp => kvp.Value == crt).Key
+                .Select(crt => sys.Extender.ExtensionTypes().Contains(crt)
+                               ? sys.Extender.Base(crt)
                                : crt)
                 .Distinct()
                 .Where(crt => Repository.Instance.Registered(crt).DataSourceFactory is CoreDataSourceFactory)
@@ -51,11 +51,11 @@ namespace Lynicon.Repositories
 
             var builder = new ModelBuilder(SqlServerConventionSetBuilder.Build());
 
-            CompositeTypeManager.Instance.SummarisedTypes.Keys.Do(t => builder.Ignore(t));
+            sys.Extender.BaseTypes.Do(t => builder.Ignore(t));
 
-            foreach (var sumsType in CompositeTypeManager.Instance.SummarisedTypes.Where(kvp => requiredBaseTypes.Contains(kvp.Key)))
+            foreach (var sumsType in sys.Extender.BaseTypes.Where(bt => requiredBaseTypes.Contains(bt)))
             {
-                builder.Entity(sumsType.Value).ToTable(LinqX.GetTableName(sumsType.Key));
+                builder.Entity(sys.Extender.Summarised(sumsType)).ToTable(LinqX.GetTableName(sumsType));
             }
 
             SummaryModel = builder.Model;
@@ -70,15 +70,16 @@ namespace Lynicon.Repositories
             selectors = new ConcurrentDictionary<Type, MethodInfo>();
             alwaysIncludes = new ConcurrentDictionary<Type, List<string>>();
 
+            var extender = LyniconSystem.Instance.Extender;
             // Prebuilds expressions which are expensive to build because of reflection
-            foreach (var summType in CompositeTypeManager.Instance.SummarisedTypes)
+            foreach (var summType in extender.BaseTypes)
             {
-                projectors.TryAdd(summType.Key, GetProjector(summType.Key));
-                selectors.TryAdd(summType.Key, GetSelectMethodInfo(summType.Key));
-                alwaysIncludes.TryAdd(summType.Value, GetAlwaysIncludes(summType.Key));
+                projectors.TryAdd(summType, GetProjector(summType));
+                selectors.TryAdd(summType, GetSelectMethodInfo(summType));
+                alwaysIncludes.TryAdd(extender.Summarised(summType), GetAlwaysIncludes(summType));
             }
 
-            BuildModel();
+            BuildModel(LyniconSystem.Instance);
         }
 
         public SummaryDb()
@@ -98,8 +99,9 @@ namespace Lynicon.Repositories
 
         private static LambdaExpression GetProjector(Type tBase)
         {
-            Type sumsType = CompositeTypeManager.Instance.SummarisedTypes[tBase];
-            Type extType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
+            var extender = LyniconSystem.Instance.Extender;
+            Type sumsType = extender.Summarised(tBase);
+            Type extType = extender[tBase];
 
             // Codes for x => new ExtType { Prop1 = x.Prop1, Prop2 = x.Prop2 ... }
             var param = Expression.Parameter(sumsType, "x");
@@ -118,8 +120,10 @@ namespace Lynicon.Repositories
 
         private static MethodInfo GetSelectMethodInfo(Type tBase)
         {
-            Type sumsType = CompositeTypeManager.Instance.SummarisedTypes[tBase];
-            Type extType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
+            var extender = LyniconSystem.Instance.Extender;
+
+            Type sumsType = extender.Summarised(tBase);
+            Type extType = extender[tBase];
 
             // Get method info for .Select<sumsType, extType>()
             Type iqT = typeof(IQueryable<>).MakeGenericType(sumsType);
@@ -133,7 +137,9 @@ namespace Lynicon.Repositories
 
         private static List<string> GetAlwaysIncludes(Type tBase)
         {
-            Type sumsType = CompositeTypeManager.Instance.SummarisedTypes[tBase];
+            var extender = LyniconSystem.Instance.Extender;
+
+            Type sumsType = extender.Summarised(tBase);
             return sumsType.GetProperties()
                 .Where(pi => pi.GetCustomAttribute<AlwaysIncludeAttribute>() != null)
                 .Select(pi => pi.Name)
@@ -162,7 +168,8 @@ namespace Lynicon.Repositories
         /// <returns>IQueryable in extended type which doesn't fetch non-summarised fields</returns>
         public IQueryable SummarisedSet(Type tBase)
         {
-            if (!CompositeTypeManager.Instance.BaseTypes.Contains(tBase))
+            var extender = LyniconSystem.Instance.Extender;
+            if (!extender.BaseTypes.Contains(tBase))
                 throw new Exception("No composite of base type " + tBase.FullName);
 
             // Below hack required because constructing the 'project' query (which is .Select(..) under the covers)
@@ -170,12 +177,12 @@ namespace Lynicon.Repositories
             // is not relevant as it will be ignored, however the item type IS used in TotalCache.
             if (Repository.Instance.AvoidConnection)
             {
-                Type itemType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
+                Type itemType = extender[tBase] ?? tBase;
                 Type listType = typeof(List<>).MakeGenericType(itemType);
                 return ((IEnumerable)(Activator.CreateInstance(listType))).AsQueryable();
             }
                 
-            Type sumsType = CompositeTypeManager.Instance.SummarisedTypes[tBase];
+            Type sumsType = extender.Summarised(tBase);
             IQueryable q = (IQueryable)ReflectionX.InvokeGenericMethod(this, "SummarisedSet", sumsType);
 
             var project = projectors[tBase];

@@ -8,6 +8,7 @@ using Lynicon.Modules;
 using Lynicon.Extensibility;
 using Lynicon.DataSources;
 using Xunit;
+using Lynicon.Models;
 
 namespace LyniconANC.Test
 {
@@ -23,8 +24,6 @@ namespace LyniconANC.Test
 
         public LyniconSystemFixture()
         {
-            CompositeTypeManager.Instance.RegisterExtensionType(typeof(ExtTestData));
-
             LyniconSystem = new LyniconSystem(new LyniconSystemOptions()
                 .UseTypeSetup(col =>
                 {
@@ -40,18 +39,23 @@ namespace LyniconANC.Test
                     col.SetupType<PathAddressData>();
                     col.SetupType<SplitAddressData>();
                     col.SetupType<PropertyRedirectContent>();
-                    col.Repository.Register(null, new ContentRepository(new MockDataSourceFactory()));
-                    col.Repository.Register(typeof(TestData), new BasicRepository(new MockDataSourceFactory()));
-                    col.Repository.Register(typeof(ContentItem), new ContentRepository(new MockDataSourceFactory()));
+                    col.System.Repository.Register(null, new ContentRepository(col.System, new MockDataSourceFactory(col.System)));
+                    col.System.Repository.Register(typeof(TestData), new BasicRepository(col.System, new MockDataSourceFactory(col.System)));
+                    col.System.Repository.Register(typeof(ContentItem), new ContentRepository(col.System, new MockDataSourceFactory(col.System)));
                 }));
 
-            LyniconSystem.Construct(new Module[] { new CoreModule() });
+            LyniconSystem.Extender.AddExtensionRule(typeof(TestData), typeof(IExtTestData));
+            LyniconSystem.Extender.AddExtensionRule(typeof(ICoreMetadata), typeof(IPublishable));
+            LyniconSystem.Extender.AddExtensionRule(typeof(ICoreMetadata), typeof(IInternational));
+
+            LyniconSystem.Construct(new Module[] { new CoreModule(LyniconSystem) });
             LyniconSystem.Modules.SkipDbStateCheck = true;
+            LyniconSystem.SetAsPrimarySystem();
             LyniconSystem.Initialise();
 
             //SetupLyniconSystemWithDb();
 
-            VersionManager.Instance.RegisterVersion(new TestVersioner());
+            //VersionManager.Instance.RegisterVersion(new TestVersioner());
 
             var testingRoutes = new RouteCollection();
             testingRoutes.AddTestDataRoute<HeaderContent>("header", "header/{_0}", new { controller = "mock", action = "mock" });
@@ -75,15 +79,15 @@ namespace LyniconANC.Test
                 {
                     col.SetupTypeForBasic<TestData>();
                     col.SetupType<HeaderContent>();
-                    col.Repository.Register(null, new ContentRepository(new CoreDataSourceFactory()));
-                    col.Repository.Register(typeof(TestData), new BasicRepository(new CoreDataSourceFactory()));
-                    col.Repository.Register(typeof(ContentItem), new ContentRepository(new CoreDataSourceFactory()));
+                    col.System.Repository.Register(null, new ContentRepository(new CoreDataSourceFactory(col.System)));
+                    col.System.Repository.Register(typeof(TestData), new BasicRepository(col.System, new CoreDataSourceFactory(col.System)));
+                    col.System.Repository.Register(typeof(ContentItem), new ContentRepository(new CoreDataSourceFactory(col.System)));
                 }));
 
-            LyniconSystemWithDb.Collator = new Collator(new Repository());
+            LyniconSystemWithDb.Collator = new Collator(LyniconSystemWithDb);
             LyniconSystemWithDb.Modules = new LyniconModuleManager();
 
-            LyniconSystemWithDb.Construct(new Module[] { new CoreModule() });
+            LyniconSystemWithDb.Construct(new Module[] { new CoreModule(LyniconSystemWithDb) });
             LyniconSystemWithDb.Modules.SkipDbStateCheck = true;
             LyniconSystemWithDb.Initialise();
         }

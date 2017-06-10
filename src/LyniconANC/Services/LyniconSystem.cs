@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Lynicon.Repositories;
+using LyniconANC.Extensibility;
 
 namespace Lynicon.Services
 {
@@ -20,27 +22,44 @@ namespace Lynicon.Services
     {
         public static LyniconSystem Instance { get; set; }
 
-        static LyniconSystem()
-        {
-            Instance = new LyniconSystem();
-        }
-
         public LyniconModuleManager Modules { get; set; }
 
         public ISecurityManager SecurityManager { get; set; }
 
         public Collator Collator { get; set; }
 
+        public Repository Repository { get; set; }
+
+        public EventHub Events { get; set; }
+
+        public TypeExtender Extender { get; set; }
+
         public LyniconSystemOptions Settings { get; set; }
+
+        public VersionManager Versions { get; set; }
 
         public LyniconSystem()
         {
-            Modules = LyniconModuleManager.Instance;
-            Collator = Collator.Instance;
+            Modules = new LyniconModuleManager();
+            Collator = new Collator(this);
+            Repository = new Repository(this);
+            Events = new EventHub();
+            Extender = new TypeExtender();
+            Versions = new VersionManager();
         }
         public LyniconSystem(LyniconSystemOptions options) : this()
         {
             this.Settings = options;
+        }
+
+        public void SetAsPrimarySystem()
+        {
+            Instance = this;
+            LyniconModuleManager.Instance = this.Modules;
+            Collator.Instance = this.Collator;
+            Repository.Instance = this.Repository;
+            EventHub.Instance = this.Events;
+            VersionManager.Instance = this.Versions;
         }
 
         public void Construct(IApplicationBuilder app)

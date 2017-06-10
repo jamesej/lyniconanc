@@ -17,7 +17,7 @@ namespace LyniconANC.Test.Models
 
         public BaseTContent()
         {
-            BaseContent.InitialiseProperties(this);
+            InitialiseProperties();
         }
     }
 

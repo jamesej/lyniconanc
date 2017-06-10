@@ -71,20 +71,20 @@ namespace LyniconANC.Test
             Collator.Instance.Set(rc1);
             Collator.Instance.Set(rc2);
 
-            var backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt1.OriginalRecord), "RefTarget").ToList();
+            var backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
             Assert.Equal(2, backRefs.Count);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt2.OriginalRecord), "RefTarget").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt2), "RefTarget").ToList();
             Assert.Equal(0, backRefs.Count);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt2.OriginalRecord), "RefTargetOther").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt2), "RefTargetOther").ToList();
             Assert.Equal(1, backRefs.Count);
 
             rc2.RefTarget = new Reference<RefTargetContent>(rt2.ItemId);
             Collator.Instance.Set(rc2);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt1.OriginalRecord), "RefTarget").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
             Assert.Equal(1, backRefs.Count);
 
             Collator.Instance.Delete(rc1);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(rt1.OriginalRecord), "RefTarget").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
             Assert.Equal(0, backRefs.Count);
         }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Lynicon.Collation;
 using Lynicon.Membership;
 using Lynicon.Models;
+using Lynicon.Services;
 
 namespace Lynicon.Extensibility
 {
@@ -41,11 +42,17 @@ namespace Lynicon.Extensibility
         public abstract bool IsAddressable { get; }
 
         /// <summary>
+        /// The Lynicon system in which the versioner runs
+        /// </summary>
+        public LyniconSystem System { get; private set; }
+
+        /// <summary>
         /// Create a versioner
         /// </summary>
-        public Versioner()
+        public Versioner(LyniconSystem sys)
         {
             this.IsVersionable = null;
+            this.System = sys;
         }
 
         /// <summary>
@@ -53,7 +60,7 @@ namespace Lynicon.Extensibility
         /// </summary>
         /// <param name="versionKey">The version key for the versioner</param>
         /// <param name="isVersionable">function testing whether a content type is versionable</param>
-        public Versioner(Func<Type, bool> isVersionable) : this()
+        public Versioner(LyniconSystem sys, Func<Type, bool> isVersionable) : this(sys)
         {
             this.IsVersionable = isVersionable;
         }
@@ -79,23 +86,23 @@ namespace Lynicon.Extensibility
         }
 
         /// <summary>
-        /// Set the current value for this versioning system using supplied mode on supplied ItemVersion
+        /// Get the current value for this versioning system using supplied mode
         /// </summary>
         /// <param name="mode">The mode to use</param>
-        /// <param name="version">The ItemVersion on which to add the key/value for this versioning system</param>
-        public abstract void SetCurrentVersion(VersioningMode mode, ItemVersion version);
+        /// <returns>The current value for this versioning system</returns>
+        public abstract object CurrentValue(VersioningMode mode);
         /// <summary>
-        /// Get the versioning system value from a container and set this value on the supplied ItemVersion
+        /// Get the versioning system value from a container
         /// </summary>
         /// <param name="container">The container from which to get the version key</param>
-        /// <param name="version">The ItemVersion on which to add the key/value for this versioning system</param>
-        public abstract void GetItemVersion(object container, ItemVersion version);
+        /// <returns>the key/value for this versioning system</returns>
+        public abstract object GetItemValue(object container);
         /// <summary>
         /// Set the versioning on a container to have the value from this versioning system from the supplied ItemVersion
         /// </summary>
-        /// <param name="version">The ItemVersion from which to get the versioning value</param>
+        /// <param name="value">The versioning value</param>
         /// <param name="container">The container on which to set the versioning value</param>
-        public abstract void SetItemVersion(ItemVersion version, object container);
+        public abstract void SetItemValue(object value, object container);
         /// <summary>
         /// Get display details for displaying the value for this versioning system from the supplied ItemVersion
         /// </summary>

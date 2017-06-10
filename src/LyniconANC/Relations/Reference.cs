@@ -15,6 +15,7 @@ using Lynicon.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Reflection;
+using Lynicon.Services;
 
 namespace Lynicon.Relations
 {
@@ -26,14 +27,14 @@ namespace Lynicon.Relations
     {
         public static Func<ItemVersionedId, Type, string, IEnumerable<Summary>> ReferenceGetter { get; set; }
 
-        public static IEnumerable<Summary> GetReferencesFrom<TContent>(object o, string propertyName)
+        public static IEnumerable<Summary> GetReferencesFrom<TContent>(LyniconSystem sys, object o, string propertyName)
             where TContent : class
         {
             if (o is IContentContainer)
-                return GetReferencesFrom<TContent>(new ItemVersionedId(o), propertyName);
+                return GetReferencesFrom<TContent>(new ItemVersionedId(sys, o), propertyName);
 
             var cont = Collator.Instance.GetContainer(o);
-            return GetReferencesFrom<TContent>(cont, propertyName);
+            return GetReferencesFrom<TContent>(sys, cont, propertyName);
         }
         public static IEnumerable<Summary> GetReferencesFrom<TContent>(ItemVersionedId ividToItem, string propertyName)
             where TContent : class
@@ -51,8 +52,8 @@ namespace Lynicon.Relations
                 var neNull = Expression.NotEqual(xGetRef, Expression.Constant(null));
                 if (!typeof(Reference).IsAssignableFrom(refProp.PropertyType))
                     throw new ArgumentException(string.Format("Trying to get references for type {0} property {1} which is not of Reference type", typeof(TContent).FullName, propertyName));
-                var xGetIvid = Expression.MakeMemberAccess(xGetRef, refProp.PropertyType.GetProperty("VersionedId"));
-                var ividConst = Expression.Constant(ividToItem);
+                var xGetIvid = Expression.MakeMemberAccess(xGetRef, refProp.PropertyType.GetProperty("ItemId"));
+                var ividConst = Expression.Constant(new ItemId(ividToItem));
                 var comp = Expression.Equal(xGetIvid, ividConst);
                 var test = Expression.AndAlso(neNull, comp);
                 var lambda = Expression.Lambda<Func<TContent, bool>>(test, xParam);
@@ -88,7 +89,6 @@ namespace Lynicon.Relations
             }
             set
             {
-
                 string strippedValue = (value ?? "").UpTo(" ");
                 extraSerializedData = (value ?? "").After(" ");
                 var itemId = string.IsNullOrEmpty(strippedValue) ? null : new ItemId(strippedValue);
@@ -138,22 +138,6 @@ namespace Lynicon.Relations
                 if (Type == null || string.IsNullOrEmpty(Id))
                     return null;
                 return new ItemId(Id + ":" + Type.FullName);
-            }
-        }
-
-        [JsonIgnore, ScaffoldColumn(false)]
-        public virtual ItemVersionedId VersionedId
-        {
-            get
-            {
-                if (IsEmpty)
-                    return null;
-                return new ItemVersionedId(this.ItemId, VersionManager.Instance.CurrentVersion);
-            }
-            set
-            {
-                this.Id = value.Id.ToString();
-                this.DataType = value.Type.FullName;
             }
         }
 
@@ -251,9 +235,9 @@ namespace Lynicon.Relations
         /// <typeparam name="T">The content type (or parent type or interface) of the referring items</typeparam>
         /// <param name="propName">The property on the referencing item which must refer to this item</param>
         /// <returns>List of referencing items</returns>
-        public virtual IEnumerable<Summary> GetReferencingItems<T>(string propName) where T : class
+        public virtual IEnumerable<Summary> GetReferencingItems<T>(ItemVersion version, string propName) where T : class
         {
-            return Reference.GetReferencesFrom<T>(this.VersionedId, propName);
+            return Reference.GetReferencesFrom<T>(new ItemVersionedId(this.ItemId, version), propName);
         }
 
         /// <summary>
@@ -377,7 +361,7 @@ namespace Lynicon.Relations
             var summaries = Collator.Instance.Get<Summary, object>(AssignableContentTypes, iq => iq);
             var slis = summaries.Select(s => new SelectListItem
             {
-                Text = IsContentType ? s.Title : s.Title + " (" + BaseContent.ContentClassDisplayName(s.Type) + ")",
+                Text = IsContentType ? s.Title : s.Title + " (" + LyniconUi.ContentClassDisplayName(s.Type) + ")",
                 Value = IsContentType ? s.Id.ToString() + ":" : s.ItemId.ToString(),
                 Selected = (s.Id.ToString() == this.Id && s.Type == this.Type)
             }).OrderBy(sli => sli.Text).ToList();

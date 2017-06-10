@@ -53,7 +53,7 @@ namespace LyniconANC.Test
         {
             // ItemId uses ContentType() of the relevant type
             Guid id1 = Guid.NewGuid();
-            Type extType = CompositeTypeManager.Instance.ExtendedTypes[typeof(TestData)];
+            Type extType = sys.LyniconSystem.Extender[typeof(TestData)];
             var ii1 = new ItemId(extType, id1);
             Assert.Equal(typeof(TestData), ii1.Type);
 
@@ -80,7 +80,7 @@ namespace LyniconANC.Test
             // Construct from data item
             RestaurantContent rc = Collator.Instance.GetNew<RestaurantContent>(new Address(typeof(RestaurantContent), "x"));
             var ii5 = new ItemId(rc);
-            Assert.Equal(ii5.Id, rc.Identity);
+            Assert.Equal(ii5.Id, ((ICoreMetadata)rc).Identity);
 
             // Construct from summary
             RestaurantSummary rs = Collator.Instance.GetSummary<RestaurantSummary>(rc);

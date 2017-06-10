@@ -7,7 +7,7 @@ using Lynicon.Attributes;
 
 namespace LyniconANC.Test.Models
 {
-    internal class PathAddressData
+    public class PathAddressData
     {
         [AddressComponent(UsePath = true)]
         public string P { get; set; }

@@ -25,6 +25,7 @@ namespace Lynicon.Startup
             var options = new LyniconSystemOptions();
             optionsAction(options);
             var lynSystem = new LyniconSystem(options);
+            lynSystem.SetAsPrimarySystem();
             LyniconSystem.Instance = lynSystem;
             services.AddSingleton<LyniconSystem>(lynSystem);
             services.AddSingleton<IAuthorizationHandler, ContentPermissionHandler>();

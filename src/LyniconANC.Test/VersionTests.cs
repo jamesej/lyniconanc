@@ -16,6 +16,8 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Routing;
 using System.Reflection;
 using Xunit;
+using Lynicon.Services;
+using LyniconANC.Extensibility;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -30,17 +32,17 @@ namespace LyniconANC.Test
 
         #region IContentContainer Members
 
-        public object GetContent()
+        public object GetContent(TypeExtender extender)
         {
             throw new NotImplementedException();
         }
 
-        public Summary GetSummary()
+        public Summary GetSummary(LyniconSystem sys)
         {
             throw new NotImplementedException();
         }
 
-        public void SetContent(object o)
+        public void SetContent(LyniconSystem sys, object o)
         {
             throw new NotImplementedException();
         }
@@ -109,11 +111,11 @@ namespace LyniconANC.Test
 
         public PublishingVersioner() : base()
         {
-            PublishedVersion = new ItemVersion { { VersionKey, true } };
+            PublishedVersion = new ItemVersion(new Dictionary<string, object> { { VersionKey, true } });
         }
         public PublishingVersioner(Func<Type, bool> isVersionable) : base(isVersionable)
         {
-            PublishedVersion = new ItemVersion { { VersionKey, true } };
+            PublishedVersion = new ItemVersion(new Dictionary<string, object> { { VersionKey, true } });
         }
 
         public override bool Versionable(Type type)
@@ -124,7 +126,7 @@ namespace LyniconANC.Test
             return typeof(IPublishable).IsAssignableFrom(containerType);
         }
 
-        public override void SetCurrentVersion(VersioningMode mode, ItemVersion version)
+        public override object CurrentValue(VersioningMode mode)
         {
             bool isEditor = false;
             try
@@ -134,21 +136,22 @@ namespace LyniconANC.Test
             catch { }
 
             if (!isEditor || mode == VersioningMode.Public)
-                version[VersionKey] = true;
+                return true;
             else
-                version[VersionKey] = false;
+                return false;
         }
 
-        public override void GetItemVersion(object container, ItemVersion version)
+        public override object GetItemValue(object container)
         {
-            if (((IPublishable)container).IsPubVersion.HasValue)
-                version[VersionKey] = ((IPublishable)container).IsPubVersion;
+            if (container is IPublishable && ((IPublishable)container).IsPubVersion.HasValue)
+                return ((IPublishable)container).IsPubVersion;
+            return ItemVersion.Unset;
         }
 
-        public override void SetItemVersion(ItemVersion version, object container)
+        public override void SetItemValue(object value, object container)
         {
             if (container is IPublishable)
-                ((IPublishable)container).IsPubVersion = (bool)version[VersionKey];
+                ((IPublishable)container).IsPubVersion = (bool)value;
         }
 
         public override VersionDisplay DisplayItemVersion(ItemVersion version)
@@ -238,7 +241,7 @@ namespace LyniconANC.Test
             return typeof(IInternational).IsAssignableFrom(containerType);
         }
 
-        public override void SetCurrentVersion(VersioningMode mode, ItemVersion version)
+        public override object CurrentValue(VersioningMode mode)
         {
             var rd = RouteX.CurrentRouteData();
             string locale;
@@ -250,17 +253,20 @@ namespace LyniconANC.Test
                 locale = routeLocaleFromLocale(routeLocale);
             }
 
-            version[VersionKey] = locale;
+            return locale;
         }
 
-        public override void GetItemVersion(object container, ItemVersion version)
+        public override object GetItemValue(object container)
         {
-            version[VersionKey] = (container as IInternational).Locale;
+            if (container is IInternational)
+                return ((IInternational)container).Locale;
+            else
+                return ItemVersion.Unset;
         }
 
-        public override void SetItemVersion(ItemVersion version, object container)
+        public override void SetItemValue(object value, object container)
         {
-            ((IInternational)container).Locale = (string)version[VersionKey];
+            ((IInternational)container).Locale = (string)value;
         }
 
         public override VersionDisplay DisplayItemVersion(ItemVersion version)
@@ -330,11 +336,17 @@ namespace LyniconANC.Test
     {
         #region ICollator Members
 
-        public Repository Repository { get; set; }
 
         public Type AssociatedContainerType
         {
             get { return typeof(TestContainer); }
+        }
+
+        public LyniconSystem System { get; set; }
+
+        public void BuildForTypes(IEnumerable<Type> types)
+        {
+
         }
 
         public IEnumerable<T> Get<T>(IEnumerable<Address> addresses) where T : class
@@ -399,7 +411,7 @@ namespace LyniconANC.Test
         public object GetContainer(Address a, object o)
         {
             var tc = new TestContainer();
-            new ItemVersion(o).SetOnItem(tc);
+            new ItemVersion(System, o).SetOnItem(System.Versions, tc);
             return tc;
         }
 
@@ -463,7 +475,7 @@ namespace LyniconANC.Test
             var iv0 = new ItemVersion();
 
             var cont = new TestContainer { ContentType = typeof(HeaderContent), IsPubVersion = true, Locale = "en-GB" };
-            var iv1 = new ItemVersion(cont);
+            var iv1 = new ItemVersion(sys.LyniconSystem, cont);
             Assert.Equal(true, iv1["Published"]);
             Assert.Equal("en-GB", iv1["Locale"]);
 
@@ -474,8 +486,10 @@ namespace LyniconANC.Test
 
             var iv3 = new ItemVersion(iv2);
             Assert.Equal(iv3, iv2);
-            iv3["Published"] = false;
-            Assert.NotEqual(iv3, iv2);
+            var d3 = new Dictionary<string, object>(iv3);
+            d3["Published"] = false;
+            var ivc = new ItemVersion(d3);
+            Assert.NotEqual(ivc, iv2);
 
             var iv4 = new ItemVersion(new Dictionary<string, object> { { "sval", "abc" }, { "ival", 15 } });
             var json = JsonConvert.SerializeObject(iv4);
@@ -483,48 +497,49 @@ namespace LyniconANC.Test
             Assert.Equal((int)15, iv5["ival"]);
 
             // can construct using dictionary initializer
-            var iv6 = new ItemVersion { { "A", 1 }, { "B", false } };
+            var iv6 = new ItemVersion(new Dictionary<string, object> { { "A", 1 }, { "B", false } });
         }
 
         [Fact]
         public void ItemVersionOperations()
         {
             // means published English vsn
-            var iv1 = new ItemVersion { { "Published", true }, { "Locale", "en-GB" } };
+            var iv1 = new ItemVersion(new Dictionary<string, object> { { "Published", true }, { "Locale", "en-GB" } });
             // means unpublished vsn used for all locales
-            var iv2 = new ItemVersion { { "Published", false }, { "Locale", null } };
+            var iv2 = new ItemVersion(new Dictionary<string, object> { { "Published", false }, { "Locale", null } });
             // means Spanish vsn of type which is not versionable for publishing
-            var iv3 = new ItemVersion { { "Locale", "es-ES" } };
+            var iv3 = new ItemVersion(new Dictionary<string, object> { { "Locale", "es-ES" } });
 
-            var iv4 = iv1.GetAddressablePart();
-            Assert.Equal(new ItemVersion { { "Locale", "en-GB" } }, iv4);
+            var iv4 = iv1.GetAddressablePart(sys.LyniconSystem.Versions);
+            Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Locale", "en-GB" } }), iv4);
 
             var iv5 = iv1.GetUnaddressablePart();
-            Assert.Equal(new ItemVersion { { "Published", true } }, iv5);
+            Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Published", true } }), iv5);
 
-            var iv6 = iv1.GetApplicablePart(typeof(TestContent));
-            Assert.Equal(new ItemVersion { { "Locale", "en-GB" } }, iv6);
+            var iv6 = iv1.GetApplicablePart(sys.LyniconSystem.Versions, typeof(TestContent));
+            Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Locale", "en-GB" } }), iv6);
 
-            var iv7 = iv1.Superimpose(new ItemVersion { { "Published", false }, { "A", "x" } });
+            var iv7 = iv1.Superimpose(new ItemVersion(new Dictionary<string, object> { { "Published", false }, { "A", "x" } }));
             Assert.Equal(true, iv1["Published"]); // does not mutate iv1
-            Assert.Equal(new ItemVersion { { "Published", false }, { "Locale", "en-GB" }, { "A", "x" } }, iv7);
+            Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Published", false }, { "Locale", "en-GB" }, { "A", "x" } }), iv7);
 
-            var iv9 = new ItemVersion(iv1);
-            iv9.Add("X", null);
+            var d9 = new Dictionary<string, object>(iv1);
+            d9.Add("X", null);
+            var iv9 = new ItemVersion(d9);
 
-            var iv8 = iv9.Overlay(new ItemVersion { { "Published", false }, { "Locale", null } });
-            Assert.Equal(new ItemVersion { { "Published", false }, { "Locale", null }, { "X", null } }, iv8);
+            var iv8 = iv9.Overlay(new ItemVersion(new Dictionary<string, object> { { "Published", false }, { "Locale", null } }));
+            Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Published", false }, { "Locale", null }, { "X", null } }), iv8);
             Assert.Equal("en-GB", iv9["Locale"]); // does not mutate iv1
 
-            var iv10 = iv9.Mask(new ItemVersion { { "Published", null }, { "Locale", "es-ES" } });
-            Assert.Equal(new ItemVersion { { "Published", true }, { "Locale", "es-ES" } }, iv10);
+            var iv10 = iv9.Mask(new ItemVersion(new Dictionary<string, object> { { "Published", null }, { "Locale", "es-ES" } }));
+            Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Published", true }, { "Locale", "es-ES" } }), iv10);
             Assert.Equal("es-ES", iv10["Locale"]);
         }
 
         [Fact]
         public void ItemVersionSerialization()
         {
-            var iv1 = new ItemVersion { { "Published", true }, { "Locale", "en-GB" } };
+            var iv1 = new ItemVersion(new Dictionary<string, object> { { "Published", true }, { "Locale", "en-GB" } });
             var dict = new Dictionary<ItemVersion, string>();
             dict.Add(iv1, "hello");
 

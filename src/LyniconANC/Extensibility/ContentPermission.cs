@@ -12,6 +12,7 @@ using System.Collections;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Reflection;
+using Lynicon.Services;
 
 namespace Lynicon.Extensibility
 {
@@ -94,7 +95,7 @@ namespace Lynicon.Extensibility
                 if (container == null)
                     return false;
 
-                vsn = new ItemVersion(container);
+                vsn = new ItemVersion(LyniconSystem.Instance, container);
             }
 
             foreach (var kvp in vsn)

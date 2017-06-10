@@ -393,6 +393,16 @@ namespace Lynicon.Utility
                     yield return found;
         }
 
+        public static IEnumerable<T> Recurse<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> function)
+        {
+            foreach (T item in source)
+            {
+                yield return item;
+                foreach (T child in function(item).Recurse(function))
+                    yield return child;
+            }
+
+        }
 
         public static IEnumerable<TSource> PartialOrderBy<TSource, TKey>(
             this IEnumerable<TSource> source,

@@ -35,11 +35,16 @@ namespace LyniconANC.Test
             hc.HeaderBody = "xyz";
             hc.SubTests = new List<SubTest> { new SubTest { A = "aab", B = "bbc" } };
 
+            Assert.IsAssignableFrom<ICoreMetadata>(hc);
+
             Collator.Instance.Set(hc);
 
             var item = Collator.Instance.Get<HeaderContent2>(new Address(typeof(HeaderContent2), "ct-a"));
             Assert.NotNull(item);
             Assert.Equal(item.SubTestsCount, 1);
+
+            Assert.IsAssignableFrom<ICoreMetadata>(item);
+
 
             var hc2 = Collator.Instance.GetNew<HeaderContent2>(new Address(typeof(HeaderContent2), "ct-b"));
 
@@ -47,15 +52,21 @@ namespace LyniconANC.Test
             hc2.Image.Url = "/def.gif";
             hc2.HeaderBody = "bbb";
 
+            Assert.IsAssignableFrom<ICoreMetadata>(hc2);
+
             Collator.Instance.Set(hc2, true);
 
             var items = Collator.Instance.Get<HeaderContent2>();
             Assert.Equal(2, items.Count(i => (i.Title ?? "").StartsWith("CT")));
 
+            var allHc2 = Collator.Instance.Get<object, object>(new Type[] { typeof(HeaderContent2) }, iq => iq).ToList();
+            Assert.True(allHc2.Count > 0 && allHc2.All(o => o is HeaderContent2 && o is ICoreMetadata));
+
             var itemId = new ItemId(item);
             var item2 = Collator.Instance.Get<HeaderContent2>(itemId);
             Assert.NotNull(item2);
             Assert.Equal(item.Title, item2.Title);
+            Assert.IsAssignableFrom<ICoreMetadata>(item2);
 
             Collator.Instance.Delete(item2);
 

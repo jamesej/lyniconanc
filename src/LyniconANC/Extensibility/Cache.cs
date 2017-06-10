@@ -9,6 +9,8 @@ using Lynicon.Repositories;
 using Lynicon.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
+using Lynicon.Services;
+using LyniconANC.Extensibility;
 
 namespace Lynicon.Extensibility
 {
@@ -38,7 +40,10 @@ namespace Lynicon.Extensibility
         public static T CopyCacheItem<T>(T cacheItem) where T : class
         {
             var json = JsonConvert.SerializeObject(cacheItem);
-            return (T)JsonConvert.DeserializeObject(json, cacheItem.GetType());
+            var copy = (T)JsonConvert.DeserializeObject(json, cacheItem.GetType());
+            TypeExtender.CopyExtensionData(cacheItem, copy);
+
+            return copy;
         }
 
         /// <summary>
@@ -114,7 +119,7 @@ namespace Lynicon.Extensibility
         /// </summary>
         /// <param name="name">Name of the module</param>
         /// <param name="dependentOn">List of names of other modules this is dependent on (these will start up before this one)</param>
-        public Cache(IHostingEnvironment env, string name, params string[] dependentOn) : base(name, dependentOn)
+        public Cache(LyniconSystem sys, IHostingEnvironment env, string name, params string[] dependentOn) : base(sys, name, dependentOn)
         {
             hosting = env;
             SerializationMode = CacheSerialization.Json;

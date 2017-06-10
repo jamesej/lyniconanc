@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lynicon.Services;
 
 namespace Lynicon.DataSources
 {
@@ -20,9 +21,12 @@ namespace Lynicon.DataSources
 
         ContextLifetimeMode contextLifetimeMode = ContextLifetimeMode.PerCall;
 
-        public CoreDataSource(ContextLifetimeMode contextLifetimeMode, bool forSummaries)
+        public LyniconSystem System { get; set; }
+
+        public CoreDataSource(LyniconSystem sys, ContextLifetimeMode contextLifetimeMode, bool forSummaries)
         {
             this.contextLifetimeMode = contextLifetimeMode;
+            System = sys;
             Db = GetDb(forSummaries);
         }
 
@@ -57,13 +61,13 @@ namespace Lynicon.DataSources
 
         public void Create(object o)
         {
-            var item = CompositeTypeManager.Instance.ConvertToComposite(o);
+            var item = System.Extender.ConvertToExtended(o);
             Db.Entry(item).State = EntityState.Added;
         }
 
         public void Delete(object o)
         {
-            var item = CompositeTypeManager.Instance.ConvertToComposite(o);
+            var item = System.Extender.ConvertToExtended(o);
             Db.Entry(item).State = EntityState.Deleted;
         }
 
@@ -82,7 +86,7 @@ namespace Lynicon.DataSources
 
         public void Update(object o)
         {
-            var item = CompositeTypeManager.Instance.ConvertToComposite(o);
+            var item = System.Extender.ConvertToExtended(o);
             Db.Entry(item).State = EntityState.Modified;
         }
 

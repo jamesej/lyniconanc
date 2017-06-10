@@ -8,12 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Utility;
 using Microsoft.EntityFrameworkCore;
+using Lynicon.Services;
 
 namespace Lynicon.DataSources
 {
     public class NullDataSource : IDataSource
     {
         public string DataSourceSpecifier { get; set; }
+
+        public LyniconSystem System { get; set; }
 
         public void Create(object o)
         { }

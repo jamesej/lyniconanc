@@ -30,14 +30,14 @@ namespace LyniconANC.Test
             var ci = Repository.Instance.New<ContentItem>();
             Assert.Equal(ci.Id, Guid.Empty);
 
-            var hc = new HeaderContent();
+            var hc = Collator.Instance.GetNew<HeaderContent>();
             hc.Title = "Header A";
             hc.Image.Url = "/abc.gif";
             hc.HeaderBody = "xyz";
-            ci.SetContent(hc);
+            ci.SetContent(sys.LyniconSystem, hc);
             ci.Path = "rt-a";
             Assert.Equal(ci.Title, "Header A");
-            Assert.Equal(((HeaderSummary)ci.GetSummary()).Image.Url, "/abc.gif");
+            Assert.Equal(((HeaderSummary)ci.GetSummary(sys.LyniconSystem)).Image.Url, "/abc.gif");
 
             Repository.Instance.Set(ci);
 

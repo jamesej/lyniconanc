@@ -1,5 +1,6 @@
 ﻿using Lynicon.Extensibility;
 using Lynicon.Repositories;
+using Lynicon.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace Lynicon.DataSources
                 return "";
             }
         }
+
+        public LyniconSystem System { get; set; }
 
         public IDataSource Create(bool forSummaries)
         {

@@ -20,8 +20,8 @@ namespace Lynicon.Extensibility
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(LyniconModuleManager));
 
-        static readonly LyniconModuleManager instance = new LyniconModuleManager();
-        public static LyniconModuleManager Instance { get { return instance; } }
+        static LyniconModuleManager instance = new LyniconModuleManager();
+        public static LyniconModuleManager Instance { get { return instance; } set { instance = value; } }
 
         static LyniconModuleManager() { }
 
@@ -170,8 +170,8 @@ namespace Lynicon.Extensibility
 
             Initialised = true;
 
-            // Tell UI to show an alert if there was a problem
-            if (this.AnyBlocked)
+            // Tell UI to show an alert if there was a problem and this is the primary module manager
+            if (this.AnyBlocked && this == Instance)
                 LyniconUi.Instance.ShowProblemAlert = true;
 
             // Run any registered startup processes

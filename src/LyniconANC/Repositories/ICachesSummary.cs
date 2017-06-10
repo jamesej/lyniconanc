@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lynicon.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,6 @@ namespace Lynicon.Repositories
     public interface ICachesSummary
     {
         void InvalidateSummary();
-        void EnsureSummaryCache();
+        void EnsureSummaryCache(LyniconSystem sys);
     }
 }

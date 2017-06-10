@@ -7,7 +7,7 @@ using Lynicon.Attributes;
 
 namespace LyniconANC.Test.Models
 {
-    internal class SplitAddressData
+    public class SplitAddressData
     {
         [AddressComponent("_0")]
         public string A { get; set; }

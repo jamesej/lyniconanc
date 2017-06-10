@@ -10,6 +10,7 @@ using Lynicon.Extensibility;
 using Lynicon.Repositories;
 using Lynicon.Utility;
 using Newtonsoft.Json;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
@@ -19,18 +20,6 @@ namespace Lynicon.Collation
     [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
     public class ItemVersionedId : ItemId, IEquatable<ItemVersionedId>
     {
-        /// <summary>
-        /// Make an ItemVersionedId for the current version of a content item specified by
-        /// its ItemId
-        /// </summary>
-        /// <param name="id">The ItemId of the content item</param>
-        /// <returns>The currently versioned ItemVersionedId for the content item</returns>
-        public static ItemVersionedId CurrentFromId(ItemId id)
-        {
-            ItemVersion currApplic = VersionManager.Instance.CurrentVersionForType(id.Type);
-            return new ItemVersionedId(id, currApplic);
-        }
-
         /// <summary>
         /// Creates an ItemVersionedId for a content item specified by its ItemId and an
         /// ItemVersion without removing any version keys inapplicable to the type of the item
@@ -49,12 +38,12 @@ namespace Lynicon.Collation
         /// </summary>
         /// <param name="container">A container</param>
         /// <returns>A list of specific ItemVersionedIds</returns>
-        public static List<ItemVersionedId> CreateExpanded(object container)
+        public static List<ItemVersionedId> CreateExpanded(LyniconSystem sys, object container)
         {
-            var vsn = new ItemVersion(container);
+            var vsn = new ItemVersion(sys, container);
             ItemId iid = new ItemId(container);
             var res = new List<ItemVersionedId>();
-            foreach (var v in vsn.MatchingVersions(iid.Type))
+            foreach (var v in vsn.MatchingVersions(sys.Versions, iid.Type))
                 res.Add(new ItemVersionedId(iid, v));
 
             return res;
@@ -73,10 +62,7 @@ namespace Lynicon.Collation
         {
             get
             {
-                if (version == null && Id != null && Type != null)
-                    return VersionManager.Instance.CurrentVersion;
-                else
-                    return version;
+                return version;
             }
             set
             {
@@ -89,13 +75,13 @@ namespace Lynicon.Collation
         /// </summary>
         public ItemVersionedId() { }
         /// <summary>
-        /// Create the ItemVersionedId of a given container
+        /// Create the ItemVersionedId of a given container or content item
         /// </summary>
-        /// <param name="container">The container</param>
-        public ItemVersionedId(object container) :
-            base(container)
+        /// <param name="container">The container or content item</param>
+        public ItemVersionedId(LyniconSystem sys, object o) :
+            base(o)
         {
-            Version = new ItemVersion(container);
+            Version = new ItemVersion(sys, o);
         }
         /// <summary>
         /// Create the ItemVersionedId from a serialized string
@@ -113,25 +99,23 @@ namespace Lynicon.Collation
         public ItemVersionedId(ItemVersionedId ivid) : this(ivid, ivid.Version)
         { }
         /// <summary>
-        /// Create an ItemVersionedId from an ItemId by adding the current version to it
+        /// Create an ItemVersionedId from an ItemId
         /// </summary>
         /// <param name="id">The ItemId</param>
-        public ItemVersionedId(ItemId id) : this(id, VersionManager.Instance.CurrentVersion)
+        public ItemVersionedId(ItemId id) : this(id, null)
         { }
         /// <summary>
-        /// Create an ItemVersionedId from an ItemId and an ItemVersion, restricting the ItemVersion
-        /// to only those keys applicable to the type of the ItemId
+        /// Create an ItemVersionedId from an ItemId and an ItemVersion
         /// </summary>
         /// <param name="id">the ItemId</param>
         /// <param name="version">the ItemVersion</param>
         public ItemVersionedId(ItemId id, ItemVersion version) :
             base(id.Type, id.Id)
         {
-            Version = VersionManager.Instance.GetApplicableVersion(version, id.Type);
+            Version = version;
         }
         /// <summary>
-        /// Create an ItemVersionedId from a type, an id and an ItemVersion, restricting the ItemVersion
-        /// to only those keys applicable to the type of the ItemId
+        /// Create an ItemVersionedId from a type, an id and an ItemVersion
         /// </summary>
         /// <param name="type">the type</param>
         /// <param name="id">the id</param>
@@ -139,7 +123,7 @@ namespace Lynicon.Collation
         public ItemVersionedId(Type type, object id, ItemVersion version):
             base(type, id)
         {
-            Version = VersionManager.Instance.GetApplicableVersion(version, type);
+            Version = version ?? throw new ArgumentException("ItemVersion cannot be null");
         }
 
         /// <summary>

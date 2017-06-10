@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lynicon.DataSources;
+using Lynicon.Services;
 
 namespace LyniconANC.Test
 {
@@ -16,9 +17,16 @@ namespace LyniconANC.Test
             get { return ""; }
         }
 
+        public LyniconSystem System { get; set; }
+
+        public MockDataSourceFactory(LyniconSystem sys)
+        {
+            System = sys;
+        }
+
         public IDataSource Create(bool forSummaries)
         {
-            return new MockDataSource();
+            return new MockDataSource(System);
         }
 
         #endregion

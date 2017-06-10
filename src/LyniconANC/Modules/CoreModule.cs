@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using Lynicon.Extensions;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using Lynicon.Services;
 
 namespace Lynicon.Modules
 {
@@ -26,8 +28,8 @@ namespace Lynicon.Modules
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(CoreModule));
 
-        public CoreModule(params string[] dependentOn)
-            : base("Core", dependentOn)
+        public CoreModule([FromServices]LyniconSystem sys, params string[] dependentOn)
+            : base(sys, "Core", dependentOn)
         {
         }
 
@@ -53,11 +55,6 @@ namespace Lynicon.Modules
 
         public override bool Initialise()
         {
-            if (!VerifyDbState("LyniconInit 0.1"))
-            {
-                return false;
-            }
-
             Collator.Instance.SetupType(typeof(ContentItem), null, null);
 
             // Set up Url Management

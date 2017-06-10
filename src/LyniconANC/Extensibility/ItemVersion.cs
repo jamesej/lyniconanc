@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using Lynicon.Repositories;
 using Lynicon.Collation;
 using Lynicon.Models;
+using System.Collections.ObjectModel;
+using Lynicon.Services;
 
 namespace Lynicon.Extensibility
 {
@@ -22,18 +24,9 @@ namespace Lynicon.Extensibility
     /// specific version values for the null values.
     /// </summary>
     [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
-    public class ItemVersion : Dictionary<string, object>, IEquatable<ItemVersion>
+    public class ItemVersion : ReadOnlyDictionary<string, object>, IEquatable<ItemVersion>
     {
-        /// <summary>
-        /// Get the current version (from the global VersionManager)
-        /// </summary>
-        public static ItemVersion Current
-        {
-            get
-            {
-                return VersionManager.Instance.CurrentVersion;
-            }
-        }
+        public readonly static object Unset = (object)"086e3c0a-b81d-418a-9d95-52929a4e1fe2";
 
         /// <summary>
         /// Fix value types, needs to correct for JSON deserialization of ints to Int64
@@ -56,60 +49,80 @@ namespace Lynicon.Extensibility
         /// <summary>
         /// Create an empty ItemVersion
         /// </summary>
-        public ItemVersion()
+        public ItemVersion() : base(new Dictionary<string, object>())
         { }
         /// <summary>
-        /// Create an ItemVersion from dictionary (which could be another ItemVersion)
+        /// Create an ItemVersion from dictionary (which could be another ItemVersion) (copies dictionary)
         /// </summary>
         /// <param name="dict">Dictionary of string keys to object values</param>
-        public ItemVersion(IDictionary<string, object> dict) : base(dict)
+        public ItemVersion(IDictionary<string, object> dict) : base(dict.ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
         { }
         /// <summary>
         /// Special constructor for use in JSON deserialization which corrects integer values to Int32 from Int64
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        public ItemVersion(SerializationInfo info, StreamingContext context)
+        public ItemVersion(SerializationInfo info, StreamingContext context) : base(Serialize(info, context))
         {
-            ItemVersion newIv = JsonConvert.DeserializeObject<ItemVersion>((string)info.GetValue("vsn", typeof(string)));
-            newIv.Do(kvp => this.Add(kvp.Key, kvp.Value is Int64 ? Convert.ToInt32(kvp.Value) : kvp.Value));
         }
         /// <summary>
         /// Creates the ItemVersion for a data object which can be a summary, a container or a content item
         /// </summary>
         /// <param name="o">Data object for which to create its ItemVersion</param>
-        public ItemVersion(object o) : base()
+        public ItemVersion(LyniconSystem sys, object o) : base(Construct(sys, o))
         {
-            if (o is Summary)
-            {
-                var vsn = ((Summary)o).Version;
-                if (vsn != null)
-                    vsn.Do(kvp => this.Add(kvp.Key, kvp.Value));
-            } 
-            else
-            {
-                object container = null;
-                if (o is IContentContainer)
-                    container = o;
-                else
-                    container = Collator.Instance.GetContainer(o);
-
-                VersionManager.Instance.GetVersion(container)
-                    .Do(kvp => this.Add(kvp.Key, kvp.Value));
-            }
-
         }
         /// <summary>
         /// Create an ItemVersion from a serialized string
         /// </summary>
         /// <param name="desc">ItemVersion serialized to string</param>
         public ItemVersion(string desc)
-            : base()
+            : base(Deserialize(desc))
         {
+        }
+
+        public ItemVersion(params (string key, object value)[] kvps) : base(kvps.ToDictionary(kvp => kvp.key, kvp => kvp.value))
+        { }
+
+        private static Dictionary<string, object> Serialize(SerializationInfo info, StreamingContext context)
+        {
+            Dictionary<string, object> iv = JsonConvert.DeserializeObject<Dictionary<string, object>>((string)info.GetValue("vsn", typeof(string)));
+            Dictionary<string, object> newIv = iv.ToDictionary(kvp => kvp.Key, kvp => kvp.Value is Int64 ? Convert.ToInt32(kvp.Value) : kvp.Value);
+            return newIv;
+        }
+
+        private static Dictionary<string, object> Deserialize(string desc)
+        {
+            var iv = new Dictionary<string, object>();
             if (string.IsNullOrEmpty(desc))
-                return;
+                return iv;
             var newIv = JsonConvert.DeserializeObject<Dictionary<string, object>>(desc);
-            newIv.Do(kvp => this.Add(kvp.Key, kvp.Value is Int64 ? Convert.ToInt32(kvp.Value) : kvp.Value));
+            newIv.Do(kvp => iv.Add(kvp.Key, kvp.Value is Int64 ? Convert.ToInt32(kvp.Value) : kvp.Value));
+            return iv;
+        }
+
+        private static Dictionary<string, object> Construct(LyniconSystem sys, object o)
+        {
+            var iv = new Dictionary<string, object>();
+            if (o is Summary)
+            {
+                var vsn = ((Summary)o).Version;
+                if (vsn != null)
+                    vsn.Do(kvp => iv.Add(kvp.Key, kvp.Value));
+            }
+            else
+            {
+                object container = null;
+                if (o is IContentContainer)
+                    container = o;
+                else
+                    container = sys.Collator.GetContainer(o);
+
+                sys.Versions.GetVersion(container)
+                    .Do(kvp => iv.Add(kvp.Key, kvp.Value));
+            }
+
+            return iv;
         }
 
         /// <summary>
@@ -118,12 +131,12 @@ namespace Lynicon.Extensibility
         /// are 'unaddressable'.  This returns the version key/values in this version which are addressable.
         /// </summary>
         /// <returns>Version with addressable key/values only</returns>
-        public ItemVersion GetAddressablePart()
+        public ItemVersion GetAddressablePart(VersionManager vm)
         {
-            var addressablePart = new ItemVersion();
-            this.Where(kvp => VersionManager.Instance.AddressableVersionKeys.Contains(kvp.Key))
+            var addressablePart = new Dictionary<string, object>();
+            this.Where(kvp => vm.AddressableVersionKeys.Contains(kvp.Key))
                 .Do(kvp => addressablePart.Add(kvp.Key, kvp.Value));
-            return addressablePart;
+            return new ItemVersion(addressablePart);
         }
 
         /// <summary>
@@ -134,10 +147,10 @@ namespace Lynicon.Extensibility
         /// <returns>Version with unaddressable key/values only</returns>
         public ItemVersion GetUnaddressablePart()
         {
-            var unaddressablePart = new ItemVersion();
+            var unaddressablePart = new Dictionary<string, object>();
             this.Where(kvp => VersionManager.Instance.UnaddressableVersionKeys.Contains(kvp.Key))
                 .Do(kvp => unaddressablePart.Add(kvp.Key, kvp.Value));
-            return unaddressablePart;
+            return new ItemVersion(unaddressablePart);
         }
 
         /// <summary>
@@ -145,9 +158,9 @@ namespace Lynicon.Extensibility
         /// </summary>
         /// <param name="t">Content type of an item</param>
         /// <returns>Key/values used to version type t</returns>
-        public ItemVersion GetApplicablePart(Type t)
+        public ItemVersion GetApplicablePart(VersionManager vm, Type t)
         {
-            return VersionManager.Instance.GetApplicableVersion(this, t);
+            return vm.GetApplicableVersion(this, t);
         }
 
         /// <summary>
@@ -158,20 +171,20 @@ namespace Lynicon.Extensibility
         /// <returns>A new ItemVersion made by copying the keys of the argument over the keys of this one</returns>
         public ItemVersion Superimpose(ItemVersion other)
         {
-            var combined = new ItemVersion(this);
+            var combined = new Dictionary<string, object>(this);
             other.Do(kvp => combined[kvp.Key] = kvp.Value);
-            return combined;
+            return new ItemVersion(combined);
         }
 
         public ItemVersion Overlay(ItemVersion other)
         {
-            var overlaid = new ItemVersion(this);
+            var overlaid = new Dictionary<string, object>(this);
             other.Do(kvp =>
                 {
                     if (overlaid.ContainsKey(kvp.Key))
                         overlaid[kvp.Key] = kvp.Value;
                 });
-            return overlaid;
+            return new ItemVersion(overlaid);
         }
 
         /// <summary>
@@ -183,7 +196,7 @@ namespace Lynicon.Extensibility
         /// <returns>Resulting ItemVersion</returns>
         public ItemVersion Mask(ItemVersion other)
         {
-            var masked = new ItemVersion();
+            var masked = new Dictionary<string, object>();
             other.Do(kvp =>
                 {
                     if (kvp.Value == null && this.ContainsKey(kvp.Key))
@@ -191,7 +204,7 @@ namespace Lynicon.Extensibility
                     else if (kvp.Value != null)
                         masked.Add(kvp.Key, kvp.Value);
                 });
-            return masked;
+            return new ItemVersion(masked);
         }
 
         /// <summary>
@@ -201,13 +214,13 @@ namespace Lynicon.Extensibility
         /// <returns>Most specific ItemVersion containing this and the other</returns>
         public ItemVersion LeastAbstractCommonVersion(ItemVersion other)
         {
-            var extended = new ItemVersion();
+            var extended = new Dictionary<string, object>();
             other.Do(kvp =>
                 {
                     if (this.ContainsKey(kvp.Key) && this[kvp.Key] == kvp.Value)
                         extended.Add(kvp.Key, kvp.Value);
                 });
-            return extended;
+            return new ItemVersion(extended);
         }
 
         /// <summary>
@@ -241,41 +254,30 @@ namespace Lynicon.Extensibility
         }
 
         /// <summary>
-        /// Remove all the keys listed from this ItemVersion
-        /// </summary>
-        /// <param name="keys">List of keys to remove</param>
-        public void RemoveKeys(IEnumerable<string> keys)
-        {
-            foreach (string key in keys)
-                if (this.ContainsKey(key))
-                    this.Remove(key);
-        }
-
-        /// <summary>
         /// Find all specific ItemVersions which are applicable to a type
         /// </summary>
         /// <param name="t">The type</param>
         /// <returns>All applicable ItemVersion</returns>
-        public List<ItemVersion> MatchingVersions(Type t)
+        public List<ItemVersion> MatchingVersions(VersionManager vm, Type t)
         {
-            var vsn = new ItemVersion(this);
-            var other = VersionManager.Instance.VersionForType(t);
+            var vsn = new Dictionary<string, object>(this);
+            var other = vm.VersionForType(t);
             foreach (var key in this.Keys)
                 if (!other.ContainsKey(key))
                     vsn.Remove(key);
             foreach (var key in other.Keys)
                 if (!vsn.ContainsKey(key))
                     vsn.Add(key, null);
-            return vsn.Expand();
+            return new ItemVersion(vsn).Expand();
         }
 
         /// <summary>
         /// Set the version of a container to this ItemVersion
         /// </summary>
         /// <param name="container">The container on which to set the ItemVersion</param>
-        public void SetOnItem(object container)
+        public void SetOnItem(VersionManager vm, object container)
         {
-            VersionManager.Instance.SetVersion(this, container);
+            vm.SetVersion(this, container);
         }
 
         /// <summary>
@@ -285,28 +287,28 @@ namespace Lynicon.Extensibility
         /// <returns>List of contained specific ItemVersions</returns>
         public List<ItemVersion> Expand()
         {
-            var vs = new List<ItemVersion> { new ItemVersion(this) };
+            var vs = new List<Dictionary<string, object>> { new Dictionary<string, object>(this) };
             foreach (string key in this.Keys)
             {
                 if (this[key] != null)
                     continue;
 
-                var vals = VersionManager.Instance.VersionLists[key];
+                var vals = VersionManager.VersionLists[key];
                 if (vals == null || vals.Length == 0)
                     throw new Exception("Can't get current versions because current version has null value for unlistable key " + key);
                 vs.Do(v => v[key] = vals[0]);
-                var addVs = new List<ItemVersion>();
+                var addVs = new List<Dictionary<string, object>>();
                 vals.Skip(1).Do(val =>
                     vs.Do(v =>
                     {
-                        var addV = new ItemVersion(v);
+                        var addV = new Dictionary<string, object>(v);
                         addV[key] = val;
                         addVs.Add(addV);
                     }));
                 vs.AddRange(addVs);
             }
 
-            return vs;
+            return vs.Select(dict => new ItemVersion(dict)).ToList();
         }
 
         /// <summary>
@@ -377,15 +379,5 @@ namespace Lynicon.Extensibility
         }
 
         #endregion
-
-        [OnDeserialized]
-        internal void OnDeserializedMethod(StreamingContext context)
-        {
-            foreach (string key in this.Keys.ToList())
-            {
-                if (this[key] != null && this[key].GetType() == typeof(Int64))
-                    this[key] = (int)(Int64)this[key];
-            }
-        }
     }
 }

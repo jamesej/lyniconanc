@@ -41,10 +41,12 @@ namespace Lynicon.Repositories
 
             var builder = new ModelBuilder(SqlServerConventionSetBuilder.Build());
 
+            // temp, breaks separability of Lynicon systems
+            var sys = LyniconSystem.Instance;
 
-            foreach (var extendedType in CompositeTypeManager.Instance.ExtendedTypes.Where(kvp => requiredTypes.Contains(kvp.Value)))
+            foreach (Type baseType in sys.Extender.BaseTypes.Where(t => requiredTypes.Contains(sys.Extender[t])))
             {
-                builder.Entity(extendedType.Value).ToTable(LinqX.GetTableName(extendedType.Key));
+                builder.Entity(sys.Extender[baseType]).ToTable(LinqX.GetTableName(baseType));
             }
 
             CoreModel = builder.Model;
@@ -89,12 +91,12 @@ namespace Lynicon.Repositories
         /// <returns>A DbQuery against the underlying database</returns>
         public IQueryable CompositeSet(Type tBase, bool useIncludes)
         {
-            if (!CompositeTypeManager.Instance.BaseTypes.Contains(tBase))
+            var extender = LyniconSystem.Instance.Extender;
+            var ext = extender[tBase];
+            if (ext == null)
                 throw new Exception("No composite of base type " + tBase.FullName);
 
-            Type extType = CompositeTypeManager.Instance.ExtendedTypes[tBase];
-
-            IQueryable q = (IQueryable)ReflectionX.InvokeGenericMethod(this, "InnerCompositeSet", extType, true, useIncludes);
+            IQueryable q = (IQueryable)ReflectionX.InvokeGenericMethod(this, "InnerCompositeSet", ext, true, useIncludes);
 
             return q;
         }

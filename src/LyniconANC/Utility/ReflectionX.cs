@@ -12,6 +12,7 @@ using Lynicon.Collation;
 using Lynicon.Relations;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
+using LyniconANC.Extensibility;
 
 namespace Lynicon.Utility
 {
@@ -477,9 +478,7 @@ namespace Lynicon.Utility
             if (res.IsGenericType())
                 res = res.GetGenericArguments().First();
             res = res.UnproxiedType();
-            var kvp = CompositeTypeManager.Instance.ExtendedTypes.FirstOrDefault(v => v.Value == res);
-            if (kvp.Key != null)
-                res = kvp.Key;
+            res = TypeExtender.BaseType(res);
             return res;
         }
 

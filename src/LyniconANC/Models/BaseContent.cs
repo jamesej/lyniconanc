@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Linq.Expressions;
 //using Lynicon.Membership;
 using Lynicon.Attributes;
+using LyniconANC.Extensibility;
 
 namespace Lynicon.Models
 {
@@ -54,42 +55,32 @@ namespace Lynicon.Models
             }
         }
 
-        /// <summary>
-        /// Take a content type and display its name in a user-friendly way
-        /// </summary>
-        /// <param name="t">The content type</param>
-        /// <returns>Friendly display of its name</returns>
-        public static string ContentClassDisplayName(Type t)
+        public void InitialiseProperties()
         {
-            if (t == null)
-                return "";
-            if (t.Name == "Reference`1")
-                t = t.GenericTypeArguments[0];
-            var attr = t.GetCustomAttribute<ContentTypeDisplayNameAttribute>();
-            if (attr != null)
-                return attr.DisplayName;
-            string name = t.Name.UpToLast("Content").ExpandCamelCase();
-            return name.UpTo("`").Trim();
+            InitialiseProperties(this);
         }
 
-        /// <summary>
-        /// Identity of the container of this content item
-        /// </summary>
-        [JsonIgnore, ScaffoldColumn(false)]
-        public Guid Identity
-        {
-            get { return this.OriginalRecord == null ? Guid.Empty : this.OriginalRecord.Identity; }
-        }
+        ///// <summary>
+        ///// Identity of the container of this content item
+        ///// </summary>
+        //[JsonIgnore, ScaffoldColumn(false)]
+        //public Guid Identity
+        //{
+        //    get { return this.OriginalRecord == null ? Guid.Empty : this.OriginalRecord.Identity; }
+        //}
 
         string url = null;
+        /// <summary>
+        /// Returns the url of this content item (if it is accessible through routing)
+        /// </summary>
         [JsonIgnore, ScaffoldColumn(false)]
         public string Url
         {
             get
             {
-                if (url == null && this.OriginalRecord != null)
+                if (url == null && this is ICoreMetadata)
                 {
-                    url = this.OriginalRecord.GetSummary().Url;
+                    url = Collator.Instance.GetSummary<Summary>(this).Url;
                 }
                 return url;
             }
@@ -101,14 +92,20 @@ namespace Lynicon.Models
         [JsonIgnore, ScaffoldColumn(false)]
         public ItemId ItemId
         {
-            get { return new ItemId(this.GetType(), this.Identity); }
+            get
+            {
+                if (this is ICoreMetadata)
+                    return new ItemId(TypeExtender.BaseType(this.GetType()), ((ICoreMetadata)this).Identity);
+                else
+                    return null;
+            }
         }
 
-        /// <summary>
-        /// The container which contained this content item
-        /// </summary>
-        [JsonIgnore, ScaffoldColumn(false)]
-        public ContentItem OriginalRecord { get; set; }
+        ///// <summary>
+        ///// The container which contained this content item
+        ///// </summary>
+        //[JsonIgnore, ScaffoldColumn(false)]
+        //public ContentItem OriginalRecord { get; set; }
 
         protected virtual string PathSep
         {
@@ -123,7 +120,10 @@ namespace Lynicon.Models
         /// <returns>The list of content items</returns>
         protected virtual IEnumerable<T> GetPathChildren<T>() where T : class
         {
-            string pathPattern = this.OriginalRecord.Path + PathSep;
+            if (!(this is ICoreMetadata))
+                return null;
+
+            string pathPattern = ((ICoreMetadata)this).Path + PathSep;
             return GetPathPattern<T>(pathPattern);
         }
 
@@ -135,10 +135,13 @@ namespace Lynicon.Models
         /// <returns>The content item</returns>
         protected virtual T GetPathParent<T>() where T : class
         {
-            string path = this.OriginalRecord.Path;
+            if (!(this is ICoreMetadata))
+                return null;
+
+            string path = ((ICoreMetadata)this).Path;
             if (string.IsNullOrEmpty(path))
                 return null;
-            string pathPattern = this.OriginalRecord.Path.UpTo(PathSep);
+            string pathPattern = path.UpTo(PathSep);
             return GetPathPattern<T>(pathPattern).FirstOrDefault();
         }
 

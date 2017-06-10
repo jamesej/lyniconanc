@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Utility;
 using Microsoft.EntityFrameworkCore;
+using Lynicon.Services;
 
 namespace Lynicon.DataSources
 {
@@ -24,8 +25,11 @@ namespace Lynicon.DataSources
 
         ContextLifetimeMode contextLifetimeMode = ContextLifetimeMode.PerCall;
 
-        public EFDataSource(Dictionary<Type, Func<TContext, IQueryable>> dbSetSelectors, ContextLifetimeMode contextLifetimeMode, bool forSummaries)
+        public LyniconSystem System { get; set; }
+
+        public EFDataSource(LyniconSystem sys, Dictionary<Type, Func<TContext, IQueryable>> dbSetSelectors, ContextLifetimeMode contextLifetimeMode, bool forSummaries)
         {
+            this.System = sys;
             this.contextLifetimeMode = contextLifetimeMode;
             this.dbSetSelectors = dbSetSelectors;
             Db = GetDb();

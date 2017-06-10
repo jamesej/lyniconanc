@@ -10,6 +10,7 @@ using Lynicon.Repositories;
 using Lynicon.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Concurrent;
 
 namespace Lynicon.Extensibility
 {
@@ -79,8 +80,13 @@ namespace Lynicon.Extensibility
             public VersioningMode Mode { get; set; }
         }
 
-        static readonly VersionManager instance = new VersionManager();
-        public static VersionManager Instance { get { return instance; } }
+        static VersionManager instance = new VersionManager();
+        public static VersionManager Instance { get { return instance; } internal set { instance = value; } }
+
+        /// <summary>
+        /// Lists of possible values for each version key
+        /// </summary>
+        public static ConcurrentDictionary<string, object[]> VersionLists { get; set; }
 
         static VersionManager() { }
 
@@ -97,11 +103,6 @@ namespace Lynicon.Extensibility
         /// </summary>
         public List<string> UnaddressableVersionKeys { get; set; }
 
-        /// <summary>
-        /// Lists of possible values for each version key
-        /// </summary>
-        public Dictionary<string, object[]> VersionLists { get; set; }
-
         protected const string StateStackKey = "lyn_version_state_stack";
         /// <summary>
         /// Stack of versioning states.  Note this is held on the RequestThreadCache so a different stack is maintained for
@@ -111,9 +112,9 @@ namespace Lynicon.Extensibility
         {
             get
             {
-                if (!RequestThreadCache.Current.ContainsKey(StateStackKey))
-                    RequestThreadCache.Current.Add(StateStackKey, new Stack<VersioningState>());
-                return (Stack<VersioningState>)RequestThreadCache.Current[StateStackKey];
+                if (!RequestThreadCache.Current.ContainsKey(StateStackKey + UniqueId))
+                    RequestThreadCache.Current.Add(StateStackKey + UniqueId, new Stack<VersioningState>());
+                return (Stack<VersioningState>)RequestThreadCache.Current[StateStackKey + UniqueId];
             }
         }
 
@@ -125,16 +126,16 @@ namespace Lynicon.Extensibility
         {
             get
             {
-                if (!RequestThreadCache.Current.ContainsKey(ModeKey))
+                if (!RequestThreadCache.Current.ContainsKey(ModeKey + UniqueId))
                     return VersioningMode.Current;
-                return (VersioningMode)RequestThreadCache.Current[ModeKey];
+                return (VersioningMode)RequestThreadCache.Current[ModeKey + UniqueId];
             }
             set
             {
-                if (!RequestThreadCache.Current.ContainsKey(ModeKey))
-                    RequestThreadCache.Current.Add(ModeKey, value);
+                if (!RequestThreadCache.Current.ContainsKey(ModeKey + UniqueId))
+                    RequestThreadCache.Current.Add(ModeKey + UniqueId, value);
                 else
-                    RequestThreadCache.Current[ModeKey] = value;
+                    RequestThreadCache.Current[ModeKey + UniqueId] = value;
             }
         }
 
@@ -148,16 +149,16 @@ namespace Lynicon.Extensibility
         {
             get
             {
-                if (!RequestThreadCache.Current.ContainsKey(SpecificVersionKey))
+                if (!RequestThreadCache.Current.ContainsKey(SpecificVersionKey + UniqueId))
                     return new ItemVersion();
-                return (ItemVersion)RequestThreadCache.Current[SpecificVersionKey];
+                return (ItemVersion)RequestThreadCache.Current[SpecificVersionKey + UniqueId];
             }
             set
             {
-                if (!RequestThreadCache.Current.ContainsKey(SpecificVersionKey))
-                    RequestThreadCache.Current.Add(SpecificVersionKey, value);
+                if (!RequestThreadCache.Current.ContainsKey(SpecificVersionKey + UniqueId))
+                    RequestThreadCache.Current.Add(SpecificVersionKey + UniqueId, value);
                 else
-                    RequestThreadCache.Current[SpecificVersionKey] = value;
+                    RequestThreadCache.Current[SpecificVersionKey + UniqueId] = value;
             }
         }
 
@@ -186,26 +187,28 @@ namespace Lynicon.Extensibility
         }
 
         private const string overrideBlockKey = "_lyn_overrideBlock";
-        private bool OverrideVersion(ItemVersion v, ItemVersion over)
+        private ItemVersion OverrideVersion(ItemVersion overridden, ItemVersion over)
         {
             bool changed = false;
 
+            var v = overridden.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
             // detected if we have recursed into this (on the current thread/request) and don't apply override if so
-            bool blocked = RequestThreadCache.Current.ContainsKey(overrideBlockKey)
-                ? ((bool?)RequestThreadCache.Current[overrideBlockKey] ?? false)
+            bool blocked = RequestThreadCache.Current.ContainsKey(overrideBlockKey + UniqueId)
+                ? ((bool?)RequestThreadCache.Current[overrideBlockKey + UniqueId] ?? false)
                 : false;
 
             if (over.Count > 0 && !blocked)
             {
                 IUser u = null;
-                RequestThreadCache.Current[overrideBlockKey] = true;
+                RequestThreadCache.Current[overrideBlockKey + UniqueId] = true;
                 try
                 {
                     u = SecurityManager.Current?.User;
                 }
                 finally
                 {
-                    RequestThreadCache.Current[overrideBlockKey] = false;
+                    RequestThreadCache.Current[overrideBlockKey + UniqueId] = false;
                 }
 
                 foreach (var versioner in Versioners)
@@ -230,7 +233,7 @@ namespace Lynicon.Extensibility
                 }
             }
 
-            return changed;
+            return changed ? new ItemVersion(v) : null;
         }
 
         // Current version is cached on the request
@@ -248,7 +251,7 @@ namespace Lynicon.Extensibility
             {
                 if (Mode != VersioningMode.Current
                     || currentVersionInvalidated
-                    || !RequestThreadCache.Current.ContainsKey(CurrentVersionKey))
+                    || !RequestThreadCache.Current.ContainsKey(CurrentVersionKey + UniqueId))
                 {
                     ItemVersion iv = null;
                     if (Mode == VersioningMode.All)
@@ -257,30 +260,29 @@ namespace Lynicon.Extensibility
                         iv = SpecificVersion;
                     else if (Mode == VersioningMode.Public)
                     {
-                        iv = new ItemVersion();
-                        foreach (var versioner in Versioners)
-                            iv.Add(versioner.VersionKey, versioner.PublicVersionValue);
+                        iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.PublicVersionValue));
                     }
                     else
                     {
-                        iv = new ItemVersion();
-                        foreach (var versioner in Versioners)
-                            versioner.SetCurrentVersion(Mode, iv);
+                        iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.CurrentValue(Mode)));
+
                         var vOver = this.ClientVersionOverride;
                         if (vOver != null && vOver != iv)
                         {
-                            currentVersionIsOverridden = OverrideVersion(iv, vOver);
+                            var overridden = OverrideVersion(iv, vOver);
+                            currentVersionIsOverridden = overridden != null;
+                            iv = overridden ?? iv;
                         } 
                         else
                             currentVersionIsOverridden = false;
                     }
 
                     if (Mode == VersioningMode.Current)
-                        RequestThreadCache.Current[CurrentVersionKey] = new ItemVersion(iv);
+                        RequestThreadCache.Current[CurrentVersionKey + UniqueId] = new ItemVersion(iv);
 
                     return iv;
                 }
-                return new ItemVersion((ItemVersion)RequestThreadCache.Current[CurrentVersionKey]);
+                return new ItemVersion((ItemVersion)RequestThreadCache.Current[CurrentVersionKey + UniqueId]);
             }
         }
 
@@ -305,12 +307,12 @@ namespace Lynicon.Extensibility
         /// <returns>Current Item version with only the keys applicable to a type</returns>
         public ItemVersion CurrentVersionForType(Type type)
         {
-            var vsn = new ItemVersion(CurrentVersion);
+            var vsn = new Dictionary<string, object>(CurrentVersion);
             foreach (var versioner in Versioners)
                 if (!versioner.Versionable(type))
                     vsn.Remove(versioner.VersionKey);
 
-            return vsn;
+            return new ItemVersion(vsn);
         }
 
         /// <summary>
@@ -345,12 +347,12 @@ namespace Lynicon.Extensibility
         {
             get
             {
-                var iv = new ItemVersion();
-                foreach (var versioner in Versioners)
-                    iv.Add(versioner.VersionKey, versioner.PublicVersionValue);
+                var iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.PublicVersionValue));
                 return iv;
             }
         }
+
+        public Guid UniqueId { get; private set; }
 
         /// <summary>
         /// Expand the abstract version to a list of fully-specified versions
@@ -360,13 +362,13 @@ namespace Lynicon.Extensibility
         /// <returns>List of fully-specified versions</returns>
         public List<ItemVersion> ContainingVersions(ItemVersion iv)
         {
-            var expIv = new ItemVersion(iv);
+            var expIv = new Dictionary<string, object>(iv);
             foreach (var versioner in Versioners)
             {
                 if (!iv.ContainsKey(versioner.VersionKey))
                     expIv.Add(versioner.VersionKey, null);
             }
-            return expIv.Expand();
+            return new ItemVersion(expIv).Expand();
         }
 
         /// <summary>
@@ -377,7 +379,8 @@ namespace Lynicon.Extensibility
             Versioners = new List<Versioner>();
             AddressableVersionKeys = new List<string>();
             UnaddressableVersionKeys = new List<string>();
-            VersionLists = new Dictionary<string, object[]>();
+            VersionLists = new ConcurrentDictionary<string, object[]>();
+            UniqueId = Guid.NewGuid();
         }
 
         /// <summary>
@@ -392,7 +395,8 @@ namespace Lynicon.Extensibility
                 AddressableVersionKeys.Add(versioner.VersionKey);
             else
                 UnaddressableVersionKeys.Add(versioner.VersionKey);
-            VersionLists.Add(versioner.VersionKey, versioner.AllVersionValues);
+            if (!VersionLists.ContainsKey(versioner.VersionKey))
+                VersionLists.TryAdd(versioner.VersionKey, versioner.AllVersionValues);
         }
 
         /// <summary>
@@ -415,7 +419,7 @@ namespace Lynicon.Extensibility
             if (specificVersion != null)
                 this.SpecificVersion = specificVersion;
 
-            return new VersioningContext(this.CurrentVersion);
+            return new VersioningContext(this);
         }
 
         /// <summary>
@@ -435,10 +439,10 @@ namespace Lynicon.Extensibility
         /// <returns>The ItemVersion of the container</returns>
         public ItemVersion GetVersion(object container)
         {
-            var version = new ItemVersion();
-            foreach (var versioner in Versioners)
-                if (versioner.Versionable(container))
-                    versioner.GetItemVersion(container, version);
+            var version = new ItemVersion(Versioners
+                .Select(vnr => new { vnr.VersionKey, val = vnr.GetItemValue(container) })
+                .Where(vinfo => vinfo.val != ItemVersion.Unset)
+                .ToDictionary(vinfo => vinfo.VersionKey, vinfo => vinfo.val));
 
             return version;
         }
@@ -452,7 +456,7 @@ namespace Lynicon.Extensibility
         {
             foreach (var versioner in Versioners)
                 if (version.ContainsKey(versioner.VersionKey) && versioner.Versionable(container))
-                    versioner.SetItemVersion(version, container);
+                    versioner.SetItemValue(version[versioner.VersionKey], container);
         }
 
         /// <summary>
@@ -495,10 +499,7 @@ namespace Lynicon.Extensibility
         /// <returns>ItemVersion with null values for all the keys applicable</returns>
         public ItemVersion VersionForType(Type type)
         {
-            var iv = new ItemVersion();
-            foreach (var versioner in Versioners)
-                if (versioner.Versionable(type))
-                    iv.Add(versioner.VersionKey, null);
+            var iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => (object)null));
             return iv;
         }
 
@@ -544,7 +545,7 @@ namespace Lynicon.Extensibility
                 string cssClass = null;
                 foreach (object o in versions)
                 {
-                    var iv = new ItemVersion { { v.VersionKey, o } };
+                    var iv = new ItemVersion(new Dictionary<string, object> { { v.VersionKey, o } });
                     var dv = v.DisplayItemVersion(iv);
                     cssClass = dv.CssClass;
                     var sli = new SelectListItem();
@@ -589,14 +590,10 @@ namespace Lynicon.Extensibility
         /// <returns>The modified, applicable ItemVersion</returns>
         public ItemVersion GetApplicableVersion(ItemVersion version, Type t)
         {
-            ItemVersion res = new ItemVersion();
-            foreach (var versioner in Versioners)
-            {
-                if (!version.ContainsKey(versioner.VersionKey))
-                    continue;
-                if (versioner.Versionable(t))
-                    res.Add(versioner.VersionKey, version[versioner.VersionKey]);
-            }
+            ItemVersion res = new ItemVersion(Versioners
+                .Where(vnr => version.ContainsKey(vnr.VersionKey) && vnr.Versionable(t))
+                .ToDictionary(vnr => vnr.VersionKey, vnr => version[vnr.VersionKey]));
+
             return res;
         }
 

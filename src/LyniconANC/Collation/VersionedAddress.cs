@@ -10,6 +10,7 @@ using Lynicon.Extensibility;
 using Lynicon.Repositories;
 using Lynicon.Utility;
 using Newtonsoft.Json;
+using Lynicon.Services;
 
 namespace Lynicon.Collation
 {
@@ -20,29 +21,18 @@ namespace Lynicon.Collation
     public class VersionedAddress : Address, IEquatable<VersionedAddress>
     {
         /// <summary>
-        /// Creates a VersionedAddress from an address using the current ItemVersion
-        /// </summary>
-        /// <param name="a">The Address</param>
-        /// <returns>The resulting VersionedAddress</returns>
-        public static VersionedAddress CurrentFromAddress(Address a)
-        {
-            ItemVersion curr = VersionManager.Instance.CurrentVersionForType(a.Type);
-            return new VersionedAddress(a, curr);
-        }
-
-        /// <summary>
         /// Creates a list of VersionedAddresses by taking the (possibly abstract) version of the versioned
         /// address of a container, and producing all the specific versions contained in it attached to the
         /// ItemId of the container
         /// </summary>
         /// <param name="container">The container</param>
         /// <returns>List of specific VersionedAddresses</returns>
-        public static List<VersionedAddress> CreateExpanded(object container)
+        public static List<VersionedAddress> CreateExpanded(LyniconSystem sys, object container)
         {
-            var vsn = new ItemVersion(container);
+            var vsn = new ItemVersion(sys, container);
             Address a = new Address(container);
             var res = new List<VersionedAddress>();
-            foreach (var v in vsn.MatchingVersions(a.Type))
+            foreach (var v in vsn.MatchingVersions(sys.Versions, a.Type))
                 res.Add(new VersionedAddress(a, v));
 
             return res;
@@ -61,10 +51,7 @@ namespace Lynicon.Collation
         {
             get
             {
-                if (version == null && Type != null)
-                    return VersionManager.Instance.CurrentVersion;
-                else
-                    return version;
+                return version;
             }
             set
             {
@@ -91,10 +78,10 @@ namespace Lynicon.Collation
         /// Create the VersionedAddress of a container
         /// </summary>
         /// <param name="container">The container</param>
-        public VersionedAddress(object container) :
+        public VersionedAddress(LyniconSystem sys, object container) :
             base(container)
         {
-            Version = new ItemVersion(container);
+            Version = new ItemVersion(sys, container);
         }
         /// <summary>
         /// Create a VersionedAddress from its serialized string
@@ -115,7 +102,7 @@ namespace Lynicon.Collation
         /// Create a VersionedAddress from an Address and the current ItemVersion
         /// </summary>
         /// <param name="a">The address</param>
-        public VersionedAddress(Address a) : this(a, VersionManager.Instance.CurrentVersion)
+        public VersionedAddress(Address a) : this(a, null)
         { }
         /// <summary>
         /// Create a VersionedAddress from an Address and an ItemVersion
@@ -125,7 +112,7 @@ namespace Lynicon.Collation
         public VersionedAddress(Address a, ItemVersion version) :
             base(a.Type, a.GetAsContentPath())
         {
-            Version = VersionManager.Instance.GetApplicableVersion(version, a.Type);
+            Version = version;
         }
         /// <summary>
         /// Create a VersionedAddress from a Type, an address path and an ItemVersion
@@ -142,9 +129,9 @@ namespace Lynicon.Collation
         /// </summary>
         /// <param name="mask">The ItemVersion to mask with</param>
         /// <returns>The resulting ItemVersionedId</returns>
-        public ItemVersionedId Mask(ItemVersion mask)
+        public ItemVersionedId Mask(LyniconSystem sys, ItemVersion mask)
         {
-            var ivid = new ItemVersionedId(this);
+            var ivid = new ItemVersionedId(sys, this);
             ivid.Version = ivid.Version.Mask(mask);
             return ivid;
         }

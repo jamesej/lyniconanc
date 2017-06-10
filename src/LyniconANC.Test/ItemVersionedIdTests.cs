@@ -27,8 +27,8 @@ namespace LyniconANC.Test
         public void ItemVersionedIdEquality()
         {
             Guid id0 = Guid.NewGuid();
-            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "testV", "en-GB" } });
-            ItemVersion iv1 = new ItemVersion(new Dictionary<string, object> { { "testV", "es-ES" } });
+            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "Locale", "en-GB" } });
+            ItemVersion iv1 = new ItemVersion(new Dictionary<string, object> { { "Locale", "es-ES" } });
             var ii0 = new ItemVersionedId(typeof(HeaderContent), id0, iv0);
             var ii1 = new ItemVersionedId(typeof(HeaderContent), new Guid(id0.ToString()), new ItemVersion(iv0));
             var ii2 = new ItemVersionedId(typeof(RestaurantContent), id0, new ItemVersion(iv0));
@@ -52,11 +52,11 @@ namespace LyniconANC.Test
         [Fact]
         public void ItemVersionedIdConstructors()
         {
-            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "testV", "en-GB" } });
+            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "Locale", "en-GB" } });
 
             // ItemId uses ContentType() of the relevant type
             Guid id1 = Guid.NewGuid();
-            Type extType = CompositeTypeManager.Instance.ExtendedTypes[typeof(TestData)];
+            Type extType = sys.LyniconSystem.Extender[typeof(TestData)];
             var ii1 = new ItemVersionedId(extType, id1, iv0);
             Assert.Equal(typeof(TestData), ii1.Type);
 
@@ -69,28 +69,28 @@ namespace LyniconANC.Test
             // Construct from basic type
             TestData td = Collator.Instance.GetNew<TestData>(new Address(typeof(TestData), "a"));
             td.Id = 5;
-            var ii3 = new ItemVersionedId(td);
+            var ii3 = new ItemVersionedId(sys.LyniconSystem, td);
             Assert.Equal(ii3.Id, td.Id);
             Assert.Equal(ii3.Version, VersionManager.Instance.CurrentVersionForType(typeof(TestData)));
 
             // Construct from container
-            Guid id = Guid.NewGuid();
-            Guid ident = Guid.NewGuid();
-            ContentItem ci = new ContentItem { Id = id, Identity = ident, DataType = typeof(RestaurantContent).FullName };
-            var ii4 = new ItemVersionedId(ci);
-            Assert.Equal(ii4.Id, ident);
-            Assert.Equal(ii4.Type, typeof(RestaurantContent));
-            Assert.Equal(ii4.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
+            //Guid id = Guid.NewGuid();
+            //Guid ident = Guid.NewGuid();
+            //ContentItem ci = new ContentItem { Id = id, Identity = ident, DataType = typeof(RestaurantContent).FullName };
+            //var ii4 = new ItemVersionedId(ci);
+            //Assert.Equal(ii4.Id, ident);
+            //Assert.Equal(ii4.Type, typeof(RestaurantContent));
+            //Assert.Equal(ii4.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
 
             // Construct from data item
             RestaurantContent rc = Collator.Instance.GetNew<RestaurantContent>(new Address(typeof(RestaurantContent), "x"));
-            var ii5 = new ItemVersionedId(rc);
-            Assert.Equal(ii5.Id, rc.Identity);
+            var ii5 = new ItemVersionedId(sys.LyniconSystem, rc);
+            Assert.Equal(ii5.Id, ((ICoreMetadata)rc).Identity);
             Assert.Equal(ii5.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
 
             // Construct from summary
             RestaurantSummary rs = Collator.Instance.GetSummary<RestaurantSummary>(rc);
-            var ii6 = new ItemVersionedId(rs);
+            var ii6 = new ItemVersionedId(sys.LyniconSystem, rs);
             Assert.Equal(ii6.Id, rs.Id);
             Assert.Equal(ii6.Type, rs.Type);
             Assert.Equal(ii6.Version, VersionManager.Instance.CurrentVersionForType(typeof(RestaurantContent)));
@@ -101,21 +101,21 @@ namespace LyniconANC.Test
             object otest = null;
             string stest = null;
             Summary summtest = null;
-            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(cc));
+            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(sys.LyniconSystem, cc));
             Assert.Throws<NullReferenceException>(() => new ItemVersionedId(iitest));
-            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(otest));
+            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(sys.LyniconSystem, otest));
             Assert.Throws<ArgumentException>(() => new ItemVersionedId(stest));
-            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(summtest));
+            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(sys.LyniconSystem, summtest));
             Assert.Throws<ArgumentException>(() => new ItemVersionedId(typeof(RestaurantContent), null, iv0));
             Assert.Throws<ArgumentException>(() => new ItemVersionedId(null, Guid.NewGuid(), iv0));
-            Assert.Throws<NullReferenceException>(() => new ItemVersionedId(typeof(RestaurantContent), Guid.NewGuid(), null));
+            Assert.Throws<ArgumentException>(() => new ItemVersionedId(typeof(RestaurantContent), Guid.NewGuid(), null));
         }
 
         [Fact]
         public void ItemIdSerialization()
         {
             Guid id0 = Guid.NewGuid();
-            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "testV", "en-GB" } });
+            ItemVersion iv0 = new ItemVersion(new Dictionary<string, object> { { "Locale", "en-GB" } });
             var ii0 = new ItemVersionedId(typeof(TestData), id0, iv0);
             var dict = new Dictionary<ItemVersionedId, string>();
             dict.Add(ii0, "hello");
