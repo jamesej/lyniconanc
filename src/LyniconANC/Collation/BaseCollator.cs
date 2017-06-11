@@ -98,6 +98,9 @@ namespace Lynicon.Collation
                 parms["$orderBy"] = (string)rd.DataTokens["orderBy"];
             }
 
+            if (parms["$orderBy"] != null && typeof(TQuery).GetProperty(parms["$orderBy"]) == null)
+                parms.Remove("$orderBy");
+
             Func<IQueryable<TQuery>, IQueryable<TQuery>> queryBody = (iq => iq.Filter(parms).AsFacade<TQuery>());
             var parmsCount = new NameValueCollection(parms);
             parmsCount.Remove("$skip");

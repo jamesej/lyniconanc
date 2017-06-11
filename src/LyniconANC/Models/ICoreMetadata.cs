@@ -1,4 +1,5 @@
-﻿using Lynicon.Collation;
+﻿using Lynicon.Attributes;
+using Lynicon.Collation;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Lynicon.Models
         Guid Id { get; set; }
         [ScaffoldColumn(false)]
         Guid Identity { get; set; }
-        [ScaffoldColumn(false)]
+        [ScaffoldColumn(false), AddressComponent(UsePath = true)]
         string Path { get; set; }
         [ScaffoldColumn(false)]
         DateTime Created { get; set; }

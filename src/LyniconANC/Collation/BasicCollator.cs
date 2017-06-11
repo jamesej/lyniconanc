@@ -56,7 +56,7 @@ namespace Lynicon.Collation
                     yield return res;
             }
         }
-        private IEnumerable<T> GetAddressesOfType<T, TAddress>(IEnumerable<Address> addresses)
+        protected IEnumerable<T> GetAddressesOfType<T, TAddress>(IEnumerable<Address> addresses)
             where T : class
             where TAddress : class
         {
