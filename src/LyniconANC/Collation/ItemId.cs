@@ -51,7 +51,7 @@ namespace Lynicon.Collation
         public object Id
         {
             get { return id; }
-            set
+            protected set
             {
                 if (value == null)
                     throw new ArgumentException("ItemId's Id cannot be null");
@@ -64,7 +64,7 @@ namespace Lynicon.Collation
         /// <summary>
         /// Type of the item
         /// </summary>
-        public Type Type { get; set; }
+        public Type Type { get; protected set; }
 
         public ItemId()
         { }

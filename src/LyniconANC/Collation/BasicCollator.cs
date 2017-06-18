@@ -33,7 +33,7 @@ namespace Lynicon.Collation
         {
             return GetIdName(typeof(T));
         }
-        public string GetIdName(Type t)
+        public virtual string GetIdName(Type t)
         {
             return Collator.Instance.GetIdProperty(t).Name;
         }
@@ -61,12 +61,14 @@ namespace Lynicon.Collation
             where TAddress : class
         {
             bool isSummary = typeof(T).IsSubclassOf(typeof(Summary)) || typeof(T) == typeof(Summary);
-            foreach (var a in addresses)
-            {
-                Func<IQueryable<TAddress>, IQueryable<TAddress>> queryBody = a.GetAsQueryBody<TAddress>();
-                foreach (var res in Repository.Get<TAddress>(typeof(T), queryBody))
-                    yield return isSummary ? GetSummary<T>(res) : res as T;
-            }
+            //foreach (var a in addresses)
+            //{
+            //    Func<IQueryable<TAddress>, IQueryable<TAddress>> queryBody = a.GetAsQueryBody<TAddress>();
+            //    foreach (var res in Repository.Get<TAddress>(typeof(T), queryBody))
+            //        yield return isSummary ? GetSummary<T>(res) : res as T;
+            //}
+            foreach (var res in Collate<object>(null, addresses))
+                yield return isSummary ? GetSummary<T>(res) : res as T;
         }
 
         /// <inheritdoc/>
@@ -85,7 +87,7 @@ namespace Lynicon.Collation
             where TId : class
         {
             bool isSummary = typeof(T).IsSubclassOf(typeof(Summary)) || typeof(T) == typeof(Summary);
-            foreach (var res in Repository.Get<TId>(typeof(T), ids))
+            foreach (var res in Collate<object>(Repository.Get<TId>(typeof(T), ids), null))
                 yield return isSummary ? GetSummary<T>(res) : res as T;
         }
 
@@ -103,7 +105,7 @@ namespace Lynicon.Collation
                 //if (!typeof(T).IsAssignableFrom(typeof(TQuery)))
                 //    throw new ArgumentException("Need to be able to assign query type: " + typeof(TQuery).FullName + " to output type " + typeof(T).FullName);
 
-                foreach (var res in Repository.Get<TQuery>(typeof(T), types, queryBody))
+                foreach (var res in Collate<object>(Repository.Get<TQuery>(typeof(T), types, queryBody), null))
                     yield return res as T;
             }
         }
@@ -149,7 +151,7 @@ namespace Lynicon.Collation
         /// <inheritdoc/>
         public override T GetNew<T>(Address a)
         {
-            T newT = Repository.New<T>();
+            T newT = System.Repository.New<T>();
 
             // set values implied by route
             if (a != null && !a.ContainsKey("_id"))  // don't set id from route as it should be automatically generated
@@ -158,12 +160,15 @@ namespace Lynicon.Collation
             // ensure it is created in the current version
             System.Versions.SetVersion(VersionManager.Instance.CurrentVersion, newT);
 
-            return newT;
+            return Collate<T>(new object[] { newT }, new Address[] { a }).Single();
         }
 
         /// <inheritdoc/>
         public override bool Set(Address a, object data, Dictionary<string, object> setOptions)
         {
+            if (a == null)
+                a = GetAddress(data);
+            SetRelated(a.GetAsContentPath(), data, (bool)(setOptions.ContainsKey("bypassChecks") ? setOptions["bypassChecks"] : false));
             return Repository.Set(new List<object>{ data }, setOptions)[0];
         }
 
@@ -189,21 +194,20 @@ namespace Lynicon.Collation
         /// <inheritdoc/>
         public override Address GetAddress(Type type, RouteData rd)
         {
-            Address address = new Address();
+            var dict = new Dictionary<string, object>();
             if (rd != null)
             {
                 if (rd.Values.ContainsKey("_id"))
-                    address.Add("_id", rd.Values["_id"]);
+                    dict.Add("_id", rd.Values["_id"]);
                 else
                 {
                     foreach (string key in rd.Values.Keys.Where(k => k.StartsWith("_") || k.StartsWith("*_")))
                         if ((rd.Values[key] ?? "").ToString() != "")
-                            address.Add(key, rd.Values[key]);
+                            dict.Add(key, rd.Values[key]);
                 }
             }
-            address.Type = type;
-            address.FixCase();
-            return address;
+            var address = new Address(type, dict);
+            return address.FixCase();
         }
 
         /// <inheritdoc/>

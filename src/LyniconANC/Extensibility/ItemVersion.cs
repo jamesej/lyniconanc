@@ -311,6 +311,11 @@ namespace Lynicon.Extensibility
             return vs.Select(dict => new ItemVersion(dict)).ToList();
         }
 
+        public ItemVersion Canonicalise()
+        {
+            return new ItemVersion(this.Where(kvp => kvp.Value != null).ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+        }
+
         /// <summary>
         /// Return this ItemVersion as a serialized string
         /// </summary>

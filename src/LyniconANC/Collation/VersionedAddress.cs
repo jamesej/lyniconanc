@@ -53,7 +53,7 @@ namespace Lynicon.Collation
             {
                 return version;
             }
-            set
+            protected set
             {
                 version = value;
             }
@@ -70,10 +70,6 @@ namespace Lynicon.Collation
             }
         }
 
-        /// <summary>
-        /// Create an empty VersionedAddress
-        /// </summary>
-        public VersionedAddress() { }
         /// <summary>
         /// Create the VersionedAddress of a container
         /// </summary>
@@ -123,18 +119,6 @@ namespace Lynicon.Collation
         public VersionedAddress(Type t, string path, ItemVersion version) :
             this(new Address(t, path), version)
         { }
-
-        /// <summary>
-        /// Create an ItemVersionedId from this VersionedAddress, masking the ItemVersion with the supplied ItemVersion
-        /// </summary>
-        /// <param name="mask">The ItemVersion to mask with</param>
-        /// <returns>The resulting ItemVersionedId</returns>
-        public ItemVersionedId Mask(LyniconSystem sys, ItemVersion mask)
-        {
-            var ivid = new ItemVersionedId(sys, this);
-            ivid.Version = ivid.Version.Mask(mask);
-            return ivid;
-        }
 
         /// <summary>
         /// Serialize a VersionedAddress

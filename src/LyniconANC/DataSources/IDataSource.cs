@@ -12,7 +12,7 @@ namespace Lynicon.DataSources
         /// <summary>
         /// The Lynicon data system in which this data source exists
         /// </summary>
-        LyniconSystem System { get; set; }
+        LyniconSystem System { get; }
 
         /// <summary>
         /// Return an IQueryable<ExtT> where ExtT is the extended version of 'type' if it exists, or 'type' itself if not,

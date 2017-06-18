@@ -17,6 +17,7 @@ using Lynicon.Editors;
 using Lynicon.DataSources;
 using LyniconANC.Extensibility;
 using Lynicon.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lynicon.Collation
 {
@@ -614,8 +615,21 @@ namespace Lynicon.Collation
         /// <returns>List of PropertyInfos of the properties required to generate a summary</returns>
         public List<PropertyInfo> ContainerSummaryFields(Type containerType)
         {
+            Type baseType = TypeExtender.BaseType(containerType);
+            var excludedPropNames = new List<string>();
+            if (baseType.GetCustomAttribute<SummaryTypeAttribute>() != null) // has a declared summary type
+            {
+                // Exclude all properties in the base type which aren't marked as in the summary
+                excludedPropNames = baseType.GetPersistedProperties()
+                    .Where(pi => pi.GetCustomAttribute<SummaryAttribute>() == null 
+                                 && pi.GetCustomAttribute<AddressComponentAttribute>() == null
+                                 && pi.GetCustomAttribute<KeyAttribute>() == null)
+                    .Select(pi => pi.Name)
+                    .ToList();
+            }
+
             return containerType.GetPersistedProperties()
-                .Where(pi => pi.GetCustomAttribute<NotSummarisedAttribute>() == null)
+                .Where(pi => !excludedPropNames.Contains(pi.Name) && pi.GetCustomAttribute<NotSummarisedAttribute>() == null)
                 .ToList();
         }
 

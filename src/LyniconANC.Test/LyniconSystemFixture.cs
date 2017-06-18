@@ -39,8 +39,11 @@ namespace LyniconANC.Test
                     col.SetupType<PathAddressData>();
                     col.SetupType<SplitAddressData>();
                     col.SetupType<PropertyRedirectContent>();
+                    col.SetupTypeForBasic<RedirectData>();
+                    col.SetupType<RedirectTargetContent>();
                     col.System.Repository.Register(null, new ContentRepository(col.System, new MockDataSourceFactory(col.System)));
                     col.System.Repository.Register(typeof(TestData), new BasicRepository(col.System, new MockDataSourceFactory(col.System)));
+                    col.System.Repository.Register(typeof(RedirectData), new BasicRepository(col.System, new MockDataSourceFactory(col.System)));
                     col.System.Repository.Register(typeof(ContentItem), new ContentRepository(col.System, new MockDataSourceFactory(col.System)));
                 }));
 
@@ -65,8 +68,8 @@ namespace LyniconANC.Test
             testingRoutes.AddTestDataRoute<RefContent>("ref", "ref/{_0}/{_1}", new { controller = "mock", action = "mock" });
             ContentMap.Instance.RouteCollection = testingRoutes;
 
-            VersionManager.Instance.RegisterVersion(new PublishingVersioner(t => t == typeof(HeaderContent)));
-            VersionManager.Instance.RegisterVersion(new I18nVersioner(new string[] { "en-GB", "es-ES" }, "locale", "en-GB", s => s));
+            VersionManager.Instance.RegisterVersion(new PublishingVersioner(LyniconSystem, t => t == typeof(HeaderContent)));
+            VersionManager.Instance.RegisterVersion(new I18nVersioner(LyniconSystem, new string[] { "en-GB", "es-ES" }, "locale", "en-GB", s => s));
 
             Collator.Instance.SetupType<TestContent>(new TestCollator(), null);
         }

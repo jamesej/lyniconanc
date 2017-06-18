@@ -109,11 +109,11 @@ namespace LyniconANC.Test
             get { return new object[] { true, false }; }
         }
 
-        public PublishingVersioner() : base()
+        public PublishingVersioner(LyniconSystem sys) : base(sys)
         {
             PublishedVersion = new ItemVersion(new Dictionary<string, object> { { VersionKey, true } });
         }
-        public PublishingVersioner(Func<Type, bool> isVersionable) : base(isVersionable)
+        public PublishingVersioner(LyniconSystem sys, Func<Type, bool> isVersionable) : base(sys, isVersionable)
         {
             PublishedVersion = new ItemVersion(new Dictionary<string, object> { { VersionKey, true } });
         }
@@ -216,16 +216,16 @@ namespace LyniconANC.Test
             get { return localeSet.Cast<object>().ToArray(); }
         }
 
-        public I18nVersioner(string[] localeSet, string localeRouteKey, string defaultLocale, Func<string, string> routeLocaleFromLocale)
-            : base()
+        public I18nVersioner(LyniconSystem sys, string[] localeSet, string localeRouteKey, string defaultLocale, Func<string, string> routeLocaleFromLocale)
+            : base(sys)
         {
             this.localeSet = localeSet;
             this.localeRouteKey = localeRouteKey;
             this.defaultLocale = defaultLocale;
             this.routeLocaleFromLocale = routeLocaleFromLocale;
         }
-        public I18nVersioner(string[] localeSet, string localeRouteKey, string defaultLocale, Func<string, string> routeLocaleFromLocale, Func<Type, bool> isVersionable)
-            : base(isVersionable)
+        public I18nVersioner(LyniconSystem sys, string[] localeSet, string localeRouteKey, string defaultLocale, Func<string, string> routeLocaleFromLocale, Func<Type, bool> isVersionable)
+            : base(sys, isVersionable)
         {
             this.localeSet = localeSet;
             this.localeRouteKey = localeRouteKey;

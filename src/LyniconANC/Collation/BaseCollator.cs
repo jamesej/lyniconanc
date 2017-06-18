@@ -15,6 +15,8 @@ using Microsoft.Extensions.Primitives;
 using System.Reflection;
 using LyniconANC.Extensibility;
 using Lynicon.Services;
+using Lynicon.Attributes;
+using Newtonsoft.Json.Linq;
 
 namespace Lynicon.Collation
 {
@@ -24,6 +26,8 @@ namespace Lynicon.Collation
     /// </summary>
     public abstract class BaseCollator : ICollator
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(BaseCollator));
+
         #region ICollator Members
 
         /// <summary>
@@ -107,6 +111,7 @@ namespace Lynicon.Collation
             parmsCount.Remove("$top");
             parmsCount.Remove("$orderBy");
             Func<IQueryable<TQuery>, IQueryable<TQuery>> queryBodyCount = (iq => iq.Filter(parmsCount).AsFacade<TQuery>());
+            var qry = new List<TQuery>().Filter(parmsCount);
 
             int count;
             bool querySummary = typeof(Summary).IsAssignableFrom(typeof(TQuery));
@@ -214,5 +219,285 @@ namespace Lynicon.Collation
         public abstract PropertyInfo GetIdProperty(Type t);
 
         #endregion
+
+        /// <summary>
+        /// Starting from a list of addresses and optionally (or only) the containers at those addresses, fetch
+        /// any containers necessary and any other containers required to supply redirected properties for them,
+        /// obtain the contained content items and collate their properties, returning the content items at the
+        /// addresses.
+        /// </summary>
+        /// <typeparam name="T">Type of content items to return</typeparam>
+        /// <param name="startContainers">Initial list of containers if they are available</param>
+        /// <param name="startAddresses">Initial list of addresses, which may be omitted and derived from containers</param>
+        /// <returns>List of content items</returns>
+        public IEnumerable<T> Collate<T>(IEnumerable<object> startContainers, IEnumerable<Address> startAddresses) where T : class
+        {
+            // place to store all the containers we have currently
+            Dictionary<VersionedAddress, object> containers;
+            ItemVersion containerCommonVersion;
+
+            startAddresses = startAddresses ?? Enumerable.Empty<Address>();
+
+            (containers, containerCommonVersion) = ProcessContainers(startContainers);
+
+            List<Address> fetchAddrs = startAddresses
+                .Where(sa => !containers.Any(kvp => kvp.Key.Address == sa)).ToList();
+
+            var allStartAddressesByType = fetchAddrs.Concat(containers.Keys)
+                .GroupBy(a => a.Type)
+                .Select(ag => new { aType = ag.Key, addrs = ag.ToList() })
+                .ToList();
+
+            // Get all addresses for items to collate (startAddresses plus addresses from startContainers)
+            foreach (var addrTypeG in allStartAddressesByType)
+            {
+                Type contentType = addrTypeG.aType;
+                var rpsAttributes = contentType
+                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                    .Cast<RedirectPropertySourceAttribute>()
+                    .ToList();
+                foreach (Address addr in addrTypeG.addrs)
+                {
+                    fetchAddrs.AddRange(rpsAttributes
+                        .Select(attr => new Address(attr.ContentType ?? contentType,
+                            PathFunctions.Redirect(addr.GetAsContentPath(), attr.SourceDescriptor))));
+                }
+            }
+            fetchAddrs = fetchAddrs.Distinct().ToList();
+
+            bool pushVersion = (startContainers != null);
+            if (pushVersion) // Get containers in any version that might be relevant to a start container
+                System.Versions.PushState(VersioningMode.Specific, containerCommonVersion);
+
+            try
+            {
+                // Get all the containers for collation (if current version is not fully specified, may be multiple per address)
+                foreach (var cont in System.Repository.Get(typeof(object), fetchAddrs))
+                {
+                    var va = new VersionedAddress(System, cont);
+                    if (containers.ContainsKey(va))
+                        log.Error("Duplicate versioned address in db: " + va.ToString());
+                    else
+                        containers.Add(new VersionedAddress(new Address(cont), new ItemVersion(System, cont).Canonicalise()), cont); 
+                }
+            }
+            finally
+            {
+                if (pushVersion)
+                    System.Versions.PopState();
+            }
+
+            // Create a lookup by (non-versioned) address of all the containers we have
+            var contLookup = containers.ToLookup(kvp => kvp.Key.Address.ToString(), kvp => kvp.Value);
+
+            // We have the data, now collate it into the content from the startContainers
+            foreach (var addrTypeG in allStartAddressesByType)
+            {
+                // Process all the start addresses (including those of the start containers) of a given type
+
+                Type contentType = addrTypeG.aType;
+                var rpsAttributes = contentType
+                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                    .Cast<RedirectPropertySourceAttribute>()
+                    .ToList();
+
+                foreach (var addrOrVAddr in addrTypeG.addrs)
+                {
+                    var addr = new Address(addrOrVAddr.Type, addrOrVAddr); // convert a VersionedAddress to an Address if necessary
+                    var primaryPath = addr.GetAsContentPath();
+                    if (!contLookup.Contains(new Address(addr.Type, addr).ToString()))
+                        continue;
+
+                    foreach (var cont in contLookup[addr.ToString()])
+                    {
+                        object primaryContent = cont;
+                        JObject jContent = null;
+
+                        if (primaryContent is IContentContainer)
+                            primaryContent = ((IContentContainer)primaryContent).GetContent(System.Extender);
+                        //jContent = JObject.FromObject(primaryContent);
+
+                        foreach (var rpsAttribute in rpsAttributes)
+                        {
+                            var refAddress = new VersionedAddress(
+                                rpsAttribute.ContentType ?? contentType,
+                                PathFunctions.Redirect(primaryPath, rpsAttribute.SourceDescriptor),
+                                new ItemVersion(System, cont).Canonicalise()
+                                );
+                            if (refAddress.Address == addr) // redirected to itself, ignore
+                                continue;
+                            object refItem = containers.ContainsKey(refAddress) ? containers[refAddress] : null;
+                            if (refItem is IContentContainer)
+                                refItem = ((IContentContainer)refItem).GetContent(System.Extender);
+                            if (refItem != null)
+                                foreach (string propertyPath in rpsAttribute.PropertyPaths)
+                                {
+                                    var toFromPaths = GetPaths(propertyPath);
+                                    //JObject refdObject = JObject.FromObject(refItem);
+                                    //jContent.CopyPropertyFrom(toFromPaths[0], refdObject, toFromPaths[1]);
+                                    object val = ReflectionX.GetPropertyValueByPath(refItem, toFromPaths[1]);
+                                    var piSet = ReflectionX.GetPropertyByPath(primaryContent.GetType(), toFromPaths[0]);
+                                    piSet.SetValue(primaryContent, val);
+                                }
+                        }
+
+                        //primaryContent = jContent.ToObject(primaryContent.GetType(), new JsonSerializer());
+                        yield return primaryContent as T;
+                    }
+                }
+            }
+        }
+
+        public (Dictionary<VersionedAddress, object>, ItemVersion) ProcessContainers(IEnumerable<object> startContainers)
+        {
+            var containers = new Dictionary<VersionedAddress, object>();
+            ItemVersion containerCommonVersion = null;
+            // Ensure we have the start addresses
+            if (startContainers != null)
+            {
+                foreach (var cont in startContainers)
+                {
+                    var cVersAddr = new VersionedAddress(System, cont);
+                    if (!containers.ContainsKey(cVersAddr))
+                        containers.Add(cVersAddr, cont);
+                    else
+                        log.Error("Duplicate versioned address: " + cVersAddr.ToString());
+
+                    containerCommonVersion = containerCommonVersion == null ? cVersAddr.Version : containerCommonVersion.LeastAbstractCommonVersion(cVersAddr.Version);
+                }
+            }
+
+            return (containers, containerCommonVersion);
+        }
+
+        protected virtual string[] GetPaths(string path)
+        {
+            if (path.Contains(">"))
+                return path.Split('>').Select(s => s.Trim()).ToArray(); // primary path > redirect path
+            else
+                return new string[] { path, path };
+        }
+
+        /// <summary>
+        /// Decollates changes to content object which should be redirected to other records used as property sources
+        /// </summary>
+        /// <param name="path">path of content record</param>
+        /// <param name="data">content object</param>
+        /// <returns>JObject build from content object</returns>
+        protected virtual object SetRelated(string path, object data, bool bypassChecks)
+        {
+
+            System.Versions.PushState(VersioningMode.Specific, new ItemVersion(System, data));
+
+            try
+            {
+                JObject jObjectContent = JObject.FromObject(data);
+
+                // Establish the records to fetch and fetch them
+
+                Type contentType = data.GetType().UnextendedType();
+                var rpsAttributes = contentType
+                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                    .Cast<RedirectPropertySourceAttribute>()
+                    .Where(rpsa => !rpsa.ReadOnly)
+                    .ToList();
+                //List<string> paths = rpsAttributes
+                //        .Select(a => PathFunctions.Redirect(path, a.SourceDescriptor))
+                //        .Distinct()
+                //        .ToList();
+                //if (paths == null || paths.Count == 0)
+                //    return jObjectContent;
+
+                //List<ContentItem> records = Repository.GetByPath(contentType, paths).ToList();
+
+                List<Address> addresses = rpsAttributes
+                    .Select(a => new Address(a.ContentType ?? contentType, PathFunctions.Redirect(path, a.SourceDescriptor)))
+                    .Distinct()
+                    .ToList();
+                if (addresses == null || addresses.Count == 0)
+                    return data;
+                List<object> records = Repository.Instance.Get(typeof(object), addresses).ToList();
+
+                // Update the fetched referenced records with updated referenced properties on the content object
+
+                List<Address> doneAddrs = new List<Address>();
+                List<object> vals = new List<object>();
+                var writebacks = new Dictionary<string[], object>();
+
+                foreach (var rpsAttribute in rpsAttributes)
+                {
+                    Address address = new Address(
+                        rpsAttribute.ContentType ?? contentType,
+                        PathFunctions.Redirect(path, rpsAttribute.SourceDescriptor));
+
+                    string refdPath = address.GetAsContentPath();
+                    Type refdType = address.Type;
+
+                    if (refdPath == path && refdType == contentType) // redirected to itself, ignore
+                        continue;
+                    object refdRecord = records.FirstOrDefault(r => new Address(r) == address);
+                    object refdContent = refdRecord;
+                    if (refdRecord is IContentContainer)
+                        refdContent = ((IContentContainer)refdRecord).GetContent(System.Extender);
+                    if (refdRecord == null) // adding a new record
+                    {
+                        refdContent = Collator.Instance.GetNew(address);
+                        refdRecord = Collator.Instance.GetContainer(address, refdContent);
+                    }
+
+                    JObject refdObject = JObject.FromObject(refdContent);
+                    List<string[]> writebackPaths = new List<string[]>();
+                    foreach (string propertyPath in rpsAttribute.PropertyPaths)
+                    {
+                        var toFromPaths = GetPaths(propertyPath);
+                        if (toFromPaths[0].EndsWith("<"))
+                        {
+                            toFromPaths[0] = toFromPaths[0].UpToLast("<");
+                            toFromPaths[1] = toFromPaths[1].UpToLast("<");
+                            writebackPaths.Add(toFromPaths);
+                        }
+                        refdObject.CopyPropertyFrom(toFromPaths[1], jObjectContent, toFromPaths[0]);
+                    }
+
+                    if (refdRecord is IContentContainer)
+                    {
+                        Type valType = ((IContentContainer)refdRecord).ContentType;
+                        valType = System.Extender[valType] ?? valType;
+                        ((IContentContainer)refdRecord).SetContent(System, refdObject.ToObject(valType));
+                    }
+                    else
+                        refdRecord = refdObject.ToObject(refdRecord.GetType());
+
+                    if (!doneAddrs.Contains(address))
+                    {
+                        doneAddrs.Add(address);
+                        vals.Add(refdRecord);
+                    }
+
+                    writebackPaths.Do(wp => writebacks.Add(wp, refdRecord));
+                }
+
+                // Create or update referred-to records
+                if (vals.Count > 0)
+                {
+                    Repository.Set(vals, null, bypassChecks);
+
+                    // write back any values configured by attributes (e.g. database index updates)
+                    foreach (var kvp in writebacks)
+                    {
+                        JObject refdObject = JObject.FromObject(kvp.Value);
+                        jObjectContent.CopyPropertyFrom(kvp.Key[0], refdObject, kvp.Key[1]);
+                    }
+                    data = jObjectContent.ToObject(data.GetType());
+                }
+
+                return writebacks.Count > 0 ? data : null;
+            }
+            finally
+            {
+                System.Versions.PopState();
+            }
+        }
+
     }
 }

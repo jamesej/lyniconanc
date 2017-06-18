@@ -71,8 +71,31 @@ namespace LyniconANC.Test
             prc2 = Collator.Instance.Get<PropertyRedirectContent>(prc0.ItemId);
 
             Assert.True(prc2.Common == "Changed", "common on get by id");
+        }
 
+        [Fact]
+        public void BasicRedirect()
+        {
+            var addr1 = new Address(typeof(RedirectData), "Redirect 1");
+            var rd1 = Collator.Instance.GetNew<RedirectData>(addr1);
+            rd1.Data = "Hello data";
+            rd1.Redirected = "red1";
+            Collator.Instance.Set(addr1, rd1);
 
+            var redirectItem = Collator.Instance.Get<RedirectTargetContent>(new Address(typeof(RedirectTargetContent), "Redirect 1"));
+            Assert.NotNull(redirectItem);
+            Assert.Equal("red1", redirectItem.X);
+
+            // update redirect item should reflect in primary item
+            var addr2 = new Address(typeof(RedirectTargetContent), "Redirect 1");
+            var rd2 = Collator.Instance.Get<RedirectTargetContent>(addr2);
+            Assert.NotNull(rd2);
+            Assert.Equal("red1", rd2.X);
+            rd2.X = "red2";
+            Collator.Instance.Set(rd2);
+
+            var rd11 = Collator.Instance.Get<RedirectData>(new ItemId(rd1));
+            Assert.Equal("red2", rd11.Redirected);
         }
     }
 }

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Routing;
 using System.Net;
 using Newtonsoft.Json;
 using Lynicon.Extensibility;
+using System.Collections.ObjectModel;
 
 namespace Lynicon.Collation
 {
@@ -21,11 +22,58 @@ namespace Lynicon.Collation
     /// Information extracted from a url which maps to one and only one content item
     /// </summary>
     [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
-    public class Address : Dictionary<string, object>, IEquatable<Address>
+    public class Address : ReadOnlyDictionary<string, object>, IEquatable<Address>
     {
         public static explicit operator Address(string s)
         {
             return new Address(s);
+        }
+
+        private static Dictionary<string, object> FromPath(string path)
+        {
+            var dict = new Dictionary<string, object>();
+            var pathParts = (path ?? "").Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < pathParts.Length; i++)
+                dict.Add("_" + i.ToString(), pathParts[i].ToLower());
+            return dict;
+        }
+
+        private static Dictionary<string, object> FromSerialized(string serialized)
+        {
+            var dict = new Dictionary<string, object>();
+            foreach (string kvpStr in serialized.After(":").Split('&'))
+            {
+                dict.Add(WebUtility.UrlDecode(kvpStr.UpTo("=")),
+                    WebUtility.UrlDecode(kvpStr.After("=")));
+            }
+            return dict;
+        }
+
+        private static Dictionary<string, object> FromContainer(object cont)
+        {
+
+            var addressProps = cont.GetType().GetProperties()
+                .Select(pi => new { pi, attr = pi.GetCustomAttribute<AddressComponentAttribute>() })
+                .Where(pii => pii.attr != null)
+                .ToList();
+            if (addressProps.Any(ap => ap.attr.UsePath))
+                return FromPath((string)addressProps.First(ap => ap.attr.UsePath).pi.GetValue(cont));
+            else
+            {
+                var dict = new Dictionary<string, object>();
+                addressProps.Do(pii => dict.Add(
+                    pii.attr.RouteKey ?? ("_" + pii.pi.Name),
+                    pii.pi.GetValue(cont)));
+
+                if (dict.Count == 0)
+                {
+                    var keyPi = cont.GetType().GetProperties()
+                        .FirstOrDefault(pi => pi.GetCustomAttribute<KeyAttribute>() != null);
+                    if (keyPi != null)
+                        dict.Add("_id", keyPi.GetValue(cont).ToString());
+                }
+                return dict;
+            }
         }
 
         List<string> matched = new List<string>();
@@ -61,7 +109,7 @@ namespace Lynicon.Collation
             {
                 return type;
             }
-            set
+            protected set
             {
                 Type unexType = value.UnextendedType();
                 if (!ContentTypeHierarchy.AllContentTypes.Contains(unexType))
@@ -70,12 +118,6 @@ namespace Lynicon.Collation
             }
         }
 
-        /// <summary>
-        /// Constructs an empty address
-        /// </summary>
-        public Address()
-        {
-        }
         /// <summary>
         /// Constructs an address from any string-object dictionary
         /// </summary>
@@ -90,9 +132,8 @@ namespace Lynicon.Collation
         /// </summary>
         /// <param name="type">Type of the addressed item</param>
         /// <param name="contentPath">Series of string indexes separated by ampersands</param>
-        public Address(Type type, string contentPath) : this()
+        public Address(Type type, string contentPath) : base(FromPath(contentPath))
         {
-            LoadPath(contentPath);
             this.Type = type;
         }
         /// <summary>
@@ -100,62 +141,26 @@ namespace Lynicon.Collation
         /// </summary>
         /// <param name="type">Type of the content item</param>
         /// <param name="rd">Route data of request for item</param>
-        public Address(Type type, RouteData rd)
-        {
-            var addr = Collator.Instance.GetAddress(type, rd);
-            addr.Do(kvp => this.Add(kvp.Key, kvp.Value is string ? ((string)kvp.Value).ToLower() : kvp.Value));
-            this.Type = type;
-        }
+        public Address(Type type, RouteData rd) : this(type, Collator.Instance.GetAddress(type, rd))
+        { }
         /// <summary>
         /// Constructs an address from a serialized string form (created via .ToString())
         /// </summary>
         /// <param name="serialized">the serialized string</param>
-        public Address(string serialized)
+        public Address(string serialized) : base(FromSerialized(serialized))
         {
             this.Type = ContentTypeHierarchy.GetContentType(serialized.UpTo(":"));
-            foreach (string kvpStr in serialized.After(":").Split('&'))
-            {
-                this.Add(WebUtility.UrlDecode(kvpStr.UpTo("=")),
-                    WebUtility.UrlDecode(kvpStr.After("=")));
-            }
         }
+
         /// <summary>
         /// Constructs an address by extracting it from a container or a content item where AddressComponent attributes were
         /// used to map content fields to the address
         /// </summary>
         /// <param name="cont">The container or content item</param>
         public Address(object cont)
-            : this()
+            : base(FromContainer(cont))
         {
-            var addressProps = cont.GetType().GetProperties()
-                .Select(pi => new { pi, attr = pi.GetCustomAttribute<AddressComponentAttribute>() })
-                .Where(pii => pii.attr != null)
-                .ToList();
-            if (addressProps.Any(ap => ap.attr.UsePath))
-                LoadPath((string)addressProps.First(ap => ap.attr.UsePath).pi.GetValue(cont));
-            else
-            {
-                addressProps.Do(pii => this.Add(
-                    pii.attr.RouteKey ?? ("_" + pii.pi.Name),
-                    pii.pi.GetValue(cont)));
-
-                if (this.Count == 0)
-                {
-                    var keyPi = cont.GetType().GetProperties()
-                        .FirstOrDefault(pi => pi.GetCustomAttribute<KeyAttribute>() != null);
-                    if (keyPi != null)
-                        this.Add("_id", keyPi.GetValue(cont).ToString());
-                }
-            }
-
             this.Type = Collator.GetContentType(cont);
-        }
-
-        private void LoadPath(string path)
-        {
-            var pathParts = (path ?? "").Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < pathParts.Length; i++)
-                this.Add("_" + i.ToString(), pathParts[i].ToLower());
         }
 
         /// <summary>
@@ -309,11 +314,18 @@ namespace Lynicon.Collation
             }
         }
 
-        public void FixCase()
+        public Address FixCase()
         {
+            var dict = new Dictionary<string, object>();
             foreach (var key in this.Keys.ToList())
+            {
                 if (this[key] is string)
-                    this[key] = ((string)this[key]).ToLower();
+                    dict[key] = ((string)this[key]).ToLower();
+                else
+                    dict[key] = this[key];
+            }
+            
+            return new Address(this.Type, dict);
         }
 
         public override bool Equals(object obj)

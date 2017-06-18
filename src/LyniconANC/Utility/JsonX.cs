@@ -25,7 +25,7 @@ namespace Lynicon.Utility
                 if (toProperty == null)
                     toObject.AddAtPath(toPath, fromProperty);
                 else
-                    toProperty.Replace(fromProperty);
+                    toProperty.Value = fromProperty.Value;
             }
         }
 

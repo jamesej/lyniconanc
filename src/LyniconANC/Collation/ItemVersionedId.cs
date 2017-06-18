@@ -64,7 +64,7 @@ namespace Lynicon.Collation
             {
                 return version;
             }
-            set
+            protected set
             {
                 version = value;
             }

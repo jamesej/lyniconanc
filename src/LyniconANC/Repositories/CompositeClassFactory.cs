@@ -65,7 +65,6 @@ namespace Lynicon.Repositories
 
             try
             {
-                int classCount = 0;
                 foreach (var baseType in baseTypes)
                 {
                     if (baseType.IsSealed() || baseType.GetCustomAttribute<NonCompositeAttribute>() != null)

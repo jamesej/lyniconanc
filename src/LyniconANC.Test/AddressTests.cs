@@ -118,10 +118,10 @@ namespace LyniconANC.Test
             Assert.Equal("1", a1["_1"]);
             Assert.Equal("HeaderContent", a1.Type.Name);
 
-            var a2 = new Address();
-            a2.Type = typeof(HeaderContent);
-            a2["_0"] = "a";
-            a2["_1"] = 1;
+            var a2dict = new Dictionary<string, object>();
+            a2dict["_0"] = "a";
+            a2dict["_1"] = 1;
+            var a2 = new Address(typeof(HeaderContent), a2dict);
             Assert.Equal("LyniconANC.Test.Models.HeaderContent:_0=a&_1=1", a2.ToString());
 
             var dict = new Dictionary<Address, string>();
@@ -160,9 +160,10 @@ namespace LyniconANC.Test
             Assert.Equal("a", sad2.A);
             Assert.Equal(0, sad2.B);
 
-            var a4 = new Address();
-            a4.Type = typeof(SplitAddressData);
-            a4["_1"] = 2;
+            var a4dict = new Dictionary<string, object>();
+            a4dict["_1"] = 2;
+            var a4 = new Address(typeof(SplitAddressData), a4dict);
+
             var sad3 = new SplitAddressData();
             sad3.A = "hello";
             a4.SetAddressFields(sad3);

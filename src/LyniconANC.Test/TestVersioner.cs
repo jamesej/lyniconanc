@@ -5,11 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Membership;
+using Lynicon.Services;
 
 namespace LyniconANC.Test
 {
     public class TestVersioner : Versioner
     {
+        public TestVersioner(LyniconSystem sys) : base(sys)
+        { }
+
         public override object[] AllVersionValues
         {
             get

@@ -200,7 +200,8 @@ namespace Lynicon.Repositories
                     };
                     qed = EventHub.Instance.ProcessEvent("Repository.Get.Count", this, qed).Data as QueryEventData<IQueryable>;
 
-                    return qed.QueryBody(qed.Source).AsFacade<T>().Count();
+                    int ct = qed.QueryBody(qed.Source).AsFacade<T>().Count();
+                    return ct;
                 }
             }
             else

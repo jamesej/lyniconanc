@@ -179,5 +179,17 @@ namespace LyniconANC.Test
             var items2 = Collator.Instance.Get<HeaderSummary>();
             Assert.Equal(1, items2.Count(hs => (hs.Title ?? "").StartsWith("CT")));
         }
+
+        [Fact]
+        public void SummaryFields()
+        {
+            Type tExt = sys.LyniconSystem.Extender[typeof(TestData)];
+            var summaryFieldNames = Collator.Instance.ContainerSummaryFields(tExt)
+                .Select(pi => pi.Name)
+                .OrderBy(nm => nm)
+                .ToList();
+
+            Assert.True(summaryFieldNames.SequenceEqual(new List<string> { "ExtData", "Id", "Path", "Title", "Value1" }));
+        }
     }
 }

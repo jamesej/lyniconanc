@@ -134,7 +134,7 @@ namespace Lynicon.Repositories
         /// <returns>item in a container or the item itself</returns>
         public T Get<T>(Type targetType, object id) where T : class
         {
-            return Get<T>(targetType, new List<ItemId> { new ItemId { Id = id, Type = targetType } }).FirstOrDefault();
+            return Get<T>(targetType, new List<ItemId> { new ItemId(targetType, id) }).FirstOrDefault();
         }
         /// <summary>
         /// Get an item's summary by id
@@ -146,7 +146,7 @@ namespace Lynicon.Repositories
         /// <returns>summary details of item in a container</returns>
         public T Get<T>(Type summaryType, Type targetType, object id) where T : class
         {
-            return Get<T>(summaryType, new List<ItemId> { new ItemId { Id = id, Type = targetType } }).FirstOrDefault();
+            return Get<T>(summaryType, new List<ItemId> { new ItemId(targetType, id) }).FirstOrDefault();
         }
         /// <summary>
         /// Get an item by id
