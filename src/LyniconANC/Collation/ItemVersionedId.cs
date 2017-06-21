@@ -41,7 +41,7 @@ namespace Lynicon.Collation
         public static List<ItemVersionedId> CreateExpanded(LyniconSystem sys, object container)
         {
             var vsn = new ItemVersion(sys, container);
-            ItemId iid = new ItemId(container);
+            ItemId iid = new ItemId(sys.Collator, container);
             var res = new List<ItemVersionedId>();
             foreach (var v in vsn.MatchingVersions(sys.Versions, iid.Type))
                 res.Add(new ItemVersionedId(iid, v));
@@ -79,7 +79,7 @@ namespace Lynicon.Collation
         /// </summary>
         /// <param name="container">The container or content item</param>
         public ItemVersionedId(LyniconSystem sys, object o) :
-            base(o)
+            base(sys.Collator, o)
         {
             Version = new ItemVersion(sys, o);
         }

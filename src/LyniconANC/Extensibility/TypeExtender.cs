@@ -27,11 +27,16 @@ namespace LyniconANC.Extensibility
         Dictionary<Type, Type> typeExtensions = new Dictionary<Type, Type>();
         Dictionary<Type, Type> summarisedTypes = new Dictionary<Type, Type>();
         List<(Type tBase, Type tExt)> extensionRules = new List<(Type tBase, Type tExt)>();
+        CompositeClassFactory classFactory = null;
         public List<Type> BaseTypes { get; private set; }
         bool built = false;
 
-        public TypeExtender()
+        public TypeExtender() : this("CompositeClasses", "")
         {
+        }
+        public TypeExtender(string assemblyName, string typeNameRoot)
+        {
+            classFactory = new CompositeClassFactory(assemblyName, typeNameRoot);
             BaseTypes = new List<Type>();
         }
 
@@ -78,7 +83,7 @@ namespace LyniconANC.Extensibility
 
         public void BuildExtensions(Collator coll)
         {
-            var typeBuilders = CompositeClassFactory.Instance.Initialise(BaseTypes);
+            var typeBuilders = classFactory.Initialise(BaseTypes);
             foreach (var baseType in BaseTypes)
             {
                 var interfaces = new Type[] { baseType }
@@ -88,10 +93,10 @@ namespace LyniconANC.Extensibility
                     .Where(t => t.IsInterface())
                     .Distinct()
                     .ToList();
-                Type type = CompositeClassFactory.Instance.GetCompositeClassByInterfaces(typeBuilders, baseType, interfaces);
+                Type type = classFactory.GetCompositeClassByInterfaces(typeBuilders, baseType, interfaces);
                 typeExtensions.Add(baseType, type);
                 allExtensionBaseTypes.TryAdd(type, baseType);
-                Type sumsType = CompositeClassFactory.Instance.GetSummarisedType(coll, typeBuilders, type);
+                Type sumsType = classFactory.GetSummarisedType(coll, typeBuilders, type);
                 summarisedTypes.Add(baseType, sumsType);
             }
         }

@@ -63,16 +63,16 @@ namespace Lynicon.Extensions
 
         public override bool Active
         {
-            get { return RefValue != null && !RefValue.IsEmpty; }
+            get { return RefValue != null && !RefValue.IsEmpty(); }
         }
 
         public override string GetShowText(Tuple<object, Summary> row)
         {
             Reference reference = (Reference)GetField(row);
-            if (reference == null || reference.IsEmpty)
+            if (reference == null || reference.IsEmpty())
                 return "";
 
-            return reference.Summary.Title;
+            return reference.Summary(Collator.Instance).Title;
 
             //            var xParam = Expression.Parameter(typeof(T), "x");
             //var accessRef = Expression.MakeMemberAccess(xParam, this.PropInfo);

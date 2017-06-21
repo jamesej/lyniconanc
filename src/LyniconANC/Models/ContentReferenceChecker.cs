@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Relations;
+using Lynicon.Services;
+using Lynicon.Collation;
 
 namespace Lynicon.Models
 {
@@ -37,7 +39,7 @@ namespace Lynicon.Models
             if (typeof(Reference).IsAssignableFrom(pi == null ? val.GetType() : pi.PropertyType))
             {
                 Reference r = (Reference)val;
-                if (r.ItemId != null && r.Summary == null)
+                if (r.ItemId != null && r.Summary(Collator.Instance) == null)
                     Errors.Add(ItemTitle + " - " + pi.Name + " to " + r.ItemId.Type.Name + ": " + r.ItemId.Id.ToString());
             }
             else

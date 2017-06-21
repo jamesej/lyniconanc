@@ -248,7 +248,7 @@ namespace Lynicon.Controllers
 
             try
             {
-                var cachedTypes = types.Where(t => Cache.IsTotalCached(t, true)).ToList();
+                var cachedTypes = types.Where(t => Cache.IsTotalCached(LyniconModuleManager.Instance, t, true)).ToList();
                 var uncachedTypes = types.Except(cachedTypes).ToList();
                 var items = Enumerable.Range(0, 1).Select(n => new { label = "", value = "" }).ToList();
                 items.Clear();

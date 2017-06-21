@@ -47,8 +47,8 @@ namespace Lynicon.DataSources
 
             if (QueryTimeoutSecs.HasValue)
                 db.Database.SetCommandTimeout(QueryTimeoutSecs.Value);
-            else if (Repository.Instance.QueryTimeoutSecs.HasValue)
-                db.Database.SetCommandTimeout(Repository.Instance.QueryTimeoutSecs);
+            else if (System.Repository.QueryTimeoutSecs.HasValue)
+                db.Database.SetCommandTimeout(System.Repository.QueryTimeoutSecs);
 
             return db;
         }

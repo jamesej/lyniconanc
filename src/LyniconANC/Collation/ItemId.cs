@@ -86,8 +86,8 @@ namespace Lynicon.Collation
         /// Construct an ItemId by extracting it from a container
         /// </summary>
         /// <param name="container">The container</param>
-        public ItemId(IContentContainer container)
-            : this(Collator.GetContentType(container), Collator.Instance.GetIdProperty(container.GetType().UnproxiedType()).GetValue(container))
+        public ItemId(Collator coll, IContentContainer container)
+            : this(Collator.GetContentType(container), coll.GetIdProperty(container.GetType().UnproxiedType()).GetValue(container))
         {
         }
         /// <summary>
@@ -103,12 +103,12 @@ namespace Lynicon.Collation
         /// Constructs an ItemId from an unspecified object which can be a container, a content class or a summary
         /// </summary>
         /// <param name="o"></param>
-        public ItemId(object o)
+        public ItemId(Collator coll, object o)
         {
             if (o is IContentContainer)
             {
                 this.Type = Collator.GetContentType(o);
-                this.Id = Collator.Instance.GetIdProperty(o.GetType().UnproxiedType()).GetValue(o);
+                this.Id = coll.GetIdProperty(o.GetType().UnproxiedType()).GetValue(o);
             }
             else if (o is Summary)
             {
@@ -117,9 +117,9 @@ namespace Lynicon.Collation
             }
             else
             {
-                var container = Collator.Instance.GetContainer(o);
+                var container = coll.GetContainer(o);
                 this.Type = Collator.GetContentType(container);
-                this.Id = Collator.Instance.GetIdProperty(container.GetType().UnproxiedType()).GetValue(container);
+                this.Id = coll.GetIdProperty(container.GetType().UnproxiedType()).GetValue(container);
             }
         }
         /// <summary>

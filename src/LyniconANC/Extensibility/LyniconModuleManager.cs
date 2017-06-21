@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Routing;
 using System.Diagnostics;
 using System.Reflection;
+using Lynicon.Services;
 
 namespace Lynicon.Extensibility
 {
@@ -137,7 +138,7 @@ namespace Lynicon.Extensibility
         /// fails or returns false, the module is blocked, which may in a cascade block other modules
         /// dependent on it.
         /// </summary>
-        public void Initialise()
+        public void Initialise(LyniconSystem sys)
         {
             foreach (Module module in ModuleSequence)
             {
@@ -176,7 +177,7 @@ namespace Lynicon.Extensibility
 
             // Run any registered startup processes
 
-            Task.Run(() => EventHub.Instance.ProcessEvent("StartupProcess", null, null));
+            Task.Run(() => sys.Events.ProcessEvent("StartupProcess", null, null));
         }
 
         /// <summary>

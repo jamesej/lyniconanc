@@ -10,11 +10,6 @@ namespace Lynicon.DataSources
     public interface IDataSource : IDisposable
     {
         /// <summary>
-        /// The Lynicon data system in which this data source exists
-        /// </summary>
-        LyniconSystem System { get; }
-
-        /// <summary>
         /// Return an IQueryable<ExtT> where ExtT is the extended version of 'type' if it exists, or 'type' itself if not,
         /// giving access to the values of type ExtT in the data source
         /// </summary>

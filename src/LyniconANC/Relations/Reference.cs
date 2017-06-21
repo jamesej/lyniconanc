@@ -31,12 +31,12 @@ namespace Lynicon.Relations
             where TContent : class
         {
             if (o is IContentContainer)
-                return GetReferencesFrom<TContent>(new ItemVersionedId(sys, o), propertyName);
+                return GetReferencesFrom<TContent>(sys, new ItemVersionedId(sys, o), propertyName);
 
-            var cont = Collator.Instance.GetContainer(o);
+            var cont = sys.Collator.GetContainer(o);
             return GetReferencesFrom<TContent>(sys, cont, propertyName);
         }
-        public static IEnumerable<Summary> GetReferencesFrom<TContent>(ItemVersionedId ividToItem, string propertyName)
+        public static IEnumerable<Summary> GetReferencesFrom<TContent>(LyniconSystem sys, ItemVersionedId ividToItem, string propertyName)
             where TContent : class
         {
             if (ividToItem == null)
@@ -58,8 +58,8 @@ namespace Lynicon.Relations
                 var test = Expression.AndAlso(neNull, comp);
                 var lambda = Expression.Lambda<Func<TContent, bool>>(test, xParam);
 
-                foreach (var item in Collator.Instance.Get<TContent, TContent>(iq => iq.Where(lambda)))
-                    yield return Collator.Instance.GetSummary<Summary>(item);
+                foreach (var item in sys.Collator.Get<TContent, TContent>(iq => iq.Where(lambda)))
+                    yield return sys.Collator.GetSummary<Summary>(item);
             }
             else
                 foreach (var summ in ReferenceGetter(ividToItem, typeof(TContent), propertyName))
@@ -185,21 +185,35 @@ namespace Lynicon.Relations
         protected Summary summary = null;
 
         /// <summary>
-        /// The summary of the referred to item
+        /// The summary of the referred to item in the data system to which the supplied Collator belongs
         /// </summary>
-        [JsonIgnore, ScaffoldColumn(false)]
-        public virtual Summary Summary
+        public virtual Summary Summary(Collator coll)
         {
-            get
-            {
-                if (Id == null || string.IsNullOrEmpty(DataType))
-                    return null;
-                if (summary == null && ItemId != null)
-                    summary = Collator.Instance.Get<Summary>(ItemId);
-                return summary;
-            }
+            if (Id == null || string.IsNullOrEmpty(DataType))
+                return null;
+            if (summary == null && ItemId != null)
+                summary = coll.Get<Summary>(ItemId);
+            return summary;
+        }
+        /// <summary>
+        /// The summary of the referred-to item
+        /// </summary>
+        /// <returns>Summary</returns>
+        public Summary Summary()
+        {
+            return Summary(Collator.Instance);
         }
 
+        /// <summary>
+        /// Get the summary of the referred to item in the data system to which the supplied collator belongs, cast to a given summary type
+        /// </summary>
+        /// <typeparam name="T">Summary type to get</typeparam>
+        /// <returns>Summary of type T</returns>
+        public virtual T GetSummary<T>(Collator coll)
+            where T : Summary
+        {
+            return Summary(coll) as T;
+        }
         /// <summary>
         /// Get the summary of the referred to item cast to a given summary type
         /// </summary>
@@ -208,7 +222,7 @@ namespace Lynicon.Relations
         public virtual T GetSummary<T>()
             where T : Summary
         {
-            return Summary as T;
+            return Summary(Collator.Instance) as T;
         }
 
         /// <summary>
@@ -235,24 +249,31 @@ namespace Lynicon.Relations
         /// <typeparam name="T">The content type (or parent type or interface) of the referring items</typeparam>
         /// <param name="propName">The property on the referencing item which must refer to this item</param>
         /// <returns>List of referencing items</returns>
-        public virtual IEnumerable<Summary> GetReferencingItems<T>(ItemVersion version, string propName) where T : class
+        public virtual IEnumerable<Summary> GetReferencingItems<T>(LyniconSystem sys, ItemVersion version, string propName) where T : class
         {
-            return Reference.GetReferencesFrom<T>(new ItemVersionedId(this.ItemId, version), propName);
+            return Reference.GetReferencesFrom<T>(sys, new ItemVersionedId(this.ItemId, version), propName);
+        }
+        public IEnumerable<Summary> GetReferencingItems<T>(ItemVersion version, string propName) where T : class
+        {
+            return GetReferencesFrom<T>(LyniconSystem.Instance, version, propName);
         }
 
         /// <summary>
         /// Test for whether the reference points to anything
         /// </summary>
-        [JsonIgnore, ScaffoldColumn(false)]
-        public virtual bool IsEmpty
+        public virtual bool IsEmpty(Collator coll)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(Id) || Type == null || Summary == null)
-                    return true;
+            if (string.IsNullOrEmpty(Id) || Type == null || Summary(coll) == null)
+                return true;
 
-                return false;
-            }
+            return false;
+        }
+        /// <summary>
+        /// Test for whether the reference points to anything
+        /// </summary>
+        public bool IsEmpty()
+        {
+            return IsEmpty(Collator.Instance);
         }
 
         /// <summary>
@@ -261,10 +282,10 @@ namespace Lynicon.Relations
         /// <returns>The title of the referred to item if there is one</returns>
         public override string ToString()
         {
-            if (IsEmpty)
+            if (IsEmpty(Collator.Instance))
                 return "";
             else
-                return Summary.Title;
+                return Summary(Collator.Instance).Title;
         }
     }
 
@@ -296,7 +317,7 @@ namespace Lynicon.Relations
             if (IsContentType)
                 AssignableContentTypes = new List<Type> { typeof(T) };
             else
-                AssignableContentTypes = ContentTypeHierarchy.GetAssignableContentTypes(typeof(T));
+                AssignableContentTypes = ContentTypeHierarchy.GetAssignableContentTypes(Collator.Instance, typeof(T));
             assignableContentTypeNames = AssignableContentTypes.Select(t => t.FullName).ToList();
         }
 
@@ -371,12 +392,9 @@ namespace Lynicon.Relations
         }
 
         // Necessary to make override in CrossVersionReference<T> : Reference<T> work, for some reason
-        public override Summary Summary
+        public override Summary Summary(Collator coll)
         {
-            get
-            {
-                return base.Summary;
-            }
+            return base.Summary(coll);
         }
     }
 }

@@ -70,9 +70,9 @@ namespace Lynicon.Extensibility
         /// <param name="containerType">The container type to test for being cached</param>
         /// <param name="summaryOnly">If true, we only want to know if summaries will be cached: if false the whole record must be cached</param>
         /// <returns>True if the type is cached</returns>
-        public static bool IsTotalCached(Type containerType, bool summaryOnly)
+        public static bool IsTotalCached(LyniconModuleManager modules, Type containerType, bool summaryOnly)
         {
-            foreach (var cache in LyniconModuleManager.Instance.Modules.Values.OfType<Cache>())
+            foreach (var cache in modules.Modules.Values.OfType<Cache>())
             {
                 string[] nameWords = cache.Name.Split('.');
                 if (nameWords.Contains("Caching") && nameWords.Contains("Full"))

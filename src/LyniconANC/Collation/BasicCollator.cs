@@ -35,7 +35,7 @@ namespace Lynicon.Collation
         }
         public virtual string GetIdName(Type t)
         {
-            return Collator.Instance.GetIdProperty(t).Name;
+            return System.Collator.GetIdProperty(t).Name;
         }
 
         /// <inheritdoc/>
@@ -158,7 +158,7 @@ namespace Lynicon.Collation
                 a.SetAddressFields(newT);
 
             // ensure it is created in the current version
-            System.Versions.SetVersion(VersionManager.Instance.CurrentVersion, newT);
+            System.Versions.SetVersion(System.Versions.CurrentVersion, newT);
 
             return Collate<T>(new object[] { newT }, new Address[] { a }).Single();
         }
@@ -187,7 +187,7 @@ namespace Lynicon.Collation
 
             object item = Repository.Get(id.Type, id.Type, id.Id);
             moveTo.SetAddressFields(item);
-            EventHub.Instance.ProcessEvent("Content.Move", this, Tuple.Create(moveTo, item));
+            System.Events.ProcessEvent("Content.Move", this, Tuple.Create(moveTo, item));
             Repository.Set(item);
         }
 

@@ -145,10 +145,10 @@ namespace Lynicon.Extensibility
         /// are 'unaddressable'.  This returns the version key/values in this version which are unaddressable.
         /// </summary>
         /// <returns>Version with unaddressable key/values only</returns>
-        public ItemVersion GetUnaddressablePart()
+        public ItemVersion GetUnaddressablePart(VersionManager vm)
         {
             var unaddressablePart = new Dictionary<string, object>();
-            this.Where(kvp => VersionManager.Instance.UnaddressableVersionKeys.Contains(kvp.Key))
+            this.Where(kvp => vm.UnaddressableVersionKeys.Contains(kvp.Key))
                 .Do(kvp => unaddressablePart.Add(kvp.Key, kvp.Value));
             return new ItemVersion(unaddressablePart);
         }

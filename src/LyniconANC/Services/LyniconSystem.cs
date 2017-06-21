@@ -109,7 +109,7 @@ namespace Lynicon.Services
             Settings.RunTypeSetup?.Invoke(Collator);
 
             Collator.BuildRepository();
-            Modules.Initialise();
+            Modules.Initialise(this);
 
             if (life != null)
                 life.ApplicationStopped.Register(Modules.Shutdown);

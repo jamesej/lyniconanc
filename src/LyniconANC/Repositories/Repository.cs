@@ -250,7 +250,7 @@ namespace Lynicon.Repositories
         {
             foreach (var addressG in addresses.GroupBy(ad => ad.Type))
             {
-                Type contT = Collator.Instance.ContainerType(addressG.Key);
+                Type contT = System.Collator.ContainerType(addressG.Key);
                 var pathPiInfo = contT.GetProperties()
                     .Select(pi => new {pi, a = pi.GetCustomAttribute<AddressComponentAttribute>()})
                     .FirstOrDefault(pii => pii.a != null && pii.a.UsePath);
@@ -287,7 +287,7 @@ namespace Lynicon.Repositories
 
             var contentType = addresses.First().Type;
             var paths = addresses.Where(
-                a => typeof(T).IsAssignableFrom(Collator.Instance.ContainerType(a.Type)) && a.Type == contentType)
+                a => typeof(T).IsAssignableFrom(System.Collator.ContainerType(a.Type)) && a.Type == contentType)
                 .Select(a => a.GetAsContentPath()).ToList();
             var pathPiInfo = typeof(T).GetProperties()
                     .Select(pi => new { pi, a = pi.GetCustomAttribute<AddressComponentAttribute>() })
@@ -306,7 +306,7 @@ namespace Lynicon.Repositories
         /// <returns>container(s) at the address specified</returns>
         public IEnumerable<T> Get<T>(Type targetType, Address address) where T : class
         {
-            return Get<T>(targetType, new Type[] { address.Type }, address.GetAsQueryBody<T>());
+            return Get<T>(targetType, new Type[] { address.Type }, address.GetAsQueryBody<T>(System.Collator));
         }
         /// <summary>
         /// Get items by a query

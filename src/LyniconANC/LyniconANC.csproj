@@ -12,7 +12,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.0.2.47</Version>
+    <Version>0.0.2.50</Version>
   </PropertyGroup>
 
   <ItemGroup>

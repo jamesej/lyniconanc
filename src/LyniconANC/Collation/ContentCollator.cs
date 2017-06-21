@@ -232,7 +232,7 @@ namespace Lynicon.Collation
 
             contentItem.Path = address.GetAsContentPath();
 
-            EventHub.Instance.ProcessEvent("Content.Move", this, Tuple.Create(moveTo, contentItem));
+            System.Events.ProcessEvent("Content.Move", this, Tuple.Create(moveTo, contentItem));
 
             Repository.Set(contentItem);
         }
@@ -258,7 +258,7 @@ namespace Lynicon.Collation
             if (dataPath != null && routePath != null && dataPath != routePath)
             {
                 // Raise event here for when address is changed via changing addressed mapped fields on data
-                EventHub.Instance.ProcessEvent("Content.Move", this, Tuple.Create(a, data));
+                System.Events.ProcessEvent("Content.Move", this, Tuple.Create(a, data));
                 // regenerate path in case event processor changed data
                 address = new Address(data);
                 dataPath = address.GetAsContentPath();
@@ -324,7 +324,7 @@ namespace Lynicon.Collation
             address.SetAddressFields(newContent);
             if (newContent is ICoreMetadata)
                 TypeExtender.CopyExtensionData(newCI, newContent);
-            newContent = EventHub.Instance.ProcessEvent("ContentItem.New", this, newContent).Data;
+            newContent = System.Events.ProcessEvent("ContentItem.New", this, newContent).Data;
 
             newCI.SetContent(System, newContent);
             // ensure it is created in the current version
@@ -371,7 +371,7 @@ namespace Lynicon.Collation
         {
             var ci = GetContentItem(a, o);
             var data = new Dictionary<string, object> { { "Item", o }, { "Container", ci } };
-            ci = EventHub.Instance.ProcessEvent("Collator.GetContainer", this, data).GetDataItem<ContentItem>("Container");
+            ci = System.Events.ProcessEvent("Collator.GetContainer", this, data).GetDataItem<ContentItem>("Container");
             return ci;
         }
 

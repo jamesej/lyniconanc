@@ -78,7 +78,7 @@ namespace Lynicon.Repositories
             object newT = Activator.CreateInstance(System.Extender[typeof(ContentItem)]);
             ContentItem ci = (ContentItem)newT;
             ci.Identity = Guid.NewGuid();
-            newT = EventHub.Instance.ProcessEvent("Repository.New", this, newT).Data;
+            newT = System.Events.ProcessEvent("Repository.New", this, newT).Data;
             return newT;
         }
 
@@ -120,7 +120,7 @@ namespace Lynicon.Repositories
                 //    qed.Source = qed.Source.AsNoTracking();
 
                 string eventName = string.Format("Repository.Get.{0}.Ids", isSummary ? "Summaries" : "Items");
-                qed = EventHub.Instance.ProcessEvent(eventName, this, qed).Data as QueryEventData<IQueryable>;
+                qed = System.Events.ProcessEvent(eventName, this, qed).Data as QueryEventData<IQueryable>;
 
                 if (qed.EnumSource != null)
                     return qed.EnumSource.Cast<T>().ToList();
@@ -170,7 +170,7 @@ namespace Lynicon.Repositories
                 //    qed.Source = qed.Source.AsNoTracking();
 
                 string eventName = string.Format("Repository.Get.{0}", isSummary ? "Summaries" : "Items");
-                qed = EventHub.Instance.ProcessEvent(eventName, this, qed).Data as QueryEventData<IQueryable>;
+                qed = System.Events.ProcessEvent(eventName, this, qed).Data as QueryEventData<IQueryable>;
 
                 return qed.QueryBody(qed.Source).AsFacade<T>().ToList();
             }
@@ -200,7 +200,7 @@ namespace Lynicon.Repositories
                         )
                 };
 
-                qed = EventHub.Instance.ProcessEvent("Repository.Get.Count", this, qed).Data as QueryEventData<IQueryable>;
+                qed = System.Events.ProcessEvent("Repository.Get.Count", this, qed).Data as QueryEventData<IQueryable>;
 
                 return qed.QueryBody(qed.Source).AsFacade<ContentItem>().Count();
             }
@@ -232,7 +232,7 @@ namespace Lynicon.Repositories
                         throw new ProhibitedActionException("Changes in the structure of the data may cause data loss, please advise an administrator");
                     bool isAdd = (create == null ? ci.Id == Guid.Empty : create.Value);
                     var eventData = new RepositoryEventData(ci, bypassChecks);
-                    var eventResult = EventHub.Instance.ProcessEvent("Repository.Set." + (isAdd ? "Add" : "Update"), this, eventData);
+                    var eventResult = System.Events.ProcessEvent("Repository.Set." + (isAdd ? "Add" : "Update"), this, eventData);
                     var ciSave = (ContentItem)((RepositoryEventData)eventResult.Data).Container;
                     bool wasHandled = ((RepositoryEventData)eventResult.Data).WasHandled;
                     if (!wasHandled)
@@ -255,7 +255,7 @@ namespace Lynicon.Repositories
                 foreach (var sv in ciSaved)
                 {
                     var savedEventData = new RepositoryEventData(sv.Item1, bypassChecks);
-                    EventHub.Instance.ProcessEvent("Repository.Saved." + (sv.Item2 ? "Add" : "Update"), this, savedEventData);
+                    System.Events.ProcessEvent("Repository.Saved." + (sv.Item2 ? "Add" : "Update"), this, savedEventData);
                 }
                     
             }
@@ -289,7 +289,7 @@ namespace Lynicon.Repositories
             using (var dataSource = DataSourceFactory.Create(false))
             {
                 var eventData = new RepositoryEventData(ci, bypassChecks);
-                var eventResult = EventHub.Instance.ProcessEvent("Repository.Set.Delete", this, eventData);
+                var eventResult = System.Events.ProcessEvent("Repository.Set.Delete", this, eventData);
                 var ciSave = (ContentItem)((RepositoryEventData)eventResult.Data).Container;
                 bool wasHandled = ((RepositoryEventData)eventResult.Data).WasHandled;
                 if (ciSave != null)
@@ -305,7 +305,7 @@ namespace Lynicon.Repositories
                         dataSource.SaveChanges();
 
                     var savedEventData = new RepositoryEventData(ciSave, bypassChecks);
-                    EventHub.Instance.ProcessEvent(eventResult.EventName.Replace("Set", "Saved"), this, savedEventData);
+                    System.Events.ProcessEvent(eventResult.EventName.Replace("Set", "Saved"), this, savedEventData);
                 }
             }
         }

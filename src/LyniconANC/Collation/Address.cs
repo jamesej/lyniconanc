@@ -187,17 +187,28 @@ namespace Lynicon.Collation
 
         /// <summary>
         /// Get a query body which converts the address into a query which should return the item from that address
-        /// when used as an argument to a Repository method.
+        /// when used as an argument to a Repository method. Use the primary data system.
         /// </summary>
         /// <typeparam name="T">Container type query is applied to, which the address addresses</typeparam>
         /// <returns>The query body</returns>
         public Func<IQueryable<T>, IQueryable<T>> GetAsQueryBody<T>()
         {
+            return GetAsQueryBody<T>(Collator.Instance);
+        }
+        /// <summary>
+        /// Get a query body which converts the address into a query which should return the item from that address
+        /// when used as an argument to a Repository method.
+        /// </summary>
+        /// <typeparam name="T">Container type query is applied to, which the address addresses</typeparam>
+        /// <param name="coll">The collator of the data system in which the query body will run</param>
+        /// <returns>The query body</returns>
+        public Func<IQueryable<T>, IQueryable<T>> GetAsQueryBody<T>(Collator coll)
+        {
             Func<IQueryable<T>, IQueryable<T>> queryBody = null;
 
             if (this.ContainsKey("_id"))
             {
-                var idProp = Collator.Instance.GetIdProperty(typeof(T));
+                var idProp = coll.GetIdProperty(typeof(T));
                 return iq => iq.Where(LinqX.GetPropertyTest<T>(idProp.Name, this["_id"]));
             }
 

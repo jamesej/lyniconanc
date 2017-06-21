@@ -243,13 +243,13 @@ namespace Lynicon.Models
         /// </summary>
         /// <param name="targetType">the type</param>
         /// <returns>list of types which can be assigned to / contained by a type</returns>
-        public static List<Type> GetAssignableContentTypes(Type targetType)
+        public static List<Type> GetAssignableContentTypes(Collator coll, Type targetType)
         {
             List<Type> types = AllContentTypes.Where(t => targetType.IsAssignableFrom(t)).ToList();
             if (types.Count > 0)
                 return types;
 
-            types = AllContentTypes.Where(t => Collator.Instance.ContainerType(t) == targetType).ToList();
+            types = AllContentTypes.Where(t => coll.ContainerType(t) == targetType).ToList();
             if (types.Count > 0)
                 return types;
 

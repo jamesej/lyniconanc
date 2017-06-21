@@ -157,7 +157,7 @@ namespace Lynicon.Collation
             BuildForTypes(ContentTypeHierarchy.AllContentTypes);
             System.Extender.BuildExtensions(this);
             RepositoryBuilt = true;
-            EventHub.Instance.ProcessEvent("Repository.Built", this, null);
+            System.Events.ProcessEvent("Repository.Built", this, null);
         }
 
         public void BuildForTypes(IEnumerable<Type> types)
@@ -289,7 +289,7 @@ namespace Lynicon.Collation
             if (typeof(Summary).IsAssignableFrom(typeof(T)))
                 return Get<T, TQuery>(ContentTypeHierarchy.GetSummaryContainers(typeof(T)), queryBody);
             else
-                return Get<T, TQuery>(ContentTypeHierarchy.GetAssignableContentTypes(typeof(T)), queryBody);
+                return Get<T, TQuery>(ContentTypeHierarchy.GetAssignableContentTypes(this, typeof(T)), queryBody);
         }
         /// <summary>
         /// Get data items via a list of data addresses

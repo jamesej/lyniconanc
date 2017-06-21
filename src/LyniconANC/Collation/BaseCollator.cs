@@ -416,7 +416,7 @@ namespace Lynicon.Collation
                     .ToList();
                 if (addresses == null || addresses.Count == 0)
                     return data;
-                List<object> records = Repository.Instance.Get(typeof(object), addresses).ToList();
+                List<object> records = System.Repository.Get(typeof(object), addresses).ToList();
 
                 // Update the fetched referenced records with updated referenced properties on the content object
 
@@ -441,8 +441,8 @@ namespace Lynicon.Collation
                         refdContent = ((IContentContainer)refdRecord).GetContent(System.Extender);
                     if (refdRecord == null) // adding a new record
                     {
-                        refdContent = Collator.Instance.GetNew(address);
-                        refdRecord = Collator.Instance.GetContainer(address, refdContent);
+                        refdContent = System.Collator.GetNew(address);
+                        refdRecord = System.Collator.GetContainer(address, refdContent);
                     }
 
                     JObject refdObject = JObject.FromObject(refdContent);

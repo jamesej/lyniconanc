@@ -21,11 +21,8 @@ namespace Lynicon.Repositories
     /// </summary>
     internal class CompositeClassFactory
     {
-        public static readonly CompositeClassFactory Instance = new CompositeClassFactory();
-
-        public const string CompositeClassAssembly = "CompositeClasses";
-
-        static CompositeClassFactory() { }  // Trigger lazy initialization of static fields
+        public string CompositeClassAssembly { get; protected set; }
+        public string TypeNameRoot { get; protected set; }
 
         ModuleBuilder module;
         //Dictionary<Signature, Type> classes;
@@ -34,8 +31,11 @@ namespace Lynicon.Repositories
 
         Dictionary<Type, TypeBuilder> typeBuilders = new Dictionary<Type,TypeBuilder>();
 
-        private CompositeClassFactory()
+        public CompositeClassFactory(string assemblyName, string typeNameRoot)
         {
+            CompositeClassAssembly = assemblyName;
+            TypeNameRoot = typeNameRoot;
+
             AssemblyName name = new AssemblyName(CompositeClassAssembly);
             AssemblyBuilder assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #if ENABLE_LINQ_PARTIAL_TRUST
@@ -69,11 +69,10 @@ namespace Lynicon.Repositories
                 {
                     if (baseType.IsSealed() || baseType.GetCustomAttribute<NonCompositeAttribute>() != null)
                         continue;
-                    string typeName = "Composite_" + classCount.ToString() + baseType.Name;
+                    string typeName = "Composite_" + TypeNameRoot + "_" + baseType.Name;
                     TypeBuilder tb = this.module.DefineType(typeName, TypeAttributes.Class |
                             TypeAttributes.Public, baseType);
                     typeBuilders.Add(baseType, tb);
-                    classCount++;
 
                     return typeBuilders;
                 }
