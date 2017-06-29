@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Lynicon.Repositories;
 using LyniconANC.Extensibility;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Lynicon.Models;
 
 namespace Lynicon.Services
 {
@@ -102,6 +105,11 @@ namespace Lynicon.Services
                 // Initialise user system
                 this.SecurityManager = Membership.SecurityManager.Current = app.ApplicationServices.GetService<ISecurityManager>();
                 this.SecurityManager.InitialiseDataApi();
+
+                var partManager = app.ApplicationServices.GetService<ApplicationPartManager>();
+                var controllerFeature = new ControllerFeature();
+                partManager.PopulateFeature(controllerFeature);
+                ContentTypeHierarchy.RegisterControllers(controllerFeature.Controllers);
             }
 
             Modules.ValidateModules();

@@ -9,6 +9,8 @@ using Lynicon.Extensibility;
 using Lynicon.DataSources;
 using Xunit;
 using Lynicon.Models;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace LyniconANC.Test
 {
@@ -24,6 +26,7 @@ namespace LyniconANC.Test
 
         public LyniconSystemFixture()
         {
+            ContentTypeHierarchy.RegisterControllersFromAssemblies(new List<Assembly> { this.GetType().GetTypeInfo().Assembly });
             LyniconSystem = new LyniconSystem(new LyniconSystemOptions()
                 .UseTypeSetup(col =>
                 {
@@ -51,7 +54,7 @@ namespace LyniconANC.Test
             LyniconSystem.Extender.AddExtensionRule(typeof(ICoreMetadata), typeof(IPublishable));
             LyniconSystem.Extender.AddExtensionRule(typeof(ICoreMetadata), typeof(IInternational));
 
-            LyniconSystem.Construct(new Module[] { new CoreModule(LyniconSystem) });
+            LyniconSystem.Construct(new Lynicon.Extensibility.Module[] { new CoreModule(LyniconSystem) });
             LyniconSystem.Modules.SkipDbStateCheck = true;
             LyniconSystem.SetAsPrimarySystem();
             LyniconSystem.Initialise();
@@ -90,7 +93,7 @@ namespace LyniconANC.Test
             LyniconSystemWithDb.Collator = new Collator(LyniconSystemWithDb);
             LyniconSystemWithDb.Modules = new LyniconModuleManager();
 
-            LyniconSystemWithDb.Construct(new Module[] { new CoreModule(LyniconSystemWithDb) });
+            LyniconSystemWithDb.Construct(new Lynicon.Extensibility.Module[] { new CoreModule(LyniconSystemWithDb) });
             LyniconSystemWithDb.Modules.SkipDbStateCheck = true;
             LyniconSystemWithDb.Initialise();
         }

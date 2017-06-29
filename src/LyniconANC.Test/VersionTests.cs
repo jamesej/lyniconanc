@@ -513,7 +513,7 @@ namespace LyniconANC.Test
             var iv4 = iv1.GetAddressablePart(sys.LyniconSystem.Versions);
             Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Locale", "en-GB" } }), iv4);
 
-            var iv5 = iv1.GetUnaddressablePart();
+            var iv5 = iv1.GetUnaddressablePart(sys.LyniconSystem.Versions);
             Assert.Equal(new ItemVersion(new Dictionary<string, object> { { "Published", true } }), iv5);
 
             var iv6 = iv1.GetApplicablePart(sys.LyniconSystem.Versions, typeof(TestContent));

@@ -39,11 +39,18 @@ namespace LyniconANC.Test
 
             Collator.Instance.Set(hc);
 
-            var item = Collator.Instance.Get<HeaderContent2>(new Address(typeof(HeaderContent2), "ct-a"));
-            Assert.NotNull(item);
-            Assert.Equal(item.SubTestsCount, 1);
+            // modify
 
-            Assert.IsAssignableFrom<ICoreMetadata>(item);
+            hc.HeaderBody = "zzz";
+            Collator.Instance.Set(hc);
+
+            var items2 = Collator.Instance.Get<HeaderContent2>(new Address[] { new Address(typeof(HeaderContent2), "ct-a") }).ToList();
+            Assert.Equal(1, items2.Count);
+            var item = items2[0];
+            Assert.Equal(1, item.SubTestsCount);
+            Assert.Equal("zzz", item.HeaderBody);
+
+            Assert.IsAssignableFrom<ICoreMetadata>(items2[0]);
 
 
             var hc2 = Collator.Instance.GetNew<HeaderContent2>(new Address(typeof(HeaderContent2), "ct-b"));
@@ -62,7 +69,7 @@ namespace LyniconANC.Test
             var allHc2 = Collator.Instance.Get<object, object>(new Type[] { typeof(HeaderContent2) }, iq => iq).ToList();
             Assert.True(allHc2.Count > 0 && allHc2.All(o => o is HeaderContent2 && o is ICoreMetadata));
 
-            var itemId = new ItemId(item);
+            var itemId = new ItemId(sys.LyniconSystem.Collator, item);
             var item2 = Collator.Instance.Get<HeaderContent2>(itemId);
             Assert.NotNull(item2);
             Assert.Equal(item.Title, item2.Title);
@@ -70,8 +77,8 @@ namespace LyniconANC.Test
 
             Collator.Instance.Delete(item2);
 
-            var items2 = Collator.Instance.Get<HeaderContent2>();
-            Assert.Equal(1, items2.Count(i => (i.Title ?? "").StartsWith("CT")));
+            var items3 = Collator.Instance.Get<HeaderContent2>();
+            Assert.Equal(1, items3.Count(i => (i.Title ?? "").StartsWith("CT")));
 
             Collator.Instance.Delete(hc2);
         }
@@ -99,7 +106,7 @@ namespace LyniconANC.Test
             var items = Collator.Instance.Get<TestData, TestData>(iq => iq.Where(d =>(d.Title ?? "").StartsWith("TitleCT")));
             Assert.Equal(2, items.Count());
 
-            var itemId = new ItemId(item);
+            var itemId = new ItemId(sys.LyniconSystem.Collator, item);
             var item2 = Collator.Instance.Get<TestData>(itemId);
             Assert.NotNull(item2);
             Assert.Equal("TitleCT", item2.Title);

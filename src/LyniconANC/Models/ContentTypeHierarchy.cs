@@ -10,6 +10,7 @@ using Lynicon.Repositories;
 using Lynicon.Utility;
 using Lynicon.Extensibility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 namespace Lynicon.Models
 {
@@ -58,53 +59,38 @@ namespace Lynicon.Models
         /// </summary>
         public static List<Type> ExcludeFromVersioning = new List<Type>();
 
-        /// <summary>
-        /// Initialise the content type hierarchy.  Be careful this is not triggered before the route table has been
-        /// generated.
-        /// </summary>
-        static ContentTypeHierarchy()
+        public static void RegisterControllers(IList<TypeInfo> controllers)
         {
-            try
-            {
-                var contentTypes = new Type[0];
-                contentTypes.Do(t => RegisterType(t));
-
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                List<Type> controllerTypes = new List<Type>();
-                foreach (Assembly ass in assemblies)
+            ControllerActions = controllers
+                .Select(t => new
                 {
-                    if (ass.FullName.StartsWith("System.") || ass.FullName.StartsWith("Microsoft."))
-                        continue;
-                    try
-                    {
-                        foreach (Type t in ass.GetTypes())
-                            if (typeof(Controller).IsAssignableFrom(t))
-                                controllerTypes.Add(t);
-                    }
-                    catch { }
-                }
+                    ControllerName = t.Name.Replace("Controller", "").ToLower(),
+                    ActionNames = t.GetMethods()
+                            .Where(mi => mi.IsPublic
+                                && mi.GetCustomAttribute<NonPageAttribute>() == null
+                                && mi.GetCustomAttribute<NonActionAttribute>() == null
+                                && !mi.DeclaringType.Namespace.StartsWith("Microsoft.AspNetCore")
+                                && !mi.DeclaringType.Namespace.StartsWith("System"))
+                            .Select(mi => mi.Name.ToLower())
+                            .ToList()
+                })
+                .Where(ti => ti.ActionNames.Count > 0)
+                .ToDictionary(ti => ti.ControllerName, ti => ti.ActionNames);
+        }
 
-                ControllerActions = controllerTypes
-                    .Select(t => new
-                        {
-                            ControllerName = t.Name.Replace("Controller", "").ToLower(),
-                            ActionNames = t.GetMethods()
-                                .Where(mi => mi.IsPublic
-                                    && mi.GetCustomAttribute<NonPageAttribute>() == null
-                                    && mi.GetCustomAttribute<NonActionAttribute>() == null
-                                    && !mi.DeclaringType.Namespace.StartsWith("Microsoft.AspNetCore")
-                                    && !mi.DeclaringType.Namespace.StartsWith("System"))
-                                .Select(mi => mi.Name.ToLower())
-                                .ToList()
-                        })
-                    .Where(ti => ti.ActionNames.Count > 0)
-                    .ToDictionary(ti => ti.ControllerName, ti => ti.ActionNames);
-            }
-            catch (Exception ex)
+        public static void RegisterControllersFromAssemblies(List<Assembly> assemblies)
+        {
+            var controllerTypes = new List<TypeInfo>();
+            foreach (var ass in assemblies)
             {
-                throw ex;
+                foreach (Type t in ass.GetExportedTypes())
+                {
+                    if (t.IsSubclassOf(typeof(Controller)))
+                        controllerTypes.Add(t.GetTypeInfo());
+                }
             }
 
+            RegisterControllers(controllerTypes);
         }
 
         /// <summary>

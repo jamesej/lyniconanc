@@ -301,9 +301,8 @@ namespace Lynicon.Collation
                     .Cast<RedirectPropertySourceAttribute>()
                     .ToList();
 
-                foreach (var addrOrVAddr in addrTypeG.addrs)
+                foreach (var addr in addrTypeG.addrs.Select(a => new Address(a.Type, a)).Distinct()) // convert a VersionedAddress to an Address if necessary
                 {
-                    var addr = new Address(addrOrVAddr.Type, addrOrVAddr); // convert a VersionedAddress to an Address if necessary
                     var primaryPath = addr.GetAsContentPath();
                     if (!contLookup.Contains(new Address(addr.Type, addr).ToString()))
                         continue;

@@ -34,20 +34,20 @@ namespace LyniconANC.Test
 
             iid = null;
             refr = new Reference<RefTargetContent>(iid);
-            Assert.True(refr.IsEmpty, "empty reference from null itemid");
+            Assert.True(refr.IsEmpty(), "empty reference from null itemid");
 
             string s = null;
             refr = new Reference<RefTargetContent>(s);
-            Assert.True(refr.IsEmpty, "empty reference from null serialization string");
+            Assert.True(refr.IsEmpty(), "empty reference from null serialization string");
 
             refr = new Reference<RefTargetContent>(null, null);
-            Assert.True(refr.IsEmpty, "empty reference from null id/datatype");
+            Assert.True(refr.IsEmpty(), "empty reference from null id/datatype");
 
             refr = new Reference<RefTargetContent>(typeof(RefTargetContent).FullName, null);
-            Assert.True(refr.IsEmpty, "emtpy referent from null id, valid datatype");
+            Assert.True(refr.IsEmpty(), "emtpy referent from null id, valid datatype");
 
             refr = new Reference<RefTargetContent>();
-            Assert.True(refr.IsEmpty, "default constr reference is empty");
+            Assert.True(refr.IsEmpty(), "default constr reference is empty");
         }
 
         [Fact]
@@ -71,20 +71,20 @@ namespace LyniconANC.Test
             Collator.Instance.Set(rc1);
             Collator.Instance.Set(rc2);
 
-            var backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
+            var backRefs = Reference.GetReferencesFrom<RefContent>(sys.LyniconSystem, new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
             Assert.Equal(2, backRefs.Count);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt2), "RefTarget").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(sys.LyniconSystem, new ItemVersionedId(sys.LyniconSystem, rt2), "RefTarget").ToList();
             Assert.Equal(0, backRefs.Count);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt2), "RefTargetOther").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(sys.LyniconSystem, new ItemVersionedId(sys.LyniconSystem, rt2), "RefTargetOther").ToList();
             Assert.Equal(1, backRefs.Count);
 
             rc2.RefTarget = new Reference<RefTargetContent>(rt2.ItemId);
             Collator.Instance.Set(rc2);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(sys.LyniconSystem, new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
             Assert.Equal(1, backRefs.Count);
 
             Collator.Instance.Delete(rc1);
-            backRefs = Reference.GetReferencesFrom<RefContent>(new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
+            backRefs = Reference.GetReferencesFrom<RefContent>(sys.LyniconSystem, new ItemVersionedId(sys.LyniconSystem, rt1), "RefTarget").ToList();
             Assert.Equal(0, backRefs.Count);
         }
     }

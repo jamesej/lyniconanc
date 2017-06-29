@@ -83,8 +83,17 @@ namespace Lynicon.Collation
         public ItemId(ItemId iid) : this(iid.Type, iid.Id)
         { }
         /// <summary>
+        /// Construct an ItemId by extracting it from a container, using the primary Lynicon system for this
+        /// </summary>
+        /// <param name="container">The container</param>
+        public ItemId(IContentContainer container)
+            : this(Collator.GetContentType(container), Collator.Instance.GetIdProperty(container.GetType().UnproxiedType()).GetValue(container))
+        {
+        }
+        /// <summary>
         /// Construct an ItemId by extracting it from a container
         /// </summary>
+        /// <param name="coll">The collator from the system for which we are determining the itemid</param>
         /// <param name="container">The container</param>
         public ItemId(Collator coll, IContentContainer container)
             : this(Collator.GetContentType(container), coll.GetIdProperty(container.GetType().UnproxiedType()).GetValue(container))
@@ -101,8 +110,17 @@ namespace Lynicon.Collation
         }
         /// <summary>
         /// Constructs an ItemId from an unspecified object which can be a container, a content class or a summary
+        /// using the primary Lynicon system
         /// </summary>
-        /// <param name="o"></param>
+        /// <param name="o">The unspecified object</param>
+        public ItemId(object o) : this(Collator.Instance, o)
+        {
+        }
+        /// <summary>
+        /// Constructs an ItemId from an unspecified object which can be a container, a content class or a summary
+        /// </summary>
+        /// <param name="coll">The collator for the system in which to create this itemid</param>
+        /// <param name="o">The unspecified object</param>
         public ItemId(Collator coll, object o)
         {
             if (o is IContentContainer)

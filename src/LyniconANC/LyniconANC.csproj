@@ -12,7 +12,11 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.0.2.50</Version>
+    <Version>0.0.2.55</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.6|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.6\.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

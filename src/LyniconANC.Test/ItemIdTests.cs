@@ -103,7 +103,7 @@ namespace LyniconANC.Test
             });
             Assert.Throws<NullReferenceException>(() => new ItemId(summtest));
             Assert.Throws<ArgumentException>(() => new ItemId(typeof(RestaurantContent), null));
-            Assert.Throws<ArgumentException>(() => new ItemId(null, Guid.NewGuid()));
+            Assert.Throws<ArgumentException>(() => new ItemId((Type)null, Guid.NewGuid()));
         }
 
         [Fact]
