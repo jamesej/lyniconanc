@@ -18,7 +18,7 @@ using Linq2Rest;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Exceptions;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 
 namespace Lynicon.Collation

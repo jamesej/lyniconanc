@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace Lynicon.Services
 {
+    /// <summary>
+    /// Fluent builder object for creating a Lynicon system
+    /// </summary>
     public class LyniconSystemBuilder
     {
         LyniconSystem target;
@@ -22,6 +25,15 @@ namespace Lynicon.Services
             this.services = services;
         }
 
+        /// <summary>
+        /// Set up user management via ASP.Net Identity integrated with Lynicon
+        /// </summary>
+        /// <typeparam name="TUser">Type of the user</typeparam>
+        /// <typeparam name="TKey">Type of the user record key</typeparam>
+        /// <typeparam name="TContext">Type of the DbContext used for persistence of user records</typeparam>
+        /// <typeparam name="TUserManager">Type of the class providing functions for management of users</typeparam>
+        /// <typeparam name="TSignInManager">Type of the class providing sign in functions</typeparam>
+        /// <returns>Modified builder for a Lynicon system</returns>
         public LyniconSystemBuilder AddIdentityAdaptor<TUser, TKey, TContext, TUserManager, TSignInManager>()
             where TUser : IdentityUser, new()
             where TContext : IdentityDbContext<TUser>
@@ -36,6 +48,10 @@ namespace Lynicon.Services
             return this;
         }
 
+        /// <summary>
+        /// Set up user management via the default customised version of ASP.Net Identity to work with Lynicon
+        /// </summary>
+        /// <returns>Modified builder for a Lynicon system</returns>
         public LyniconSystemBuilder AddLyniconIdentity()
         {
             services.AddSingleton<Func<UserManager<User>>>(s => (() => s.GetService<UserManager<User>>()));

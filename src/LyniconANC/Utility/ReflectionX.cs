@@ -12,7 +12,7 @@ using Lynicon.Collation;
 using Lynicon.Relations;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Utility
 {
@@ -652,6 +652,22 @@ namespace Lynicon.Utility
                 typedArray.SetValue(paramsVal, idx++);
 
             return values.Take(parms.Length - 1).Append(typedArray).ToArray();
+        }
+
+        /// <summary>
+        /// Whether the baseType has an implicit conversion to the targetType
+        /// </summary>
+        /// <param name="baseType">The type tested for having an implicit conversion</param>
+        /// <param name="targetType">The type the implicit conversion converts to</param>
+        /// <returns>Whether the implicit conversion exists</returns>
+        public static bool HasImplicitConversion(Type baseType, Type targetType)
+        {
+            return baseType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Where(mi => mi.Name == "op_Implicit" && mi.ReturnType == targetType)
+                .Any(mi => {
+                    ParameterInfo pi = mi.GetParameters().FirstOrDefault();
+                    return pi != null && pi.ParameterType == baseType;
+                });
         }
     }
 }

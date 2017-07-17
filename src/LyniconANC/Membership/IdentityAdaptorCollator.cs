@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 using Lynicon.Extensibility;
 using System.Threading.Tasks;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 
 namespace Lynicon.Membership

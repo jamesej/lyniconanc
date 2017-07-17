@@ -37,7 +37,15 @@ namespace Lynicon.Utility
 
             return cons.Invoke(conformedVals);
         }
-
+        /// <summary>
+        /// Create an instance of an object injecting services into all initial constructor parameters marked with FromServicesAttribute
+        /// while supplying a list of values for subsequent parameters.  Multiple constructors can be selected between on the basis that
+        /// they all include all the services attributes as their initial parameters by matching subsequent parameters to the
+        /// supplied list of values.
+        /// </summary>
+        /// <param name="svcs">Service provider</param>
+        /// <param name="parms">list of non-service parameter values</param>
+        /// <returns>newly constructed object</returns>
         public static T CreateInstanceWithParameters<T>(this IServiceProvider svcs, params object[] parms)
         {
             return (T)svcs.CreateInstanceWithParameters(typeof(T), parms);

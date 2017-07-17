@@ -15,7 +15,7 @@ using Lynicon.Utility;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Editors;
 using Lynicon.DataSources;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 using System.ComponentModel.DataAnnotations;
 

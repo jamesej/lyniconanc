@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 
 namespace Lynicon.Extensibility

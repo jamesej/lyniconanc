@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using System.Linq;
 
 namespace Lynicon.Models

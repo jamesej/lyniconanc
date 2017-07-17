@@ -12,7 +12,7 @@ using Lynicon.Attributes;
 //using Lynicon.Collation;
 using Lynicon.Utility;
 using Lynicon.Collation;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Repositories
 {

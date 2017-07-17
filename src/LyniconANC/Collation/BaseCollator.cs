@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Routing;
 using Lynicon.Extensibility;
 using Microsoft.Extensions.Primitives;
 using System.Reflection;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 using Lynicon.Attributes;
 using Newtonsoft.Json.Linq;

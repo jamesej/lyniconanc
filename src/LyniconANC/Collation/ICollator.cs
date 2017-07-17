@@ -8,7 +8,7 @@ using Lynicon.Relations;
 using Lynicon.Repositories;
 using Microsoft.AspNetCore.Routing;
 using System.Reflection;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 
 namespace Lynicon.Collation

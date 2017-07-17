@@ -14,21 +14,39 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Lynicon.Repositories;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Lynicon.Models;
 
 namespace Lynicon.Services
 {
+    /// <summary>
+    /// Container for a Lynicon data system which specifies how data for a range of type-classes is persisted and versioned
+    /// together with modules providing additional services and event handling
+    /// </summary>
     public class LyniconSystem
     {
+        /// <summary>
+        /// The primary Lynicon system which is attached to Lynicon's management UI. Other Lynicon systems must be managed
+        /// through their code APIs.
+        /// </summary>
         public static LyniconSystem Instance { get; set; }
 
+        /// <summary>
+        /// The modules active in this system
+        /// </summary>
         public LyniconModuleManager Modules { get; set; }
 
+        /// <summary>
+        /// The user/security manager for this system
+        /// </summary>
         public ISecurityManager SecurityManager { get; set; }
 
+        /// <summary>
+        /// The collator for this system responsible for extraction of content from content containers and combination
+        /// of data from different sources
+        /// </summary>
         public Collator Collator { get; set; }
 
         public Repository Repository { get; set; }

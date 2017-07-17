@@ -9,12 +9,24 @@ using System.Collections.Concurrent;
 using Lynicon.Models;
 using Lynicon.Collation;
 
-namespace LyniconANC.Extensibility
+namespace Lynicon.Extensibility
 {
+    /// <summary>
+    /// TypeExtender manages creation at runtime of subclasses of content and container types extended to include properties
+    /// and so implement a registered list of interfaces. It provides conversion between the compile-time base class and the
+    /// run-time extended class and facilities to access the extended classes.
+    /// </summary>
     public class TypeExtender
     {
         static ConcurrentDictionary<Type, Type> allExtensionBaseTypes = new ConcurrentDictionary<Type, Type>();
 
+        /// <summary>
+        /// Get the base type of an extended type: this function acts across all Lynicon systems, it can do this
+        /// because an extended type will have only one base type. This differs from simply getting the BaseType via
+        /// reflection because it will return the original type if an extended type is not passed as the parameter
+        /// </summary>
+        /// <param name="extType">Any type: if not an extended type it will be returned<param>
+        /// <returns>If an extended type, its base type otherwise the type itself</returns>
         public static Type BaseType(Type extType)
         {
             Type unextType;
@@ -31,15 +43,27 @@ namespace LyniconANC.Extensibility
         public List<Type> BaseTypes { get; private set; }
         bool built = false;
 
+        /// <summary>
+        /// Create a new type extender with default naming of types and dynamic assembly
+        /// </summary>
         public TypeExtender() : this("CompositeClasses", "")
         {
         }
+        /// <summary>
+        /// Create a new type extender specifying naming
+        /// </summary>
+        /// <param name="assemblyName">Name of the dynamic assembly to create</param>
+        /// <param name="typeNameRoot">string added to dynamic type name in form 'Composite_[typeNameRoot]_[basetypename]'</param>
         public TypeExtender(string assemblyName, string typeNameRoot)
         {
             classFactory = new CompositeClassFactory(assemblyName, typeNameRoot);
             BaseTypes = new List<Type>();
         }
 
+        /// <summary>
+        /// Register a type as requiring extensions to be built
+        /// </summary>
+        /// <param name="t">The type to register</param>
         public void RegisterForExtension(Type t)
         {
             if (BaseTypes.Contains(t))
@@ -49,8 +73,18 @@ namespace LyniconANC.Extensibility
 
             BaseTypes.Add(t);
         }
+        /// <summary>
+        /// Register a type as requiring extensions to be built
+        /// </summary>
+        /// <typeparam name="T">The type to register</typeparam>
         public void RegisterForExtension<T>() => RegisterForExtension(typeof(T));
 
+        /// <summary>
+        /// Add a rule which indicates a base type should be extended to include an interface. The base type
+        /// can also be an interface, in which case the rule is applied recursively.
+        /// </summary>
+        /// <param name="baseType">A base type or an interface</param>
+        /// <param name="extensionInterfaceType">The interface to use to extend all registered instances of the base type or all types which by extension include the base type</param>
         public void AddExtensionRule(Type baseType, Type extensionInterfaceType)
         {
             if (extensionRules.Any(map => map.tBase.IsAssignableFrom(baseType) && extensionInterfaceType.IsAssignableFrom(map.tExt)))
@@ -61,11 +95,21 @@ namespace LyniconANC.Extensibility
             extensionRules.Add((baseType, extensionInterfaceType));
         }
 
+        /// <summary>
+        /// Get the dynamic extended type for a base type
+        /// </summary>
+        /// <param name="baseType">The base type for which to get the extended type</param>
+        /// <returns>The dynamic extended type</returns>
         public Type this[Type baseType]
         {
             get { return typeExtensions.ContainsKey(baseType) ? typeExtensions[baseType] : null; }
         }
 
+        /// <summary>
+        /// Gets a dynamic type which 
+        /// </summary>
+        /// <param name="baseType"></param>
+        /// <returns></returns>
         public Type Summarised(Type baseType)
         {
             return summarisedTypes[baseType];
@@ -86,6 +130,7 @@ namespace LyniconANC.Extensibility
             var typeBuilders = classFactory.Initialise(BaseTypes);
             foreach (var baseType in BaseTypes)
             {
+                // Recursively reapplies extension rules to the base type until a fixed list of interfaces is achieved
                 var interfaces = new Type[] { baseType }
                     .Recurse(t => extensionRules
                         .Where(er => er.tBase.IsAssignableFrom(t))

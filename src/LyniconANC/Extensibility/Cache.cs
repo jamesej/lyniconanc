@@ -10,7 +10,7 @@ using Lynicon.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
 using Lynicon.Services;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Extensibility
 {

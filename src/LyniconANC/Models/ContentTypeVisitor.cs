@@ -18,14 +18,13 @@ namespace Lynicon.Models
 
     public class ContentTypeVisitor
     {
-        public static PropertyCategory GetPropertyCategory(PropertyInfo pi)
+        public static PropertyCategory GetTypeCategory(Type t)
         {
-            Type t = pi.PropertyType;
             if (t.GetInterface("IList") != null && t.IsGenericType())
             {
                 return PropertyCategory.List;
             }
-            else if (t.IsPrimitive() || t == typeof(string) || t == typeof(DateTime) || typeof(ItemId).IsAssignableFrom(t))
+            else if (t.IsPrimitive() || t == typeof(string) || t == typeof(Guid) || t == typeof(DateTime) || typeof(ItemId).IsAssignableFrom(t))
             {
                 return PropertyCategory.Primitive;
             }
@@ -43,26 +42,20 @@ namespace Lynicon.Models
             {
                 if (prop.GetIndexParameters().Length > 0)
                     continue;
-                ScaffoldColumnAttribute sca = prop.GetCustomAttribute<ScaffoldColumnAttribute>();
-                if (sca != null && !sca.Scaffold)
-                    continue;
-                JsonIgnoreAttribute jia = prop.GetCustomAttribute<JsonIgnoreAttribute>();
-                if (jia != null)
-                    continue;
 
                 yield return prop;
             }
         }
-        public Func<PropertyInfo, bool> PropertyFilter { get; set; }
+        public Func<PropertyInfo, bool> IncludeProperty { get; set; }
 
         public ContentTypeVisitor()
         {
-            PropertyFilter = pi => true;
+            IncludeProperty = pi => true;
         }
 
         public virtual void Visit(PropertyInfo pi)
         {
-            var propCat = GetPropertyCategory(pi);
+            var propCat = GetTypeCategory(pi.PropertyType);
             switch (propCat)
             {
                 case PropertyCategory.List:
@@ -78,7 +71,7 @@ namespace Lynicon.Models
         }
         public virtual void Visit(Type t)
         {
-            foreach (var prop in GetVisitableProperties(t).Where(PropertyFilter))
+            foreach (var prop in GetVisitableProperties(t).Where(IncludeProperty))
             {
                 Visit(prop);
             }

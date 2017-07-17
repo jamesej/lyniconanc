@@ -17,7 +17,7 @@ using Lynicon.Linq;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Exceptions;
-using LyniconANC.Extensibility;
+using Lynicon.Extensibility;
 using Lynicon.Services;
 
 namespace Lynicon.Collation
@@ -82,7 +82,7 @@ namespace Lynicon.Collation
             }
         }
 
-        private IEnumerable<T> GetIdsOfType<T, TId>(IEnumerable<ItemId> ids)
+        protected IEnumerable<T> GetIdsOfType<T, TId>(IEnumerable<ItemId> ids)
             where T : class
             where TId : class
         {
