@@ -262,7 +262,7 @@ namespace Lynicon.Repositories
                     }
                     else
                         isAdd = create.Value;
-                    var eventData = new RepositoryEventData(item, bypassChecks);
+                    var eventData = new RepositoryEventData(item, setOptions);
                     var eventResult = System.Events.ProcessEvent("Repository.Set." + (isAdd ? "Add" : "Update"), this, eventData);
                     var itemSave = ((RepositoryEventData)eventResult.Data).Container;
                     bool wasHandled = ((RepositoryEventData)eventResult.Data).WasHandled;
@@ -284,7 +284,7 @@ namespace Lynicon.Repositories
 
                 foreach (var savedItem in savedItems)
                 {
-                    var eventData = new RepositoryEventData(savedItem.Item1, bypassChecks);
+                    var eventData = new RepositoryEventData(savedItem.Item1, setOptions);
                     System.Events.ProcessEvent("Repository.Saved." + (savedItem.Item2 ? "Add" : "Update"), this, eventData);
                 }
                     
@@ -318,7 +318,8 @@ namespace Lynicon.Repositories
             using (var dataSource = DataSourceFactory.Create(false))
             {
                 var idProp = LinqX.GetIdProp(o.GetType(), this.IdName);
-                var eventData = new RepositoryEventData(o, bypassChecks);
+                Dictionary<string, object> options = new Dictionary<string, object> { { "bypassChecks", bypassChecks } };
+                var eventData = new RepositoryEventData(o, options);
                 var eventResult = System.Events.ProcessEvent("Repository.Set.Delete", this, eventData);
                 var itemDel = ((RepositoryEventData)eventResult.Data).Container;
                 bool wasHandled = ((RepositoryEventData)eventResult.Data).WasHandled;
@@ -334,7 +335,7 @@ namespace Lynicon.Repositories
                         dataSource.SaveChanges();
                 }
 
-                var savedEventData = new RepositoryEventData(o, bypassChecks);
+                var savedEventData = new RepositoryEventData(o, options);
                 System.Events.ProcessEvent(eventResult.EventName.Replace("Set", "Saved"), this, savedEventData);
             }
         }

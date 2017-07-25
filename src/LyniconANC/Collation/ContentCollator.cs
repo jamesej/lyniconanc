@@ -33,6 +33,8 @@ namespace Lynicon.Collation
 
         public ContentCollator(LyniconSystem sys) : base(sys)
         { }
+        public ContentCollator(LyniconSystem sys, bool doCollation) : base(sys, doCollation)
+        { }
 
         /// <inheritdoc/>
         public override Type AssociatedContainerType { get { return typeof(ContentItem); } }

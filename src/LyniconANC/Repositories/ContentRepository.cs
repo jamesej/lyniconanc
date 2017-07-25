@@ -231,7 +231,7 @@ namespace Lynicon.Repositories
                     if (ChangeProblems.Any(cp => cp.TypeName == ci.DataType) && !BypassChangeProblems)
                         throw new ProhibitedActionException("Changes in the structure of the data may cause data loss, please advise an administrator");
                     bool isAdd = (create == null ? ci.Id == Guid.Empty : create.Value);
-                    var eventData = new RepositoryEventData(ci, bypassChecks);
+                    var eventData = new RepositoryEventData(ci, setOptions);
                     var eventResult = System.Events.ProcessEvent("Repository.Set." + (isAdd ? "Add" : "Update"), this, eventData);
                     var ciSave = (ContentItem)((RepositoryEventData)eventResult.Data).Container;
                     bool wasHandled = ((RepositoryEventData)eventResult.Data).WasHandled;
@@ -254,7 +254,7 @@ namespace Lynicon.Repositories
                     
                 foreach (var sv in ciSaved)
                 {
-                    var savedEventData = new RepositoryEventData(sv.Item1, bypassChecks);
+                    var savedEventData = new RepositoryEventData(sv.Item1, setOptions);
                     System.Events.ProcessEvent("Repository.Saved." + (sv.Item2 ? "Add" : "Update"), this, savedEventData);
                 }
                     
@@ -288,7 +288,8 @@ namespace Lynicon.Repositories
             ContentItem ci = o as ContentItem;
             using (var dataSource = DataSourceFactory.Create(false))
             {
-                var eventData = new RepositoryEventData(ci, bypassChecks);
+                var options = new Dictionary<string, object> { { "bypassChecks", bypassChecks } };
+                var eventData = new RepositoryEventData(ci, options);
                 var eventResult = System.Events.ProcessEvent("Repository.Set.Delete", this, eventData);
                 var ciSave = (ContentItem)((RepositoryEventData)eventResult.Data).Container;
                 bool wasHandled = ((RepositoryEventData)eventResult.Data).WasHandled;
@@ -304,7 +305,7 @@ namespace Lynicon.Repositories
                     if (!wasHandled)
                         dataSource.SaveChanges();
 
-                    var savedEventData = new RepositoryEventData(ciSave, bypassChecks);
+                    var savedEventData = new RepositoryEventData(ciSave, options);
                     System.Events.ProcessEvent(eventResult.EventName.Replace("Set", "Saved"), this, savedEventData);
                 }
             }

@@ -26,6 +26,8 @@ namespace Lynicon.Collation
     {
         public BasicCollator(LyniconSystem sys) : base(sys)
         { }
+        public BasicCollator(LyniconSystem sys, bool doCollation) : base(sys, doCollation)
+        { }
 
         #region ICollator Members
 

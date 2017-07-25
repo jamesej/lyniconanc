@@ -403,6 +403,7 @@ namespace Lynicon.Extensibility
         /// Push a versioning state just including a VersioningMode (making it active)
         /// </summary>
         /// <param name="mode">The VersioningMode to push</param>
+        /// <returns>A versioning context which ensures this pushed changed is removed</returns>
         public VersioningContext PushState(VersioningMode mode)
         {
             return PushState(mode, null);
@@ -412,6 +413,7 @@ namespace Lynicon.Extensibility
         /// </summary>
         /// <param name="mode">The VersioningMode to push</param>
         /// <param name="specificVersion">The SpecificVersion to push</param>
+        /// <returns>A versioning context which ensures this pushed changed is removed</returns>
         public VersioningContext PushState(VersioningMode mode, ItemVersion specificVersion)
         {
             StateStack.Push(new VersioningState { Mode = this.Mode, SpecificVersion = this.SpecificVersion });
@@ -420,6 +422,16 @@ namespace Lynicon.Extensibility
                 this.SpecificVersion = specificVersion;
 
             return new VersioningContext(this);
+        }
+
+        /// <summary>
+        /// Push a versioning state using the current version with a superimposed variation
+        /// </summary>
+        /// <param name="superimposition">ItemVersion to superimpose on current version</param>
+        /// <returns>A versioning context which ensures this pushed changed is removed</returns>
+        public VersioningContext PushSuperimposition(ItemVersion superimposition)
+        {
+            return PushState(VersioningMode.Specific, CurrentVersion.Superimpose(superimposition));
         }
 
         /// <summary>

@@ -39,6 +39,8 @@ namespace Lynicon.Collation
 
         public LyniconSystem System { get; set; }
 
+        public bool DoCollation { get; protected set; }
+
         /// <summary>
         /// The container type this repository uses (or null if its just the content type)
         /// </summary>
@@ -47,6 +49,11 @@ namespace Lynicon.Collation
         public BaseCollator(LyniconSystem sys)
         {
             System = sys;
+            DoCollation = true;
+        }
+        public BaseCollator(LyniconSystem sys, bool doCollation) : this(sys)
+        {
+            DoCollation = doCollation;
         }
 
         public abstract void BuildForTypes(IEnumerable<Type> types);
@@ -243,29 +250,32 @@ namespace Lynicon.Collation
             List<Address> fetchAddrs = startAddresses
                 .Where(sa => !containers.Any(kvp => kvp.Key.Address == sa)).ToList();
 
-            var allStartAddressesByType = fetchAddrs.Concat(containers.Keys)
-                .GroupBy(a => a.Type)
-                .Select(ag => new { aType = ag.Key, addrs = ag.ToList() })
-                .ToList();
-
-            // Get all addresses for items to collate (startAddresses plus addresses from startContainers)
-            foreach (var addrTypeG in allStartAddressesByType)
+            List<IGrouping<Type, Address>> allStartAddressesByType = null;
+            if (DoCollation)
             {
-                Type contentType = addrTypeG.aType;
-                var rpsAttributes = contentType
-                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
-                    .Cast<RedirectPropertySourceAttribute>()
+                allStartAddressesByType = fetchAddrs.Concat(containers.Keys)
+                    .GroupBy(a => a.Type)
                     .ToList();
-                foreach (Address addr in addrTypeG.addrs)
-                {
-                    fetchAddrs.AddRange(rpsAttributes
-                        .Select(attr => new Address(attr.ContentType ?? contentType,
-                            PathFunctions.Redirect(addr.GetAsContentPath(), attr.SourceDescriptor))));
-                }
-            }
-            fetchAddrs = fetchAddrs.Distinct().ToList();
 
-            bool pushVersion = (startContainers != null);
+                // Get all addresses for items to collate (startAddresses plus addresses from startContainers)
+                foreach (var addrTypeG in allStartAddressesByType)
+                {
+                    Type contentType = addrTypeG.Key;
+                    var rpsAttributes = contentType
+                        .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                        .Cast<RedirectPropertySourceAttribute>()
+                        .ToList();
+                    foreach (Address addr in addrTypeG)
+                    {
+                        fetchAddrs.AddRange(rpsAttributes
+                            .Select(attr => new Address(attr.ContentType ?? contentType,
+                                PathFunctions.Redirect(addr.GetAsContentPath(), attr.SourceDescriptor))));
+                    }
+                }
+                fetchAddrs = fetchAddrs.Distinct().ToList();
+            }
+
+            bool pushVersion = (startContainers != null && DoCollation);
             if (pushVersion) // Get containers in any version that might be relevant to a start container
                 System.Versions.PushState(VersioningMode.Specific, containerCommonVersion);
 
@@ -287,6 +297,14 @@ namespace Lynicon.Collation
                     System.Versions.PopState();
             }
 
+            if (!DoCollation)
+            {
+                // just return the containers we have
+                foreach (object cont in containers.Values)
+                    yield return cont as T;
+                yield break;
+            }
+
             // Create a lookup by (non-versioned) address of all the containers we have
             var contLookup = containers.ToLookup(kvp => kvp.Key.Address.ToString(), kvp => kvp.Value);
 
@@ -295,13 +313,13 @@ namespace Lynicon.Collation
             {
                 // Process all the start addresses (including those of the start containers) of a given type
 
-                Type contentType = addrTypeG.aType;
+                Type contentType = addrTypeG.Key;
                 var rpsAttributes = contentType
                     .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
                     .Cast<RedirectPropertySourceAttribute>()
                     .ToList();
 
-                foreach (var addr in addrTypeG.addrs.Select(a => new Address(a.Type, a)).Distinct()) // convert a VersionedAddress to an Address if necessary
+                foreach (var addr in addrTypeG.Select(a => new Address(a.Type, a)).Distinct()) // convert a VersionedAddress to an Address if necessary
                 {
                     var primaryPath = addr.GetAsContentPath();
                     if (!contLookup.Contains(new Address(addr.Type, addr).ToString()))
@@ -385,6 +403,8 @@ namespace Lynicon.Collation
         /// <returns>JObject build from content object</returns>
         protected virtual object SetRelated(string path, object data, bool bypassChecks)
         {
+            if (!DoCollation)
+                return null;
 
             System.Versions.PushState(VersioningMode.Specific, new ItemVersion(System, data));
 
@@ -400,14 +420,6 @@ namespace Lynicon.Collation
                     .Cast<RedirectPropertySourceAttribute>()
                     .Where(rpsa => !rpsa.ReadOnly)
                     .ToList();
-                //List<string> paths = rpsAttributes
-                //        .Select(a => PathFunctions.Redirect(path, a.SourceDescriptor))
-                //        .Distinct()
-                //        .ToList();
-                //if (paths == null || paths.Count == 0)
-                //    return jObjectContent;
-
-                //List<ContentItem> records = Repository.GetByPath(contentType, paths).ToList();
 
                 List<Address> addresses = rpsAttributes
                     .Select(a => new Address(a.ContentType ?? contentType, PathFunctions.Redirect(path, a.SourceDescriptor)))
@@ -479,7 +491,11 @@ namespace Lynicon.Collation
                 // Create or update referred-to records
                 if (vals.Count > 0)
                 {
-                    Repository.Set(vals, null, bypassChecks);
+                    Repository.Set(vals, new Dictionary<string, object>
+                    {
+                        { "bypassChecks", bypassChecks },
+                        { "viaCollation", true }
+                    });
 
                     // write back any values configured by attributes (e.g. database index updates)
                     foreach (var kvp in writebacks)

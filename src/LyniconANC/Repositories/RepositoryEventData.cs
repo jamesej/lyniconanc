@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lynicon.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,10 @@ namespace Lynicon.Repositories
         /// the calling code doesn't need to do it
         /// </summary>
         public bool WasHandled { get; set; }
+        /// <summary>
+        /// The options associated with this repository call
+        /// </summary>
+        public Dictionary<string,object> Options { get; set; }
 
         /// <summary>
         /// Create a new RepositoryEventData
@@ -37,10 +42,11 @@ namespace Lynicon.Repositories
         /// </summary>
         /// <param name="container">The container which is being changed</param>
         /// <param name="bypassChecks">Whether to bypass normal validation checks for a user-originated request</param>
-        public RepositoryEventData(object container, bool bypassChecks) : this()
+        public RepositoryEventData(object container, Dictionary<string, object> options) : this()
         {
             Container = container;
-            BypassChecks = bypassChecks;
+            BypassChecks = options.Get<bool>("bypassChecks", false);
+            Options = options;
         }
     }
 }

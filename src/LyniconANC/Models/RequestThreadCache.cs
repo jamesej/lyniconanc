@@ -33,7 +33,7 @@ namespace Lynicon.Models
             }
         }
 
-        ThreadLocal<Dictionary<object, object>> threadCache = new ThreadLocal<Dictionary<object, object>>(() => new Dictionary<object, object>());
+        AsyncLocal<Dictionary<object, object>> threadCache = new AsyncLocal<Dictionary<object, object>>();
 
         public RequestThreadCache()
         { }
@@ -54,6 +54,8 @@ namespace Lynicon.Models
 
         IDictionary<object, object> GetThreadCache()
         {
+            if (threadCache.Value == null)
+                threadCache.Value = new Dictionary<object, object>();
             return threadCache.Value;
         }
 
