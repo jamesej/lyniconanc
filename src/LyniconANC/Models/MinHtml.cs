@@ -114,7 +114,7 @@ namespace Lynicon.Models
         /// <summary>
         /// Constant for an empty MinHtml
         /// </summary>
-        public static MinHtml Empty
+        public static new MinHtml Empty
         {
             get
             {

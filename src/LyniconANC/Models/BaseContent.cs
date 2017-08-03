@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
 using System.Linq.Expressions;
 //using Lynicon.Membership;
 using Lynicon.Attributes;
-using Lynicon.Extensibility;
 
 namespace Lynicon.Models
 {

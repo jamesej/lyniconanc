@@ -101,7 +101,7 @@ namespace Lynicon.Membership
         /// Test for whether logged in
         /// </summary>
         /// <returns>True if logged in</returns>
-        public bool IsLoggedIn()
+        public virtual bool IsLoggedIn()
         {
             return UserName != null;
         }
@@ -110,7 +110,7 @@ namespace Lynicon.Membership
         /// Test for whether the user is anonymous
         /// </summary>
         /// <returns>True is user is anonymous</returns>
-        public bool IsAnon()
+        public virtual bool IsAnon()
         {
             return Id == Guid.Empty;
         }

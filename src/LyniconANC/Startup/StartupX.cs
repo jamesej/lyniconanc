@@ -20,6 +20,12 @@ namespace Lynicon.Startup
 {
     public static class StartupX
     {
+        /// <summary>
+        /// Add services for Lynicon
+        /// </summary>
+        /// <param name="services">The services collection</param>
+        /// <param name="optionsAction">Action to build options</param>
+        /// <returns>LyniconSystemBuilder for chaining</returns>
         public static LyniconSystemBuilder AddLynicon(this IServiceCollection services, Action<LyniconSystemOptions> optionsAction)
         {
             var options = new LyniconSystemOptions();
@@ -33,6 +39,12 @@ namespace Lynicon.Startup
             return new LyniconSystemBuilder(lynSystem, services);
         }
 
+        /// <summary>
+        /// Set up authorization for Lynicon with overrides to the standard setup
+        /// </summary>
+        /// <param name="authOptions">Authorization options to which to add Lynicon authorization</param>
+        /// <param name="permissionOverrides">Dictionary of Lynicon internal policy names ("CanEditData", "CanDeleteData") with ContentPermission objects to set the required behaviour</param>
+        /// <returns></returns>
         public static AuthorizationOptions AddLyniconAuthorization(this AuthorizationOptions authOptions, Dictionary<string, ContentPermission> permissionOverrides)
         {
             var canEditDataPermission = permissionOverrides.ContainsKey("CanEditData")
@@ -47,35 +59,62 @@ namespace Lynicon.Startup
 
             return authOptions;
         }
+        /// <summary>
+        /// Set up standard authorization for Lynicon
+        /// </summary>
+        /// <param name="authOptions">Authorization options to which to add Lynicon authorization</param>
+        /// <returns></returns>
         public static AuthorizationOptions AddLyniconAuthorization(this AuthorizationOptions authOptions)
         {
             authOptions.AddLyniconAuthorization(new Dictionary<string, ContentPermission>());
             return authOptions;
         }
 
+        /// <summary>
+        /// Set up Lynicon, creating required objects before defining routing
+        /// </summary>
+        /// <param name="app">Application builder on which to set up Lynicon</param>
+        /// <returns>Application builder with Lynicon set up</returns>
         public static IApplicationBuilder ConstructLynicon(this IApplicationBuilder app)
         {
             app.ApplicationServices.GetService<LyniconSystem>().Construct(app);
             return app;
         }
 
+        /// <summary>
+        /// Turn off checking versioning information for modules stored in database
+        /// </summary>
+        /// <param name="app">Application builder on which to turn off checking</param>
+        /// <returns>Application builder with checking turned off</returns>
         public static IApplicationBuilder LyniconSuppressDbVerification(this IApplicationBuilder app)
         {
             app.ApplicationServices.GetService<LyniconSystem>().Modules.SkipDbStateCheck = true;
             return app;
         }
 
+        /// <summary>
+        /// Initialise Lynicon after routing has been set up
+        /// </summary>
+        /// <param name="app">Application builder on which to initialise Lynicon</param>
+        /// <param name="life">Application lifetime manager to which Lynicon will attach event handlers</param>
+        /// <returns>Application builder with Lynicon initialised</returns>
         public static IApplicationBuilder InitialiseLynicon(this IApplicationBuilder app, IApplicationLifetime life)
         {
             app.ApplicationServices.GetService<LyniconSystem>().Initialise(app, life);
             return app;
         }
 
-        public static void AddLyniconOptions(this MvcOptions options)
+        /// <summary>
+        /// Add MVC customisations for Lynicon to MvcOptions
+        /// </summary>
+        /// <param name="options">MvcOptions to which to add Lynicon customisations</param>
+        /// <returns>MvcOptions with Lynicon customisations added</returns>
+        public static MvcOptions AddLyniconOptions(this MvcOptions options)
         {
             options.ModelBinderProviders.Insert(0, new ContentTypeModelBinderProvider());
             options.ModelBinderProviders.Insert(0, new PolymorphicModelBinderProvider());
             options.ModelMetadataDetailsProviders.Add(new MetadataAwareMetadataProvider());
+            return options;
         }
     }
 }

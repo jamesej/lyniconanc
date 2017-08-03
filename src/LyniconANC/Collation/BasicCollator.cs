@@ -17,7 +17,6 @@ using Lynicon.Linq;
 using Lynicon.Relations;
 using Microsoft.AspNetCore.Routing;
 using Lynicon.Exceptions;
-using Lynicon.Extensibility;
 using Lynicon.Services;
 
 namespace Lynicon.Collation

@@ -108,7 +108,7 @@ namespace Lynicon.Models
         /// <summary>
         /// Constant for an empty BbText
         /// </summary>
-        public static BbText Empty
+        public new static BbText Empty
         {
             get
             {

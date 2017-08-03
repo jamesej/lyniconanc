@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Routing;
 using Lynicon.Extensibility;
 using Microsoft.Extensions.Primitives;
 using System.Reflection;
-using Lynicon.Extensibility;
 using Lynicon.Services;
 using Lynicon.Attributes;
 using Newtonsoft.Json.Linq;
@@ -328,11 +327,9 @@ namespace Lynicon.Collation
                     foreach (var cont in contLookup[addr.ToString()])
                     {
                         object primaryContent = cont;
-                        JObject jContent = null;
 
                         if (primaryContent is IContentContainer)
                             primaryContent = ((IContentContainer)primaryContent).GetContent(System.Extender);
-                        //jContent = JObject.FromObject(primaryContent);
 
                         foreach (var rpsAttribute in rpsAttributes)
                         {
@@ -350,15 +347,12 @@ namespace Lynicon.Collation
                                 foreach (string propertyPath in rpsAttribute.PropertyPaths)
                                 {
                                     var toFromPaths = GetPaths(propertyPath);
-                                    //JObject refdObject = JObject.FromObject(refItem);
-                                    //jContent.CopyPropertyFrom(toFromPaths[0], refdObject, toFromPaths[1]);
                                     object val = ReflectionX.GetPropertyValueByPath(refItem, toFromPaths[1]);
                                     var piSet = ReflectionX.GetPropertyByPath(primaryContent.GetType(), toFromPaths[0]);
                                     piSet.SetValue(primaryContent, val);
                                 }
                         }
-
-                        //primaryContent = jContent.ToObject(primaryContent.GetType(), new JsonSerializer());
+                        
                         yield return primaryContent as T;
                     }
                 }
