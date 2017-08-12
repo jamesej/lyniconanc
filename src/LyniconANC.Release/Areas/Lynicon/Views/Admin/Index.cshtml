@@ -4,32 +4,34 @@
 }
 @section Head {
     <style>
-        .module, .change-problem { background-color: #3a7777; color: white; padding: 3px; border-bottom: 1px solid white; overflow: auto; }
-        .title { float: left; }
-        .module-section { float: left; margin-left: 10px; font-style: italic; }
-        .module-button, .button { font-weight: bold; font-style: normal; cursor: pointer; border: 1px solid white; padding: 0px 3px; float:left; margin-left: 10px; }
-        .module-button:hover, .button:hover { color: #bababa; }
-        .button { display: inline-block; }
+        .change-problem { background-color: #3a7777; color: white; padding: 3px; border-bottom: 1px solid white; overflow: auto; }
+        .title { float: left; min-height: 19px; font-weight: bold; }
+        .module { margin-top: 4px; padding: 5px; }
+        .module-section { float: left; margin-left: 6px; font-style: italic; min-height: 27px; }
+        span { padding: 4px; display: inline-block; }
+        .module-button:hover, .button:hover { color: #222; }
+        .module-button, .button { font-style: normal; border: none; background-color: #A3C3AD; color: white; padding: 4px; cursor: pointer; display: inline-block; }
     </style>
 }
+<div class="page-wrapper">
     <h2>Modules</h2>
     <div id="module-list">
         @foreach (var mavm in Model.BlockedModules)
         {
-            <div class="module blocked-module">
+            <fieldset class="module blocked-module">
                 <span class="title">@mavm.Title BLOCKED</span>
                 <span class="error">@Html.Raw(mavm.Error)</span>
-            </div>
+            </fieldset>
         }
         @foreach (var mavm in Model.RunningModules)
         {
-            <div class="module running-module">
+            <fieldset class="module running-module">
                 <span class="title">@mavm.Title</span>
                 @if (mavm.ViewName != null)
                 {
                     @Html.Partial(mavm.ViewName, mavm)
                 }
-            </div>
+            </fieldset>
         }
     </div>
     <script type="text/javascript">
@@ -44,6 +46,8 @@
             });
         });
     </script>
+    @if (Model.ChangeProblems.Count > 0)
+    {
     <h2>Change Problems</h2>
     <div id="change-problems">
         @foreach (var cp in Model.ChangeProblems)
@@ -59,6 +63,7 @@
             </div>
         }
     </div>
+    }
     <script type="text/javascript">
         $('#change-problems').on('click', '.resolved-button', function () {
             var $this = $(this);
@@ -68,6 +73,7 @@
             });
         });
     </script>
+    @*
     <h2>Field Transferer</h2>
     <div>
         <form action="/lynicon/admin/rename" method="post" target="_blank">
@@ -95,7 +101,9 @@
             <button type="submit">Rename/Delete Path</button>
         </form>
     </div>
-    <div style="height:75px"></div>
+        *@
+</div>
+<div style="height:75px"></div>
 
 @{ object dummy = null; }
 @Html.DisplayFor(m => dummy, "FuncPanel")

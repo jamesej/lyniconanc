@@ -2,7 +2,9 @@
 @using Lynicon.Utility
 
 <div class="module-section">
-    @Model.ItemCount() items recorded
+    <span>
+        @Model.ItemCount() items recorded
+    </span>
 </div>
 <div class="module-section">
     @if (!string.IsNullOrEmpty(Model.WriteToFileUrl))

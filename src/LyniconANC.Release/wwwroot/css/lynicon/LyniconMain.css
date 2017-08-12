@@ -8,6 +8,13 @@ BODY
 	margin: 0px;
 	padding: 0px;
 }
+.page-wrapper {
+    padding: 10px;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
 input, textarea {
 	border: 1px solid #b8b8b8;
 }
@@ -639,17 +646,6 @@ margin-left: 16px;
 	font-size: 16px;
 	font-weight: bold;
 }
-#funcPanel #reveal-button {
-	float: right;
-	height: 22px;
-	width: 20px;
-	padding-left: 4px;
-	cursor: pointer;
-}
-#funcPanel #reveal-arrow {
-	height: 16px;
-	width: 16px;
-}
 
 #edit .func-button:hover, #funcPanel .func-button:hover {
 	color: #bababa;
@@ -839,6 +835,10 @@ margin-right: 5px;
     padding: 3px 6px;
 }
 /* ITEM SELECTOR */
+
+#lyn-item-selector #edit {
+    border-left: none;
+}
 
 #lyn-item-selector h2 {
 	font-size: 19px;

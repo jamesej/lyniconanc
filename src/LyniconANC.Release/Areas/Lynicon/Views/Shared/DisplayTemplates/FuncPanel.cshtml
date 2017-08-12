@@ -31,7 +31,6 @@
         <div style="clear:both"></div>
     </div>
     <img id="lyn-logo" src="~/images/lynicon/lynicon-cmsbar.png" />
-    <div id="reveal-button"><img id="reveal-arrow" src="~/images/lynicon/up-arrow-white.png" /></div>
     @if (sections.Contains("Opener"))
     {
         <div id="opener">
@@ -109,24 +108,7 @@
                                     @Html.Raw(ui.ApplySubstitutions(btn.ClientClickScript, ViewContext, ViewBag))
         @:});
         }
-        $('#reveal-button').click(function () {
-            if ($('#reveal').length == 0) {
-                $("<div id='reveal'></div>")
-                    .hide()
-                    .insertBefore($('#save'))
-                    .load('/lynicon/ui/functionreveal', function () {
-                        $('#reveal').show('slow');
-                    });
-                $('#reveal-arrow').attr('src', '/areas/lynicon/content/down-arrow-white.png');
-            } else if ($('#reveal').is(':visible')) {
-                $('#reveal').hide('slow');
-                $('#reveal-arrow').attr('src', '/areas/lynicon/content/up-arrow-white.png');
-            } else {
-                $('#reveal').show('slow');
-                $('#reveal-arrow').attr('src', '/areas/lynicon/content/down-arrow-white.png');
-            }
 
-        });
         $('#funcPanel').on('click', '.lyn-version-arrow', function () {
             var dirn = $(this).hasClass('lyn-version-next') ? 1 : -1;
             var opts = $(this).siblings('.lyn-vd-items').val().split(';');

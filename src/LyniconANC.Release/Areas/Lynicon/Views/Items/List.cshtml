@@ -8,9 +8,11 @@
 
 }
 
-<div class="formWrap">
-    <h1>Item Lister</h1>
-    @await Component.InvokeAsync("ListFilters")
+<div class="page-wrapper">
+    <div class="formWrap">
+        <h1>Item Lister</h1>
+        @await Component.InvokeAsync("ListFilters")
+    </div>
+    <div id="lister-bottom-spacer"></div>
+    @Html.DisplayForModel("FuncPanel", new { ShowVersions = false })
 </div>
-<div id="lister-bottom-spacer"></div>
-@Html.DisplayForModel("FuncPanel", new { ShowVersions = false })

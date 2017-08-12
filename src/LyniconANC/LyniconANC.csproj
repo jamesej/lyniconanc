@@ -12,8 +12,27 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.0.2.66</Version>
+    <Version>0.1.0.1</Version>
     <RootNamespace>Lynicon</RootNamespace>
+    <Authors>James Ellis-Jones</Authors>
+    <Copyright>Regulus Systems Ltd</Copyright>
+    <PackageProjectUrl>http://www.lynicon.com</PackageProjectUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageTags>CMS Core</PackageTags>
+    <PackageReleaseNotes>This version removes indirect dependencies which required DNX50.</PackageReleaseNotes>
+    <PackageIconUrl>http://www.lynicon.com/images/lynicon/nuget-logo.png</PackageIconUrl>
+    <PackageLicenseUrl>http://www.lynicon.com/corelicense.txt</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/jamesej/lyniconanc</RepositoryUrl>
+    <Description>Lynicon CMS is a modern, extensible, hypermodular CMS which provides CMS facilities to ASP.Net Core on .Net Core (.Net Standard 1.6) or .Net 4.6+. This package is the core system which contains all the essential functions required for CMS, sufficient to build a small site or application.
+
+This project is open source and can be found at https://github.com/jamesej/lyniconanc. We welcome feedback to info@lynicon.com. The project manual is at https://lynicon.atlassian.net/wiki/display/LAC/Lynicon+CMS+Documentation, for setup and differences with the standard MVC version consult the ASP.Net Core Version section.
+
+For latest information and access to the Slack support channel, sign up here: http://www.lynicon.com/get-lynicon.
+
+A package providing features required for larger sites such as caching, search, sitemap and url management is now available.
+
+To install LyniconANC, run the following command in the Package Manager Console</Description>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.6|AnyCPU'">
@@ -33,7 +52,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.1.1" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Include="Linq2RestANC" Version="1.0.0" />
+    <PackageReference Include="Linq2RestANC" Version="1.0.1" />
     <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
 
