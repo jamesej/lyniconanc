@@ -14,7 +14,7 @@ namespace Lynicon.Logging
 
         public Log4NetAdapter(string loggerName)
         {
-            _logger = LogManager.GetLogger("main", loggerName);
+            _logger = LogManager.GetLogger("log4net-default-repository", loggerName);
         }
 
         public IDisposable BeginScope<TState>(TState state)

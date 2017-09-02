@@ -1,4 +1,5 @@
-﻿using Lynicon.Membership;
+﻿using Lynicon.Extensibility;
+using Lynicon.Membership;
 using Lynicon.Repositories;
 using Lynicon.Services;
 using System;
@@ -41,6 +42,16 @@ namespace Lynicon.Commands
             }
 
             SecurityManager.EnsureAdminUser(args[0]);
+
+            // Ensure any caches running which store user info are dumped to disk (if necessary)
+            foreach (var cache in LyniconSystem.Instance.Modules.ModuleSequence.OfType<Cache>())
+            {
+                if (cache.AppliesToType(typeof(User)))
+                {
+                    Console.WriteLine("Writing cache to file: " + cache.GetType().Name);
+                    cache.Dump();
+                }
+            }
 
             Console.WriteLine("Created admin user, username: administrator, email: admin@lynicon-app.com, with supplied password");
             return true;

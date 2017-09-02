@@ -114,6 +114,8 @@ namespace Lynicon.Extensibility
 
         protected readonly IHostingEnvironment hosting;
 
+        public JsonSerializer Serializer { get; set; }
+
         /// <summary>
         /// Construct a module with caching
         /// </summary>
@@ -123,6 +125,7 @@ namespace Lynicon.Extensibility
         {
             hosting = env;
             SerializationMode = CacheSerialization.Json;
+            Serializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.All };
         }
         
         /// <summary>
@@ -147,11 +150,10 @@ namespace Lynicon.Extensibility
                     switch (SerializationMode)
                     {
                         case CacheSerialization.Json:
-                            var sz = new JsonSerializer { TypeNameHandling = TypeNameHandling.All,  };
                             using (var stream = fi.OpenText())
                             {
                                 MemoryBytes = stream.BaseStream.Length;
-                                cache = (T)sz.Deserialize(stream, typeof(T));
+                                cache = (T)Serializer.Deserialize(stream, typeof(T));
                             }
                             break;
                     }
@@ -187,10 +189,9 @@ namespace Lynicon.Extensibility
                 switch (SerializationMode)
                 {
                     case CacheSerialization.Json:
-                        var sz = new JsonSerializer { TypeNameHandling = TypeNameHandling.All };
                         using (var stream = fi.CreateText())
                         {
-                            sz.Serialize(stream, cache);
+                            Serializer.Serialize(stream, cache);
                         }
                         break;
                 }
