@@ -55,8 +55,6 @@ namespace Lynicon.Modules
 
         public override bool Initialise()
         {
-            Collator.Instance.SetupType(typeof(ContentItem), null, null);
-
             // Set up Url Management
             UrlRequestInterceptor.Register();
 

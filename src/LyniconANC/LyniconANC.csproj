@@ -12,14 +12,14 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.1.0.3</Version>
+    <Version>0.1.0.8</Version>
     <RootNamespace>Lynicon</RootNamespace>
     <Authors>James Ellis-Jones</Authors>
     <Copyright>Regulus Systems Ltd</Copyright>
     <PackageProjectUrl>http://www.lynicon.com</PackageProjectUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>CMS Core</PackageTags>
-    <PackageReleaseNotes>This version removes indirect dependencies which required DNX50.</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <PackageIconUrl>http://www.lynicon.com/images/lynicon/nuget-logo.png</PackageIconUrl>
     <PackageLicenseUrl>http://www.lynicon.com/corelicense.txt</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/jamesej/lyniconanc</RepositoryUrl>
