@@ -1,5 +1,5 @@
 # lyniconanc
-Lynicon CMS for ASP.Net Core (.Net Standard 1.6, .Net 4.6)
+Lynicon CMS for ASP.Net Core (.Net Standard 1.6, .Net 4.6). Now we believe the most powerful CMS on .Net Core.
 
 In tune with the .Net Core philosophy, Lynicon is a composable and unopinionated CMS which is lightweight and low impact yet full featured.  Modules to provide functionality needed for larger sites, such as caching, url management, search, and sitemap generation will be provided as a paid-for module package, currently slated for release by the end of March this year.
 
