@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.0
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8319713B-5C90-44C9-9462-A28BD530BEB9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A53FA99-616D-44EE-86DC-B8AC7387BE00}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyniconANC.Release", "src\LyniconANC.Release\LyniconANC.Release.csproj", "{451AA7D7-D49C-4BB9-82B8-0AB1857FBB7C}"
 EndProject
@@ -39,5 +42,8 @@ Global
 		{451AA7D7-D49C-4BB9-82B8-0AB1857FBB7C} = {8319713B-5C90-44C9-9462-A28BD530BEB9}
 		{2AFF4A4A-C93C-4DB9-9D63-7616DB8FA02E} = {8319713B-5C90-44C9-9462-A28BD530BEB9}
 		{EE16E364-9270-4397-BCB4-C34EECDACD1F} = {8319713B-5C90-44C9-9462-A28BD530BEB9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {30310845-36ED-48BA-8572-F9A8A3CC527B}
 	EndGlobalSection
 EndGlobal

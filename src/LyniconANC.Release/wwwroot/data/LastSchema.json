@@ -3,9 +3,9 @@
     "Lynicon.Test.Models.TestContent, LyniconANC.Release, Version=0.0.2.0, Culture=neutral, PublicKeyToken=null": {
       "Title": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Sub": "Lynicon.Test.Models.TestSub, LyniconANC.Release, Version=0.0.2.0, Culture=neutral, PublicKeyToken=null",
-      "TestText": "Lynicon.Models.BbText, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null",
+      "TestText": "Lynicon.Models.BbText, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null",
       "Strings": "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-      "Img": "Lynicon.Models.Image, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null",
+      "Img": "Lynicon.Models.Image, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null",
       "Body": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Array": "System.String[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "PageTitle": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -14,10 +14,10 @@
     "Lynicon.Test.Models.TestSub, LyniconANC.Release, Version=0.0.2.0, Culture=neutral, PublicKeyToken=null": {
       "Colln": "System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
     },
-    "Lynicon.Models.BbText, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.BbText, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null": {
       "Text": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
     },
-    "Lynicon.Models.Image, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.Image, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null": {
       "Url": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Alt": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "BackgroundXPc": "System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -25,7 +25,7 @@
     },
     "Lynicon.Test.Models.HeaderContent, LyniconANC.Release, Version=0.0.2.0, Culture=neutral, PublicKeyToken=null": {
       "Title": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null",
+      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null",
       "HeaderBody": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Common": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "SubTestsCount": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -33,24 +33,24 @@
       "PageTitle": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "PageDescription": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
     },
-    "Lynicon.Models.Summary, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.Summary, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null": {
       "Title": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "UniqueId": "System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Id": "System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Url": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Type": "System.Type, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null"
+      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null"
     },
-    "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null": {},
+    "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null": {},
     "Lynicon.Test.Models.HeaderSummary, LyniconANC.Release, Version=0.0.2.0, Culture=neutral, PublicKeyToken=null": {
-      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null",
+      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null",
       "SubTestsCount": "System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Title": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "UniqueId": "System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Id": "System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Url": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
       "Type": "System.Type, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.1.0.1, Culture=neutral, PublicKeyToken=null"
+      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.1.0.8, Culture=neutral, PublicKeyToken=null"
     }
   },
   "ContentTypes": [
