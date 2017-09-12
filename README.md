@@ -48,3 +48,14 @@ This is available [here](http://www.lynicon.com/lynicon-base)
 
 ## Setup
 
+Once you have cloned the repository, you will need to get the test site working on your machine.
+Set the connection string in appsettings.json
+![Appsettings](http://www.lynicon.com/install/ANC17_ConnectionString.jpg)
+
+Now build the test site.
+
+You can now set up the database by running the test site from the command line (a handy feature of
+an ASP.Net Core site!). Open a command window as Administrator and go to the \src\LyniconANC.Release
+directory. Now run `dotnet run lynicon initialize-database`.
+
+
