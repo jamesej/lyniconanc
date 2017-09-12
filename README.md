@@ -57,5 +57,14 @@ Now build the test site.
 You can now set up the database by running the test site from the command line (a handy feature of
 an ASP.Net Core site!). Open a command window as Administrator and go to the \src\LyniconANC.Release
 directory. Now run `dotnet run lynicon initialize-database`.
+![InitializeDatabase](http://www.lynicon.com/install/ANCTest_InitializeDatabase.jpg)
+
+Now you can set up the CMS admin user. Run `dotnet run lynicon initialize-admin password`.
+![InitializeAdmin](http://www.lynicon.com/install/ANCTest_InitializeAdmin.jpg)
+
+You can now run the site and login with the password you set up (the email is admin@lynicon-user.com)
+
+
+
 
 
