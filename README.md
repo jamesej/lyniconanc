@@ -52,17 +52,35 @@ Once you have cloned the repository, you will need to get the test site working 
 Set the connection string in appsettings.json
 ![Appsettings](http://www.lynicon.com/install/ANC17_ConnectionString.jpg)
 
-Now build the test site.
-
 You can now set up the database by running the test site from the command line (a handy feature of
 an ASP.Net Core site!). Open a command window as Administrator and go to the \src\LyniconANC.Release
 directory. Now run `dotnet run lynicon initialize-database`.
-![InitializeDatabase](http://www.lynicon.com/install/ANCTest_InitializeDatabase.jpg)
 
-Now you can set up the CMS admin user. Run `dotnet run lynicon initialize-admin password`.
-![InitializeAdmin](http://www.lynicon.com/install/ANCTest_InitializeAdmin.jpg)
+Then you can set up the CMS admin user. Run `dotnet run lynicon initialize-admin password`.
+![Initialize](http://www.lynicon.com/install/ANCTest_Initialize.jpg)
 
 You can now run the site and login with the password you set up (the email is admin@lynicon-user.com)
+
+## How Tos
+
+### Add and Edit Content Items
+
+Content items are listed and can be added at /lynicon/items.
+Content items can be edited by visiting a url with which the content item
+is associated while logged in with the appropriate rights. The content editor
+panel is shown.
+This is described in detail in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42795022/User+Manual)
+
+### Running the Tests
+
+The tests should appear in the Test Explorer as normal in Visual Studio. If they are not
+there this is likely an issue with the XUnit test framework. Sometimes such
+issues can be resolved by cleaning and rebuilding the solution,
+and closing and reopening Visual Studio.
+
+Tests can also be run as normal in .net core on the command line
+by going to the top-level installation directory
+in a command window and running `dotnet test`.
 
 
 
