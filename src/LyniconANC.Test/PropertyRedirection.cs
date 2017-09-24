@@ -19,7 +19,7 @@ namespace LyniconANC.Test
     [Collection("Lynicon System")]
     public class PropertyRedirection
     {
-        PropertyRedirectContent prc0, prc1, prc2, prc3;
+        PropertyRedirectContent prc0, prc1, prc2;
         List<PropertyRedirectContent> prcs;
 
         LyniconSystemFixture sys;

@@ -45,6 +45,7 @@ To install LyniconANC, run the following command in the Package Manager Console<
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack.NetCore" Version="1.5.0.1" />
+    <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
@@ -54,10 +55,6 @@ To install LyniconANC, run the following command in the Package Manager Console<
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="Linq2RestANC" Version="1.0.1" />
     <PackageReference Include="System.ValueTuple" Version="4.3.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="log4net-core-preview" Version="2.0.6" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">

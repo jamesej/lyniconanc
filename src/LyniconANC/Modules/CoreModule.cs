@@ -55,6 +55,8 @@ namespace Lynicon.Modules
 
         public override bool Initialise()
         {
+            log.Info("Starting Core Module");
+
             // Set up Url Management
             UrlRequestInterceptor.Register();
 

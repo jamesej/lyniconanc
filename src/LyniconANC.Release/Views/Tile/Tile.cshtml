@@ -1,0 +1,23 @@
+﻿@model TileContent
+@using LyniconANC.Release.Models
+
+<div class="spacer" style="height:100px;">
+
+</div>
+
+<div>
+    <h1>@Model.Title</h1>
+    <img class="tile-image" src="@Model.Image.Url" alt="@Model.Image.Alt" />
+    @Model.Description
+    <div>
+        Width: @Model.Widthmm  mm
+    </div>
+    <div>
+        Height: @Model.Heightmm  mm
+    </div>
+    <div>
+        @{ var material = Model.Material.Summary(); }
+        <a href="@material.Url">Material: @material.Title</a>
+    </div>
+</div>
+    

@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Routing;
 using System.Reflection;
 using Xunit;
 using Lynicon.Services;
-using Lynicon.Extensibility;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use

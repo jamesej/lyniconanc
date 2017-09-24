@@ -240,17 +240,17 @@ namespace Lynicon.Linq
         /// Convert the type of a lambda in T if T is or contains the facade type
         /// to a lambda with T converted partially or totally to the underlying type
         /// </summary>
-        /// <typeparam name="T">Type of lambda</typeparam>
+        /// <typeparam name="TLambda">Type of lambda</typeparam>
         /// <param name="node">Lambda expression</param>
         /// <returns>Converted (if necessary) lambda expression</returns>
-        protected override Expression VisitLambda<T>(Expression<T> node)
+        protected override Expression VisitLambda<TLambda>(Expression<TLambda> node)
         {
-            Type changedType = ReflectionX.SubstituteType(typeof(T), from, to);
+            Type changedType = ReflectionX.SubstituteType(typeof(TLambda), from, to);
             if (changedType != null)
                 return Expression.Lambda(changedType, Visit(node.Body),
                     node.Parameters.Select(p => (ParameterExpression)Visit(p)));
 
-            return base.VisitLambda<T>(node);
+            return base.VisitLambda<TLambda>(node);
         }
 
         /// <summary>

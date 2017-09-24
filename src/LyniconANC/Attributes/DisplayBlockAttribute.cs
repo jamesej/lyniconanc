@@ -12,7 +12,7 @@ namespace Lynicon.Attributes
     /// The CMS Editor collapsible block in which this property should appear
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class DisplayBlockAttribute : Attribute
+    public class DisplayBlockAttribute : Attribute, IMetadataAware
     {
         /// <summary>
         /// The title shown on the collapsible block

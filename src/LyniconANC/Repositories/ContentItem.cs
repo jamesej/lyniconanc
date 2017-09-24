@@ -29,7 +29,7 @@ namespace Lynicon.Repositories
     /// <summary>
     /// The container for content item in the Content persistenc model
     /// </summary>
-    [Table("ContentItems"), Serializable]
+    [Table("ContentItems")]
     public class ContentItem : IContentContainer, IBasicAuditable, ICachesSummary, ICachesContent, ICoreMetadata
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(ContentItem));
@@ -456,7 +456,12 @@ namespace Lynicon.Repositories
                             if (kvp.Value.CanWrite
                                 && kvp.Value.GetCustomAttribute<JsonIgnoreAttribute>() == null
                                 && !contentJObject.TryGetValue(kvp.Value.Name, out dummy))
-                                    kvp.Value.SetValue(contentObject, summType.GetProperty(kvp.Key).GetValue(summ));
+                            {
+                                if (summType.GetProperty(kvp.Key) == null)
+                                    throw new Exception("Type " + type.FullName + " has property " + kvp.Key + " incorrectly marked as being on summary type " + summType.FullName);
+
+                                kvp.Value.SetValue(contentObject, summType.GetProperty(kvp.Key).GetValue(summ));
+                            }
                         });
                 }
             }

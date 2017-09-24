@@ -95,7 +95,7 @@ namespace Lynicon.AspNetCore.Identity
                            .ToArray())
                 };
             }
-            catch (Exception ex)
+            catch
             { }
 
             return lynUser;
@@ -210,7 +210,7 @@ namespace Lynicon.AspNetCore.Identity
                 await store.UpdateAsync(cUser);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }

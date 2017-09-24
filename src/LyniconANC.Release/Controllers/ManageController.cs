@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Lynicon.Test.Models;
 using TestAuth2015.Models.ManageViewModels;
 using Lynicon.Membership;
 

@@ -31,11 +31,18 @@ namespace Lynicon.Models
         /// <param name="o">The content item</param>
         public static void InitialiseProperties(object o)
         {
+            InitialiseProperties(o, new List<Type>());
+        }
+        private static void InitialiseProperties(object o, List<Type> parentTypes)
+        {
             foreach (var prop in o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty))
             {
                 ScaffoldColumnAttribute sca = prop.GetCustomAttribute<ScaffoldColumnAttribute>();
                 if (sca != null && !sca.Scaffold)
                     continue;
+
+                if (parentTypes.Contains(o.GetType())) // avoid recursion
+                    throw new Exception("InitialiseProperties encountered a self-referential loop on type " + o.GetType().FullName);
 
                 if (prop.PropertyType.IsArray)
                     throw new Exception("Content types may not have array properties: " + o.GetType().FullName);
@@ -48,7 +55,7 @@ namespace Lynicon.Models
                     if (prop.PropertyType.GetConstructor(Type.EmptyTypes) == null)
                         throw new ArgumentException("Cannot initialise type " + prop.PropertyType.FullName + " it has no default constructor");
                     object init = Activator.CreateInstance(prop.PropertyType);
-                    InitialiseProperties(init);
+                    InitialiseProperties(init, parentTypes.Concat(new List<Type> { o.GetType() }).ToList());
                     prop.SetValue(o, init);
                 }
             }

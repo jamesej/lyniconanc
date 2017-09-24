@@ -1,0 +1,22 @@
+﻿@model TileMaterialContent
+@using LyniconANC.Release.Models
+
+<div class="spacer" style="height:100px;">
+
+</div>
+
+<div>
+    <h1>@Model.Title</h1>
+    <div>
+        @Model.Description
+    </div>
+    @foreach (var summ in Model.TilesOfMaterial())
+    {
+        <a href="@summ.Url">
+            <img src="@summ.Thumbnail.Url" alt="@summ.Thumbnail.Alt" />
+            <p>@summ.Title</p>
+            <p>@summ.Caption</p>
+        </a>
+    }
+</div>
+    

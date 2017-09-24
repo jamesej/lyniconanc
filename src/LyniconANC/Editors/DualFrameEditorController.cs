@@ -50,7 +50,7 @@ namespace Lynicon.Editors
         /// <param name="updatedCheck">Record of the updated date of the data when it was put into the user's form (in ticks)</param>
         /// <returns></returns>
         [HttpPost] // TMP , ValidateInput(false)
-        public async Task<IActionResult> Index([FromBody]object data, string editAction, string formState, long? updatedCheck)
+        public IActionResult Index([FromBody]object data, string editAction, string formState, long? updatedCheck)
         {
             try
             {

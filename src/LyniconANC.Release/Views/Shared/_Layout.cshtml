@@ -1,17 +1,24 @@
-﻿<!DOCTYPE html>
+﻿@using LyniconANC.Release.Models
+@{ 
+    var pageModel = Model as TilesPageBase;
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - LyniconANC.Test</title>
+    <title>@pageModel?.PageTitle</title>
+    <meta name="description" content="@pageModel?.PageDescription" />
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
 </head>
 <body>
@@ -24,10 +31,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-controller="Home" asp-action="Index" class="navbar-brand">LyniconANC.Test</a>
+                <a asp-controller="Home" asp-action="Index" class="navbar-brand">Tiles Co.</a>
+                <img class="logo" src="@pageModel?.Shared.Logo.Url" alt="@pageModel?.Shared.Logo.Alt" />
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
+                    <li><a asp-controller="Tile" asp-action="MaterialsLanding">Tile Materials</a></li>
                     <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>

@@ -15,16 +15,12 @@
 .lyn-ss-drop-item.xvsn:hover { background-color: #c0c0c0; color: white; }
 ")
 @{
-    string vsn = null;
-    if (Model is ICrossVersionReference)
-    {
-        vsn = ((ICrossVersionReference)Model).AllowedVersionsOverlay.ToString();
-    }  
+    string vsn = null; 
 }
 <div class="lyn-reference lyn-server-select">
     @Html.HiddenFor(m => m.SerializedValue, new { @class = "lyn-ss-hidden-value" })
-    <input type="hidden" class="lyn-ss-hidden-text" value="@(Model.IsEmpty ? "" : Model.Summary.Title)" />
-    <input class="lyn-ss-input" value="@(Model.IsEmpty ? "" : Model.Summary.Title)" data-list-id="@Model.SelectListId()" data-allowed-vsn="@vsn" />
+    <input type="hidden" class="lyn-ss-hidden-text" value="@(Model.IsEmpty() ? "" : Model.Summary().Title)" />
+    <input class="lyn-ss-input" value="@(Model.IsEmpty() ? "" : Model.Summary().Title)" data-list-id="@Model.SelectListId()" data-allowed-vsn="@vsn" />
     <i class="fa fa-times lyn-ref-sel-clear"></i>
     <div class="lyn-ss-drop-pane" style="display:none"></div>
 </div>

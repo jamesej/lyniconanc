@@ -3,33 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using LyniconANC.Release.Models;
+using Lynicon.Services;
 
 namespace Lynicon.Test.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        LyniconSystem lyn;
+
+        // Lynicon sets up a context within which CMS operations occur called LyniconSystem.
+        // This is constructor injected by asp.net core
+        public HomeController(LyniconSystem lyn)
         {
-            return View();
+            this.lyn = lyn;
         }
 
-        public IActionResult About()
+        public IActionResult Index(HomeContent data)
         {
-            ViewData["Message"] = "Your application description page.";
+            // property injection of the Collator used as the gateway for the data API so that
+            // the model can fetch information about other content items
+            data.Collator = lyn.Collator;
 
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View();
+            return View(data);
         }
     }
 }

@@ -7,7 +7,6 @@ using Lynicon.Extensibility;
 using Lynicon.Models;
 using Lynicon.Repositories;
 using LyniconANC.Test.Models;
-using LyniconANC.Test.Models;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Xunit;

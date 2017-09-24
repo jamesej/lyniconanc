@@ -53,7 +53,7 @@ namespace Lynicon.Commands
                 }
             }
 
-            Console.WriteLine("Created admin user, username: administrator, email: admin@lynicon-app.com, with supplied password");
+            Console.WriteLine("Created admin user, username: administrator, email: admin@lynicon-user.com, with supplied password");
             return true;
         }
     }

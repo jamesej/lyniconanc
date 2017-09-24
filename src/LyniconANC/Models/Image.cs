@@ -20,8 +20,6 @@ namespace Lynicon.Models
         /// </summary>
         public static Func<Image, string, string> PostProcessUrl = null;
 
-        private readonly Func<string> altDefault;
-
         /// <summary>
         /// The url of the (original) image, before post processing
         /// </summary>

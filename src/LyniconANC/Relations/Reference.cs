@@ -22,11 +22,21 @@ namespace Lynicon.Relations
     /// <summary>
     /// A content subtype to represent an un-typed reference to another content item
     /// </summary>
-    
     public class Reference
     {
+        /// <summary>
+        /// Holds the procedure for getting all references pointing to a given content item
+        /// </summary>
         public static Func<ItemVersionedId, Type, string, IEnumerable<Summary>> ReferenceGetter { get; set; }
 
+        /// <summary>
+        /// Get the Summaries of the content items which contain references to a given content item
+        /// </summary>
+        /// <typeparam name="TContent">The type of the content item referred to</typeparam>
+        /// <param name="sys">The Lynicon system in which this process is to run</param>
+        /// <param name="o">The content item or container to which the references refer</param>
+        /// <param name="propertyName">The property name on the referring content item of the reference being considered</param>
+        /// <returns>The summaries of all the content items referring to the target</returns>
         public static IEnumerable<Summary> GetReferencesFrom<TContent>(LyniconSystem sys, object o, string propertyName)
             where TContent : class
         {
@@ -36,6 +46,14 @@ namespace Lynicon.Relations
             var cont = sys.Collator.GetContainer(o);
             return GetReferencesFrom<TContent>(sys, cont, propertyName);
         }
+        /// <summary>
+        /// Get the Summaries of the content items which contain references to a given content item
+        /// </summary>
+        /// <typeparam name="TContent">The type of the content item referred to</typeparam>
+        /// <param name="sys">The Lynicon system in which this process is to run</param>
+        /// <param name="ividToItem">The ItemVersionedId of the item to which the references refer</param>
+        /// <param name="propertyName">The property name on the referring content item of the reference being considered</param>
+        /// <returns>The summaries of all the content items referring to the target</returns>
         public static IEnumerable<Summary> GetReferencesFrom<TContent>(LyniconSystem sys, ItemVersionedId ividToItem, string propertyName)
             where TContent : class
         {
@@ -48,6 +66,8 @@ namespace Lynicon.Relations
 
                 var xParam = Expression.Parameter(typeof(TContent), "x");
                 var refProp = typeof(TContent).GetProperty(propertyName);
+                if (refProp == null)
+                    throw new ArgumentException(string.Format("While getting references, could not find reference property {0} on type {1}", propertyName, typeof(TContent).FullName));
                 var xGetRef = Expression.MakeMemberAccess(xParam, refProp);
                 var neNull = Expression.NotEqual(xGetRef, Expression.Constant(null));
                 if (!typeof(Reference).IsAssignableFrom(refProp.PropertyType))

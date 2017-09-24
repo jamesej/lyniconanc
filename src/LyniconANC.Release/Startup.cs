@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Lynicon.Routing;
-using Lynicon.Test.Models;
 using Lynicon.Startup;
 using Lynicon.Modules;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -35,12 +34,6 @@ namespace LyniconANC.Release
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            if (env.IsDevelopment())
-            {
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets();
-            }
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -74,7 +67,7 @@ namespace LyniconANC.Release
                     .UseModule<ContentSchemaModule>()
                     .UseTypeSetup(tsr =>
                         {
-                            tsr.SetupType(typeof(TestData), new BasicCollator(tsr.System), new BasicRepository(tsr.System, new CoreDataSourceFactory(tsr.System)), DataDiverter.Instance.NullDivert);
+                            //tsr.SetupType(typeof(TestData), new BasicCollator(tsr.System), new BasicRepository(tsr.System, new CoreDataSourceFactory(tsr.System)), DataDiverter.Instance.NullDivert);
                         }
                     ))
                 .AddLyniconIdentity();
@@ -108,10 +101,12 @@ namespace LyniconANC.Release
             app.UseMvc(routes =>
             {
                 routes.MapLyniconRoutes();
-                routes.MapDataRoute<TestContent>("test", "test/{_0}", new { controller = "Test", action = "Index" });
-                routes.MapDataRoute<HeaderContent>("header", "test/{_0}", new { controller = "Test", action = "Header" });
-                routes.MapDataRoute<List<TestContent>>("test-list", "test-list", new { controller = "Test", action = "List" }, null, new { view = "LyniconListDetail", listView = "ObjectList", rowFields = "Title, TestText" });
-                routes.MapDataRoute<TestData>("testData", "testdata/{_0}", new { controller = "Test", action = "Data" }, null, null, DataDiverter.Instance.NullDivert);
+                routes.MapDataRoute<HomeContent>("home", "", new { controller = "Home", action = "Index" });
+                routes.MapDataRoute<CommonContent>("common", "lynicon/common", new { controller = "Common", action = "Common" });
+                routes.MapDataRoute<TileContent>("tiles", "tiles/{_0}", new { controller = "Tile", action = "Tile" });
+                routes.MapDataRoute<EquipmentContent>("equipment", "equipment/{_0}", new { controller = "Equipment", action = "Equipment" });
+                routes.MapDataRoute<MaterialsLandingContent>("material-landing", "materials", new { controller = "Tile", action = "MaterialsLanding" });
+                routes.MapDataRoute<TileMaterialContent>("materials", "materials/{_0}", new { controller = "Tile", action = "TileMaterial" });
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

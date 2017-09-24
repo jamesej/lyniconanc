@@ -153,9 +153,10 @@ namespace Lynicon.Repositories
                 //            .WhereIn(ci => ci.DataType, types.Select(t => t.FullName))
                 //            .AsFacade<T>()
                 //    )
-                QueryBody = iq => queryBody(iq.AsFacade<T>()).AsFacade<ContentItem>()
-                            .WhereIn(ci => ci.DataType, types.Select(t => t.FullName))
-                            .AsFacade<T>()
+                QueryBody = iq => queryBody(
+                    iq.AsFacade<ContentItem>()
+                        .WhereIn(ci => ci.DataType, types.Select(t => t.FullName))
+                        .AsFacade<T>())
             };
             
             // if types contain object, don't select by type

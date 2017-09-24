@@ -32,7 +32,7 @@ namespace Lynicon.Membership
         /// Test for whether logged in
         /// </summary>
         /// <returns>True if logged in</returns>
-        public bool IsLoggedIn()
+        public override bool IsLoggedIn()
         {
             return UserName != null;
         }
@@ -41,7 +41,7 @@ namespace Lynicon.Membership
         /// Test for whether the user is anonymous
         /// </summary>
         /// <returns>True is user is anonymous</returns>
-        public bool IsAnon()
+        public override bool IsAnon()
         {
             return false;
         }

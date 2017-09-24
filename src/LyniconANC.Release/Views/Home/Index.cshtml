@@ -1,16 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model HomeContent
+@using LyniconANC.Release.Models
 
 <div class="spacer" style="height:100px;">
 
 </div>
 
-<h1>Lynicon CMS Test Site</h1>
+<div>
+    @Model.Intro
+</div>
 
-<ul>
-    <li>Find the full documentation <a href="https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42795015/Overview">here</a></li>
-    <li>Find the website <a href="http://www.lynicon.com">here</a></li>
-    <li>Find the nuget packages <a href="nuget.org/packages?q=lynicon">here</a></li>
-    <li>Find the module package for full CMS capability together with service agreement <a href="http://www.lynicon.com/lynicon-base">here</a></li>
-</ul>
+<h3>Today's Discounts</h3>
+@foreach (var summ in Model.Discounted().OrderByDescending(s => s.Discount))
+{
+    <a href="@summ.Url">
+        <img src="@summ.Thumbnail.Url" alt="@summ.Thumbnail.Alt" />
+        <p>@summ.Title</p>
+        <p>@(summ.Discount)% off</p>
+    </a>
+}
+

@@ -1,0 +1,17 @@
+﻿@model MaterialsLandingContent
+@using LyniconANC.Release.Models
+
+<div class="spacer" style="height:100px;">
+
+</div>
+
+<div>
+    <h1>Materials</h1>
+    @foreach (var summ in Model.TileMaterials())
+    {
+        <div>
+            <a href="@summ.Url">@summ.Title</a>
+        </div>
+    }
+</div>
+    

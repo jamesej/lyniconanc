@@ -1,501 +1,349 @@
-﻿INFO  03:00:43 Core Module Initialised
-INFO  03:08:53 Core Module Initialised
-INFO  03:10:59 Core Module Initialised
-INFO  03:18:49 Core Module Initialised
-INFO  03:23:32 Core Module Initialised
-INFO  03:30:59 Core Module Initialised
-INFO  03:38:23 Core Module Initialised
-FATAL 04:05:10 Failed to connect to database
-System.Data.SqlClient.SqlException: Invalid object name 'DbChanges'.
-   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
-   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
-   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
-   at System.Data.SqlClient.SqlDataReader.get_MetaData()
-   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds)
-   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.Execute(IRelationalConnection connection, String executeMethod, IReadOnlyDictionary`2 parameterValues, Boolean closeConnection)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteReader(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
-ClientConnectionId:f1efff68-1d20-4cd4-a718-314d676be0d1
-Error Number:208,State:1,Class:16
-ERROR 04:05:10 Module Core blocked, initialisation exception
-System.Exception: Failed to connect to database ---> System.Data.SqlClient.SqlException: Invalid object name 'DbChanges'.
-   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
-   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
-   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
-   at System.Data.SqlClient.SqlDataReader.get_MetaData()
-   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds)
-   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.Execute(IRelationalConnection connection, String executeMethod, IReadOnlyDictionary`2 parameterValues, Boolean closeConnection)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteReader(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
-   --- End of inner exception stack trace ---
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 119
-   at Lynicon.Modules.CoreModule.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\CoreModule.cs:line 56
-   at Lynicon.Extensibility.LyniconModuleManager.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\LyniconModuleManager.cs:line 145
-INFO  04:08:51 Core Module Initialised
-FATAL 05:42:50 Failed to connect to database
-System.Data.SqlClient.SqlException (0x80131904): Invalid object name 'DbChanges'.
-   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
-   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
-   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
-   at System.Data.SqlClient.SqlDataReader.get_MetaData()
-   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
-   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
-   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.ExecuteReader()
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.Execute(IRelationalConnection connection, String executeMethod, IReadOnlyDictionary`2 parameterValues, Boolean closeConnection)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteReader(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
-   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
-   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
-ClientConnectionId:2682afe5-cec3-4317-92b8-13139fd364e6
-Error Number:208,State:1,Class:16
-ERROR 05:42:50 Module Core blocked, initialisation exception
-System.Exception: Failed to connect to database ---> System.Data.SqlClient.SqlException: Invalid object name 'DbChanges'.
-   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
-   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
-   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
-   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
-   at System.Data.SqlClient.SqlDataReader.get_MetaData()
-   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite)
-   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
-   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
-   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
-   at System.Data.Common.DbCommand.ExecuteReader()
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.Execute(IRelationalConnection connection, String executeMethod, IReadOnlyDictionary`2 parameterValues, Boolean closeConnection)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteReader(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
-   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
-   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
-   --- End of inner exception stack trace ---
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 119
-   at Lynicon.Modules.CoreModule.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\CoreModule.cs:line 56
-   at Lynicon.Extensibility.LyniconModuleManager.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\LyniconModuleManager.cs:line 145
-INFO  05:49:11 Core Module Initialised
-INFO  06:07:21 Core Module Initialised
-INFO  06:11:04 Core Module Initialised
-INFO  06:13:30 Core Module Initialised
-INFO  06:42:06 Core Module Initialised
-INFO  10:38:01 Core Module Initialised
-INFO  11:09:10 Core Module Initialised
-INFO  11:24:31 Core Module Initialised
-INFO  11:31:08 Core Module Initialised
-INFO  11:34:48 Core Module Initialised
-INFO  11:58:25 Core Module Initialised
-INFO  12:51:37 Core Module Initialised
-INFO  01:15:37 Core Module Initialised
-INFO  06:48:04 Core Module Initialised
-INFO  08:17:44 Core Module Initialised
-FATAL 08:37:03 Failed to connect to database
-System.Data.SqlClient.SqlException (0x80131904): Connection Timeout Expired.  The timeout period elapsed while attempting to consume the pre-login handshake acknowledgement.  This could be because the pre-login handshake failed or the server was unable to respond back in time.  The duration spent while attempting to connect to this server was - [Pre-Login] initialization=14865; handshake=274;  ---> System.ComponentModel.Win32Exception (0x80004005): The wait operation timed out
-   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
-   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.Open()
-   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open()
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
-   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
-   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
-ClientConnectionId:1d8b5179-e0b9-4f34-a89d-00b424110cf2
-Error Number:-2,State:0,Class:11
-ERROR 08:37:04 Module Core blocked, initialisation exception
-System.Exception: Failed to connect to database ---> System.Data.SqlClient.SqlException: Connection Timeout Expired.  The timeout period elapsed while attempting to consume the pre-login handshake acknowledgement.  This could be because the pre-login handshake failed or the server was unable to respond back in time.  The duration spent while attempting to connect to this server was - [Pre-Login] initialization=14865; handshake=274;  ---> System.ComponentModel.Win32Exception: The wait operation timed out
-   --- End of inner exception stack trace ---
-   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
-   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.Open()
-   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open()
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
-   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
-   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 112
-   --- End of inner exception stack trace ---
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent) in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\Module.cs:line 119
-   at Lynicon.Modules.CoreModule.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\CoreModule.cs:line 56
-   at Lynicon.Extensibility.LyniconModuleManager.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\LyniconModuleManager.cs:line 145
-INFO  08:45:46 Core Module Initialised
-INFO  09:04:30 Core Module Initialised
-WARN  09:05:17 Unused summary type: Lynicon.Models.Summary
-INFO  09:13:23 Core Module Initialised
-WARN  09:13:51 Unused summary type: Lynicon.Models.Summary
-INFO  09:18:40 Core Module Initialised
-WARN  09:19:21 Unused summary type: Lynicon.Models.Summary
-INFO  11:38:30 Core Module Initialised
-WARN  11:38:31 Unused summary type: Lynicon.Models.Summary
-INFO  01:30:57 Core Module Initialised
-WARN  01:30:57 Unused summary type: Lynicon.Models.Summary
-ERROR 01:30:57 Module ContentSchema blocked, initialisation exception
-System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
-   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
-   at Lynicon.Models.ContentModelSchema.<>c__DisplayClass23_4.<FindProblems>b__5(KeyValuePair`2 kvp) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 243
-   at System.Linq.Enumerable.Any[TSource](IEnumerable`1 source, Func`2 predicate)
-   at Lynicon.Models.ContentModelSchema.FindProblems(ContentModelSchema codeSchema) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 241
-   at Lynicon.Modules.ContentSchemaModule.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 53
-   at Lynicon.Extensibility.LyniconModuleManager.Initialise() in C:\Dev\LyniconANC.Release\src\LyniconANC\Extensibility\LyniconModuleManager.cs:line 145
-INFO  01:33:30 Core Module Initialised
-WARN  01:34:52 Unused summary type: Lynicon.Models.Summary
-INFO  01:35:57 Core Module Initialised
-INFO  01:52:08 Core Module Initialised
-WARN  01:52:18 Unused summary type: Lynicon.Models.Summary
-INFO  01:55:07 Core Module Initialised
-WARN  01:55:21 Unused summary type: Lynicon.Models.Summary
-INFO  02:01:23 Core Module Initialised
-WARN  02:03:50 Unused summary type: Lynicon.Models.Summary
-INFO  02:05:37 Core Module Initialised
-WARN  02:05:46 Unused summary type: Lynicon.Models.Summary
-INFO  02:08:12 Core Module Initialised
-WARN  02:08:38 Unused summary type: Lynicon.Models.Summary
-INFO  02:20:08 Core Module Initialised
-WARN  02:21:19 Unused summary type: Lynicon.Models.Summary
-INFO  02:23:49 Core Module Initialised
-WARN  02:33:04 Unused summary type: Lynicon.Models.Summary
-INFO  02:35:51 Core Module Initialised
-WARN  02:35:54 Unused summary type: Lynicon.Models.Summary
-INFO  03:26:28 Core Module Initialised
-WARN  03:26:29 Unused summary type: Lynicon.Models.Summary
-INFO  03:32:26 Core Module Initialised
-WARN  03:32:27 Unused summary type: Lynicon.Models.Summary
-INFO  03:53:01 Core Module Initialised
-WARN  03:53:02 Unused summary type: Lynicon.Models.Summary
-INFO  03:55:48 Core Module Initialised
-WARN  03:55:49 Unused summary type: Lynicon.Models.Summary
-ERROR 03:55:49 Error creating content schema module dump: 
+INFO  08:20:55 Starting Core Module
+INFO  08:20:55 Core Module Initialised
+WARN  08:20:55 Unused summary type: Lynicon.Models.Summary
+INFO  09:20:24 Starting Core Module
+INFO  09:20:24 Core Module Initialised
+WARN  09:20:25 Unused summary type: Lynicon.Models.Summary
+INFO  10:22:56 Starting Core Module
+INFO  10:22:56 Core Module Initialised
+WARN  10:22:57 Unused summary type: Lynicon.Models.Summary
+ERROR 10:22:57 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  07:52:02 Starting Core Module
+INFO  07:52:02 Core Module Initialised
+WARN  07:52:02 Unused summary type: Lynicon.Models.Summary
+ERROR 07:52:02 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  08:36:40 Starting Core Module
+INFO  08:36:40 Core Module Initialised
+WARN  08:36:40 Unused summary type: Lynicon.Models.Summary
+ERROR 08:36:40 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  08:50:05 Starting Core Module
+INFO  08:50:05 Core Module Initialised
+WARN  08:50:05 Unused summary type: Lynicon.Models.Summary
+ERROR 08:50:05 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  08:51:33 Starting Core Module
+INFO  08:51:33 Core Module Initialised
+WARN  08:51:33 Unused summary type: Lynicon.Models.Summary
+ERROR 08:51:33 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:42:40 Starting Core Module
+INFO  03:42:40 Core Module Initialised
+WARN  03:42:40 Unused summary type: Lynicon.Models.Summary
+ERROR 03:42:40 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:43:55 Starting Core Module
+INFO  03:43:55 Core Module Initialised
+WARN  03:43:55 Unused summary type: Lynicon.Models.Summary
+ERROR 03:43:55 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:45:23 Starting Core Module
+INFO  03:45:23 Core Module Initialised
+WARN  03:45:23 Unused summary type: Lynicon.Models.Summary
+ERROR 03:45:23 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  04:00:37 Starting Core Module
+INFO  04:00:37 Core Module Initialised
+WARN  04:00:37 Unused summary type: Lynicon.Models.Summary
+ERROR 04:00:37 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  04:02:36 Starting Core Module
+INFO  04:02:36 Core Module Initialised
+WARN  04:02:36 Unused summary type: Lynicon.Models.Summary
+ERROR 04:02:36 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  04:09:51 Starting Core Module
+INFO  04:09:51 Core Module Initialised
+WARN  04:09:51 Unused summary type: Lynicon.Models.Summary
+ERROR 04:09:51 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  08:39:22 Starting Core Module
+INFO  08:39:22 Core Module Initialised
+WARN  08:39:22 Unused summary type: Lynicon.Models.Summary
+ERROR 08:39:22 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  08:44:00 Starting Core Module
+INFO  08:44:00 Core Module Initialised
+WARN  08:44:00 Unused summary type: Lynicon.Models.Summary
+ERROR 08:44:00 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  07:17:29 Starting Core Module
+INFO  07:17:29 Core Module Initialised
+WARN  07:17:30 Unused summary type: Lynicon.Models.Summary
+ERROR 07:17:30 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  12:44:36 Starting Core Module
+INFO  12:44:36 Core Module Initialised
+WARN  12:44:36 Unused summary type: Lynicon.Models.Summary
+ERROR 12:44:36 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  01:55:58 Starting Core Module
+INFO  01:55:58 Core Module Initialised
+WARN  01:55:59 Unused summary type: Lynicon.Models.Summary
+ERROR 01:55:59 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:00:59 Starting Core Module
+INFO  03:00:59 Core Module Initialised
+WARN  03:00:59 Unused summary type: Lynicon.Models.Summary
+ERROR 03:00:59 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:11:05 Starting Core Module
+INFO  03:11:06 Core Module Initialised
+WARN  03:11:06 Unused summary type: Lynicon.Models.Summary
+ERROR 03:11:06 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:25:48 Starting Core Module
+INFO  03:25:48 Core Module Initialised
+WARN  03:25:48 Unused summary type: Lynicon.Models.Summary
+ERROR 03:25:48 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+ERROR 03:28:46 Error creating content schema module dump: 
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at Lynicon.Collation.ChangeProblem.GetAssemblyQualifiedTypeName()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:40:02 Starting Core Module
+INFO  03:40:02 Core Module Initialised
+WARN  03:40:02 Unused summary type: Lynicon.Models.Summary
+INFO  03:41:45 Starting Core Module
+INFO  03:41:45 Core Module Initialised
+WARN  03:41:46 Unused summary type: Lynicon.Models.Summary
+ERROR 03:41:46 Error creating content schema module dump: 
 System.ArgumentNullException: Value cannot be null.
 Parameter name: key
    at System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
    at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
-   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 275
-   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp) in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
-   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action) in C:\Dev\LyniconANC.Release\src\LyniconANC\Utility\LinqX.cs:line 339
-   at Lynicon.Modules.ContentSchemaModule.Dump() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
-INFO  03:59:21 Core Module Initialised
-WARN  03:59:24 Unused summary type: Lynicon.Models.Summary
-ERROR 03:59:25 Error creating content schema module dump: 
-System.ArgumentNullException: Value cannot be null.
-Parameter name: key
-   at System.Collections.Generic.Dictionary`2.FindEntry(TKey key)
-   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
-   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem) in C:\Dev\LyniconANC.Release\src\LyniconANC\Models\ContentModelSchema.cs:line 275
-   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp) in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
-   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action) in C:\Dev\LyniconANC.Release\src\LyniconANC\Utility\LinqX.cs:line 339
-   at Lynicon.Modules.ContentSchemaModule.Dump() in C:\Dev\LyniconANC.Release\src\LyniconANC\Modules\ContentSchemaModule.cs:line 98
-INFO  04:03:55 Core Module Initialised
-WARN  04:03:56 Unused summary type: Lynicon.Models.Summary
-INFO  04:07:04 Core Module Initialised
-WARN  04:07:05 Unused summary type: Lynicon.Models.Summary
-INFO  04:09:37 Core Module Initialised
-WARN  04:09:38 Unused summary type: Lynicon.Models.Summary
-FATAL 08:46:37 Failed to connect to database
-System.Data.SqlClient.SqlException (0x80131904): Cannot open database "LynTest" requested by the login. The login failed.
-Login failed for user 'DESKTOP-PTLE0C3\james'.
-   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
-   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.Open()
-   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open()
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
-   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
-   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent)
-ClientConnectionId:47daf58c-39ec-41ed-98ae-53988141cb38
-Error Number:4060,State:1,Class:11
-ERROR 08:46:37 Module Core blocked, initialisation exception
-System.Exception: Failed to connect to database ---> System.Data.SqlClient.SqlException: Cannot open database "LynTest" requested by the login. The login failed.
-Login failed for user 'DESKTOP-PTLE0C3\james'.
-   at System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling)
-   at System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
-   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
-   at System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
-   at System.Data.SqlClient.SqlConnection.Open()
-   at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.Open()
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.BufferlessMoveNext(Boolean buffer)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryingEnumerable.Enumerator.MoveNext()
-   at Microsoft.EntityFrameworkCore.Query.QueryMethodProvider.GetResult[TResult](IEnumerable`1 valueBuffers)
-   at lambda_method(Closure , QueryContext )
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.<>c__DisplayClass20_0`1.<CompileQueryCore>b__0(QueryContext qc)
-   at Microsoft.EntityFrameworkCore.Query.Internal.QueryCompiler.Execute[TResult](Expression query)
-   at Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryProvider.Execute[TResult](Expression expression)
-   at System.Linq.Queryable.Any[TSource](IQueryable`1 source, Expression`1 predicate)
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent)
-   --- End of inner exception stack trace ---
-   at Lynicon.Extensibility.Module.VerifyDbState(String changePresent)
-   at Lynicon.Modules.CoreModule.Initialise()
-   at Lynicon.Extensibility.LyniconModuleManager.Initialise()
-INFO  03:17:52 Core Module Initialised
-WARN  03:17:52 Unused summary type: Lynicon.Models.Summary
-INFO  04:06:37 Core Module Initialised
-INFO  08:01:21 Core Module Initialised
-INFO  08:05:57 Core Module Initialised
-WARN  08:05:57 Unused summary type: Lynicon.Models.Summary
-INFO  08:54:49 Core Module Initialised
-WARN  08:54:50 Unused summary type: Lynicon.Models.Summary
-ERROR 08:57:33 Save edit failed
-Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: Database operation expected to affect 1 row(s) but actually affected 0 row(s). Data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ThrowAggregateUpdateConcurrencyException(Int32 commandIndex, Int32 expectedRowsAffected, Int32 rowsAffected)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetWithoutPropagation(Int32 commandIndex, DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.Consume(DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(Tuple`2 parameters)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(IEnumerable`1 commandBatches, IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChanges(IReadOnlyList`1 entries)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IReadOnlyList`1 entriesToSave)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
-   at Lynicon.DataSources.CoreDataSource.SaveChanges()
-   at Lynicon.Repositories.ContentRepository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Repositories.Repository.<>c__DisplayClass47_0.<Set>b__1(IGrouping`2 igroup)
-   at System.Linq.Enumerable.<SelectManyIterator>d__16`2.MoveNext()
+   at Lynicon.Models.ContentModelSchema.ApplyProblem(ContentModelSchema oldSchema, ChangeProblem problem)
+   at Lynicon.Modules.ContentSchemaModule.<>c__DisplayClass15_0.<Dump>b__0(ChangeProblem cp)
+   at Lynicon.Utility.LinqX.Do[T](IEnumerable`1 source, Action`1 action)
+   at Lynicon.Modules.ContentSchemaModule.Dump()
+INFO  03:45:17 Starting Core Module
+INFO  03:45:17 Core Module Initialised
+WARN  03:45:17 Unused summary type: Lynicon.Models.Summary
+INFO  04:12:35 Starting Core Module
+INFO  04:12:35 Core Module Initialised
+WARN  04:12:35 Unused summary type: Lynicon.Models.Summary
+INFO  04:50:30 Starting Core Module
+INFO  04:50:30 Core Module Initialised
+INFO  04:51:03 Starting Core Module
+INFO  04:51:03 Core Module Initialised
+INFO  05:17:34 Starting Core Module
+INFO  05:17:34 Core Module Initialised
+INFO  10:49:06 Starting Core Module
+INFO  10:49:06 Core Module Initialised
+WARN  10:49:06 Unused summary type: Lynicon.Models.Summary
+WARN  10:49:50 Reading content from contentitem 13ab0ef8-0569-46de-a6b3-68d8f2ea4b1e with no content:    at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)
+   at System.Environment.get_StackTrace()
+   at Lynicon.Repositories.ContentItem.GetContent(TypeExtender extender)
+   at Lynicon.Repositories.ContentItem.GetContent[T](TypeExtender extender)
+   at Lynicon.Repositories.ContentItem.GetSummary(LyniconSystem sys)
+   at Lynicon.Repositories.ContentItem.GetSummary(LyniconSystem sys, Object item)
+   at Lynicon.Collation.ContentCollator.GetSummary[TTarget](Object item)
+   at lambda_method(Closure , ContentItem )
+   at System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   at Lynicon.Collation.ContentCollator.<Get>d__8`2.MoveNext()
    at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
    at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
-   at Lynicon.Repositories.Repository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Collation.ContentCollator.Set(Address a, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create, Boolean bypassChecks)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create)
-   at Lynicon.Editors.EditorController.SaveWithRedirect(Object data)
-   at Lynicon.Editors.DualFrameEditorController.<Index>d__2.MoveNext()
-ERROR 09:01:17 Save edit failed
-Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: Database operation expected to affect 1 row(s) but actually affected 0 row(s). Data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ThrowAggregateUpdateConcurrencyException(Int32 commandIndex, Int32 expectedRowsAffected, Int32 rowsAffected)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetWithoutPropagation(Int32 commandIndex, DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.Consume(DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(Tuple`2 parameters)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(IEnumerable`1 commandBatches, IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChanges(IReadOnlyList`1 entries)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IReadOnlyList`1 entriesToSave)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
-   at Lynicon.DataSources.CoreDataSource.SaveChanges()
-   at Lynicon.Repositories.ContentRepository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Repositories.Repository.<>c__DisplayClass47_0.<Set>b__1(IGrouping`2 igroup)
-   at System.Linq.Enumerable.<SelectManyIterator>d__16`2.MoveNext()
-   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
-   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
-   at Lynicon.Repositories.Repository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Collation.ContentCollator.Set(Address a, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create, Boolean bypassChecks)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create)
-   at Lynicon.Editors.EditorController.SaveWithRedirect(Object data)
-   at Lynicon.Editors.DualFrameEditorController.<Index>d__2.MoveNext()
-ERROR 09:37:58 Save edit failed
-Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: Database operation expected to affect 1 row(s) but actually affected 0 row(s). Data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ThrowAggregateUpdateConcurrencyException(Int32 commandIndex, Int32 expectedRowsAffected, Int32 rowsAffected)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetWithoutPropagation(Int32 commandIndex, DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.Consume(DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(Tuple`2 parameters)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(IEnumerable`1 commandBatches, IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChanges(IReadOnlyList`1 entries)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IReadOnlyList`1 entriesToSave)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
-   at Lynicon.DataSources.CoreDataSource.SaveChanges()
-   at Lynicon.Repositories.ContentRepository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Repositories.Repository.<>c__DisplayClass47_0.<Set>b__1(IGrouping`2 igroup)
-   at System.Linq.Enumerable.<SelectManyIterator>d__16`2.MoveNext()
-   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
-   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
-   at Lynicon.Repositories.Repository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Collation.ContentCollator.Set(Address a, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create, Boolean bypassChecks)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create)
-   at Lynicon.Editors.EditorController.SaveWithRedirect(Object data)
-   at Lynicon.Editors.DualFrameEditorController.<Index>d__2.MoveNext()
-ERROR 09:58:27 Save edit failed
-Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: Database operation expected to affect 1 row(s) but actually affected 0 row(s). Data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ThrowAggregateUpdateConcurrencyException(Int32 commandIndex, Int32 expectedRowsAffected, Int32 rowsAffected)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetWithoutPropagation(Int32 commandIndex, DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.Consume(DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(Tuple`2 parameters)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(IEnumerable`1 commandBatches, IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChanges(IReadOnlyList`1 entries)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IReadOnlyList`1 entriesToSave)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
-   at Lynicon.DataSources.CoreDataSource.SaveChanges()
-   at Lynicon.Repositories.ContentRepository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Repositories.Repository.<>c__DisplayClass47_0.<Set>b__1(IGrouping`2 igroup)
-   at System.Linq.Enumerable.<SelectManyIterator>d__16`2.MoveNext()
-   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
-   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
-   at Lynicon.Repositories.Repository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Collation.ContentCollator.Set(Address a, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create, Boolean bypassChecks)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create)
-   at Lynicon.Editors.EditorController.SaveWithRedirect(Object data)
-   at Lynicon.Editors.DualFrameEditorController.<Index>d__2.MoveNext()
-ERROR 10:04:42 Save edit failed
-Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: Database operation expected to affect 1 row(s) but actually affected 0 row(s). Data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ThrowAggregateUpdateConcurrencyException(Int32 commandIndex, Int32 expectedRowsAffected, Int32 rowsAffected)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetWithoutPropagation(Int32 commandIndex, DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.Consume(DbDataReader reader)
-   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(Tuple`2 parameters)
-   at Microsoft.EntityFrameworkCore.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](Func`2 operation, Func`2 verifySucceeded, TState state)
-   at Microsoft.EntityFrameworkCore.ExecutionStrategyExtensions.Execute[TState,TResult](IExecutionStrategy strategy, Func`2 operation, TState state)
-   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.Execute(IEnumerable`1 commandBatches, IRelationalConnection connection)
-   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChanges(IReadOnlyList`1 entries)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(IReadOnlyList`1 entriesToSave)
-   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
-   at Lynicon.DataSources.CoreDataSource.SaveChanges()
-   at Lynicon.Repositories.ContentRepository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Repositories.Repository.<>c__DisplayClass47_0.<Set>b__1(IGrouping`2 igroup)
-   at System.Linq.Enumerable.<SelectManyIterator>d__16`2.MoveNext()
-   at System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
-   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
-   at Lynicon.Repositories.Repository.Set(List`1 items, Dictionary`2 setOptions)
-   at Lynicon.Collation.ContentCollator.Set(Address a, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Dictionary`2 setOptions)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create, Boolean bypassChecks)
-   at Lynicon.Collation.Collator.Set(Address address, Object data, Nullable`1 create)
-   at Lynicon.Editors.EditorController.SaveWithRedirect(Object data)
-   at Lynicon.Editors.DualFrameEditorController.<Index>d__2.MoveNext()
-INFO  11:39:56 Core Module Initialised
-WARN  11:39:56 Unused summary type: Lynicon.Models.Summary
-INFO  12:07:16 Core Module Initialised
-WARN  12:07:16 Unused summary type: Lynicon.Models.Summary
-INFO  11:52:20 Core Module Initialised
-INFO  12:10:27 Core Module Initialised
-WARN  12:10:27 Unused summary type: Lynicon.Models.Summary
-INFO  12:16:33 Core Module Initialised
-WARN  12:16:33 Unused summary type: Lynicon.Models.Summary
-INFO  12:20:20 Core Module Initialised
-WARN  12:20:20 Unused summary type: Lynicon.Models.Summary
-INFO  05:31:16 Core Module Initialised
-WARN  05:31:16 Unused summary type: Lynicon.Models.Summary
-INFO  09:26:21 Core Module Initialised
-INFO  08:20:09 Core Module Initialised
-INFO  06:34:56 Core Module Initialised
-INFO  07:00:35 Core Module Initialised
-WARN  07:00:35 Unused summary type: Lynicon.Models.Summary
-INFO  07:34:18 Core Module Initialised
-WARN  07:34:18 Unused summary type: Lynicon.Models.Summary
-INFO  04:18:44 Core Module Initialised
-INFO  04:40:45 Core Module Initialised
-WARN  04:40:45 Unused summary type: Lynicon.Models.Summary
-INFO  06:46:57 Core Module Initialised
-WARN  06:46:58 Unused summary type: Lynicon.Models.Summary
-INFO  08:03:14 Core Module Initialised
-WARN  08:03:15 Unused summary type: Lynicon.Models.Summary
-INFO  09:35:21 Core Module Initialised
-WARN  09:35:21 Unused summary type: Lynicon.Models.Summary
-INFO  09:58:01 Core Module Initialised
-WARN  09:58:01 Unused summary type: Lynicon.Models.Summary
+   at Lynicon.Collation.BaseCollator.GetList[T,TQuery](IEnumerable`1 types, RouteData rd)
+   at Lynicon.Collation.Collator.<GetList>d__34`2.MoveNext()
+   at System.Linq.Buffer`1..ctor(IEnumerable`1 source)
+   at System.Linq.Enumerable.ToArray[TSource](IEnumerable`1 source)
+   at Lynicon.Controllers.ItemsController.GetPage(String datatype)
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.AspNetCore.Mvc.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.<InvokeActionMethodAsync>d__27.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.<InvokeNextActionFilterAsync>d__25.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.<InvokeNextActionFilterAsync>d__25.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.<InvokeNextActionFilterAwaitedAsync>d__26.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAwaitedAsync()
+   at Microsoft.AspNetCore.Mvc.Controller.<OnActionExecutionAsync>d__27.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Controller.OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionFilter.<OnActionExecutionAsync>d__4.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionFilter.OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.<InvokeNextResourceFilter>d__22.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextResourceFilter()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.<InvokeAsync>d__20.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.MvcRouteHandler.<>c__DisplayClass8_0.<RouteAsync>b__0(HttpContext c)
+   at Microsoft.AspNetCore.Builder.RouterMiddleware.<Invoke>d__4.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Builder.RouterMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.<Invoke>d__18.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.<Invoke>d__18.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.<Invoke>d__18.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.<Invoke>d__18.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware`1.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.MigrationsEndPointMiddleware.<Invoke>d__5.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.MigrationsEndPointMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.DatabaseErrorPageMiddleware.<Invoke>d__6.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.DatabaseErrorPageMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.<Invoke>d__7.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Server.IISIntegration.IISMiddleware.<Invoke>d__8.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Server.IISIntegration.IISMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.HttpOverrides.ForwardedHeadersMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Hosting.Internal.RequestServicesContainerMiddleware.<Invoke>d__3.MoveNext()
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder.Start[TStateMachine](TStateMachine& stateMachine)
+   at Microsoft.AspNetCore.Hosting.Internal.RequestServicesContainerMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Hosting.Internal.HostingApplication.ProcessRequestAsync(Context context)
+   at Microsoft.AspNetCore.Server.Kestrel.Internal.Http.Frame`1.<RequestProcessingAsync>d__2.MoveNext()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.MoveNextRunner.InvokeMoveNext(Object stateMachine)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.MoveNextRunner.Run()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.<>c__DisplayClass4_0.<OutputAsyncCausalityEvents>b__0()
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.ContinuationWrapper.Invoke()
+   at Microsoft.AspNetCore.Server.Kestrel.Internal.Infrastructure.LoggingThreadPool.<RunAction>b__5_0(Object o)
+   at System.Threading.QueueUserWorkItemCallback.WaitCallback_Context(Object state)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+   at System.Threading.QueueUserWorkItemCallback.System.Threading.IThreadPoolWorkItem.ExecuteWorkItem()
+   at System.Threading.ThreadPoolWorkQueue.Dispatch()
+   at System.Threading._ThreadPoolWaitCallback.PerformWaitCallback()
+INFO  11:59:18 Starting Core Module
+INFO  11:59:18 Core Module Initialised
+WARN  11:59:19 Unused summary type: Lynicon.Models.Summary
+INFO  01:54:47 Starting Core Module
+INFO  01:54:47 Core Module Initialised
+WARN  01:54:48 Unused summary type: Lynicon.Models.Summary
+INFO  01:56:45 Starting Core Module
+INFO  01:56:45 Core Module Initialised
+INFO  02:00:34 Starting Core Module
+INFO  02:00:34 Core Module Initialised
+INFO  02:12:41 Starting Core Module
+INFO  02:12:41 Core Module Initialised
+INFO  02:13:40 Starting Core Module
+INFO  02:13:40 Core Module Initialised
+WARN  02:13:40 Unused summary type: Lynicon.Models.Summary
+INFO  03:04:43 Starting Core Module
+INFO  03:04:43 Core Module Initialised
+WARN  03:04:43 Unused summary type: Lynicon.Models.Summary
+INFO  03:06:09 Starting Core Module
+INFO  03:06:09 Core Module Initialised
+WARN  03:06:09 Unused summary type: Lynicon.Models.Summary

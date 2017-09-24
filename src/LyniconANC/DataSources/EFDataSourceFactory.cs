@@ -46,7 +46,6 @@ namespace Lynicon.DataSources
             return new EFDataSource<TContext>(System, DbSetSelectors, ContextLifetimeMode, forSummaries);
         }
 
-        ContextLifetimeMode contextLifetimeMode = ContextLifetimeMode.PerCall;
         /// <summary>
         /// Set how long the context persists for.  Can be per call to the repository or per request
         /// </summary>

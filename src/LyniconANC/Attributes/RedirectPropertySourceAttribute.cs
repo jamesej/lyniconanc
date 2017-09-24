@@ -11,7 +11,7 @@ namespace Lynicon.Attributes
     /// source record into the content item when reading and to distribute changes back to that
     /// sources when writing.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class RedirectPropertySourceAttribute : Attribute
     {
         /// <summary>

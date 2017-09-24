@@ -261,7 +261,7 @@ namespace Lynicon.Collation
                 {
                     Type contentType = addrTypeG.Key;
                     var rpsAttributes = contentType
-                        .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                        .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), true)
                         .Cast<RedirectPropertySourceAttribute>()
                         .ToList();
                     foreach (Address addr in addrTypeG)
@@ -314,7 +314,7 @@ namespace Lynicon.Collation
 
                 Type contentType = addrTypeG.Key;
                 var rpsAttributes = contentType
-                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), true)
                     .Cast<RedirectPropertySourceAttribute>()
                     .ToList();
 
@@ -410,7 +410,7 @@ namespace Lynicon.Collation
 
                 Type contentType = data.GetType().UnextendedType();
                 var rpsAttributes = contentType
-                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), false)
+                    .GetCustomAttributes(typeof(RedirectPropertySourceAttribute), true)
                     .Cast<RedirectPropertySourceAttribute>()
                     .Where(rpsa => !rpsa.ReadOnly)
                     .ToList();
