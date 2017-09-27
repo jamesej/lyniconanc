@@ -41,15 +41,17 @@ namespace Lynicon.Commands
             if (args.Length < 1)
                 return false;
 
-            if (args[0].ToLower() != "lynicon")
+            var lynArgs = args.SkipWhile(a => a != "--lynicon").ToArray();
+
+            if (lynArgs.Length < 2)
                 return false;
 
-            if (!commands.ContainsKey(args[1].ToLower()))
+            if (!commands.ContainsKey(lynArgs[1].ToLower()))
                 return false;
 
-            var cmd = commands[args[1].ToLower()];
+            var cmd = commands[lynArgs[1].ToLower()];
 
-            cmd.Execute(args.Skip(2).ToArray());
+            cmd.Execute(lynArgs.Skip(2).ToArray());
 
             return true;
         }

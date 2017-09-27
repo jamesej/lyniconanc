@@ -76,6 +76,7 @@ namespace Lynicon.Commands
                 fileModel.InsertUniqueLineWithIndent("using Lynicon.Services;");
                 fileModel.InsertUniqueLineWithIndent("using Lynicon.Startup;");
                 fileModel.InsertUniqueLineWithIndent("using Microsoft.AspNetCore.Identity.EntityFrameworkCore;");
+                fileModel.InsertUniqueLineWithIndent("using Microsoft.AspNetCore.Identity"); // only needed for core 2
                 fileModel.InsertLineWithIndent("");
 
                 Console.WriteLine("Added Lynicon namespaces");
