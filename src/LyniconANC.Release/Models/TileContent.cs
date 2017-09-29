@@ -17,6 +17,8 @@ namespace LyniconANC.Release.Models
         public decimal Widthmm { get; set; }
 
         public decimal Heightmm { get; set; }
+
+        public List<TileColour> AvailableColours { get; set; }
     }
 
     [SummaryType(typeof(TileSummary))]
@@ -27,6 +29,9 @@ namespace LyniconANC.Release.Models
         // You can follow references in reverse i.e. get a list of all content items with references to a specific item. See MaterialsLandingContent.cs.
         [Summary]
         public Reference<TileMaterialContent> Material { get; set; }
+
+        [Summary]
+        public List<TileColour> AvailableColours { get; set; }
 
         [Summary, DisplayBlock("Size"), Display(Name = "Width mm")]
         public decimal Widthmm { get; set; }

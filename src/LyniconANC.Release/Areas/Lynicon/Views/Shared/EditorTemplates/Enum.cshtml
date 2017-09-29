@@ -1,25 +1,7 @@
 ﻿@model Enum
 @using Lynicon.Utility
 @{
-    Type enumT = ViewData.ModelMetadata.ModelType;
-    bool isNullable = false;
-    if (enumT.IsGenericType() && enumT.GetGenericTypeDefinition() == typeof(Nullable<>))
-    {
-        enumT = Nullable.GetUnderlyingType(enumT);
-        isNullable = true;
-    }
-    
-    var values = Enum.GetValues(enumT).Cast<object>()
-                     .Select(v => new SelectListItem
-                        {
-                            Selected = v.Equals(Model),
-                            Text = v.ToString(),
-                            Value = v.ToString()
-                        }).ToList();
-    if (isNullable)
-    {
-        values.Insert(0, new SelectListItem { Selected = (Model == null), Text = "", Value = null });
-    }
+    var values = EnumX.EnumSelectList(ViewData.ModelMetadata.ModelType, Model);
 }
 
 @Html.DropDownList("", values, ViewData)

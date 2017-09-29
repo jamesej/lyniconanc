@@ -62,6 +62,9 @@ Then you can set up the CMS admin user. Run `dotnet run -- --lynicon initialize-
 
 You can now run the site and login with the password you set up (the email is admin@lynicon-user.com)
 
+If you would like to populate your database with sample content, there is a script at `\src\LyniconANC.Release\Areas\Lynicon\Admin\SQL\TilesSiteContentSetup.sql`
+which will create example content for the test site.
+
 ## How Tos
 
 ### Add and Edit Content Items

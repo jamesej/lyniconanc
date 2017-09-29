@@ -1,28 +1,22 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Lynicon.Routing;
-using Lynicon.Startup;
-using Lynicon.Modules;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Lynicon.Membership;
-using Microsoft.AspNetCore.Identity;
-using Lynicon.Services;
-using Lynicon.Extensibility;
-using LyniconANC.Release.Models;
-using Lynicon.Collation;
-using Lynicon.Repositories;
-using Lynicon.DataSources;
-using Lynicon.Editors;
+
 using System.Reflection;
 using Lynicon.Logging;
+using Lynicon.Membership;
+using Lynicon.Modules;
+using Lynicon.Routing;
+using Lynicon.Services;
+using Lynicon.Startup;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using LyniconANC.Release.Models;
 
 namespace LyniconANC.Release
 {
@@ -32,12 +26,10 @@ namespace LyniconANC.Release
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            builder.AddEnvironmentVariables();
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
             Configuration = builder.Build();
-
             env.ConfigureLog4Net("log4net.xml");
         }
 
@@ -47,30 +39,17 @@ namespace LyniconANC.Release
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
-            // Add framework services.
-            services.AddMvc(options => options.AddLyniconOptions())
-                .AddApplicationPart(typeof(LyniconSystem).GetTypeInfo().Assembly);
-
+            services.AddMvc(options => options.AddLyniconOptions()).AddApplicationPart(typeof(LyniconSystem).GetTypeInfo().Assembly);
             services.AddIdentity<User, IdentityRole>()
-                //.AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
-            services.AddAuthorization(options =>
-                options.AddLyniconAuthorization());
-
-            services.AddLynicon(options =>
-                options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
-                    .UseModule<CoreModule>()
-                    .UseModule<ContentSchemaModule>()
-                    .UseTypeSetup(tsr =>
-                        {
-                            //tsr.SetupType(typeof(TestData), new BasicCollator(tsr.System), new BasicRepository(tsr.System, new CoreDataSourceFactory(tsr.System)), DataDiverter.Instance.NullDivert);
-                        }
-                    ))
-                .AddLyniconIdentity();
+            	.AddDefaultTokenProviders();
+            	
+            	services.AddAuthorization(options => options.AddLyniconAuthorization());
+            	
+            	services.AddLynicon(options =>
+            		options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
+            			.UseModule<CoreModule>()
+						.UseModule<ContentSchemaModule>())
+            	.AddLyniconIdentity();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,8 +61,7 @@ namespace LyniconANC.Release
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-                //app.UseBrowserLink();
+                app.UseBrowserLink();
             }
             else
             {
@@ -92,12 +70,9 @@ namespace LyniconANC.Release
 
             app.UseStaticFiles();
 
-            app.UseIdentity();
+app.UseIdentity();
 
-            // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
-
-            app.ConstructLynicon();
-
+app.ConstructLynicon();
             app.UseMvc(routes =>
             {
                 routes.MapLyniconRoutes();
@@ -111,7 +86,7 @@ namespace LyniconANC.Release
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
+            
             app.InitialiseLynicon(life);
         }
     }

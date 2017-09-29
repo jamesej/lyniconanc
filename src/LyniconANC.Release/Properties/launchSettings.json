@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:9227/",
+      "applicationUrl": "http://localhost:57054/",
       "sslPort": 0
     }
   },
@@ -15,14 +15,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "LyniconANC.Test": {
+    "LyniconANC.Release": {
       "commandName": "Project",
-      "commandLineArgs": "-- --lynicon initialize-admin p4ssw0rd",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:57055/"
     }
   }
 }

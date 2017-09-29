@@ -1,6 +1,6 @@
 ﻿@model TileContent
 @using LyniconANC.Release.Models
-
+@using Lynicon.Utility
 <div class="spacer" style="height:100px;">
 
 </div>
@@ -19,5 +19,17 @@
         @{ var material = Model.Material.Summary(); }
         <a href="@material.Url">Material: @material.Title</a>
     </div>
+    @if (Model.AvailableColours != null)
+    {
+    <div>
+        <h3>Available Colours</h3>
+        <ul>
+        @foreach (var colr in Model.AvailableColours)
+        {
+           <li>@colr.DisplayName()</li> 
+        }
+        </ul>
+    </div>
+    }
 </div>
     
