@@ -3,7 +3,6 @@
 
 ![Lynicon CMS](http://www.lynicon.com/images/lynicon/twitter-logo.png)
 
-Lynicon CMS for ASP.Net Core (.Net Standard 1.6, .Net 4.6).
 Now we believe the most powerful CMS on .Net Core.
 
 *It can be this easy to add content management to your site*
