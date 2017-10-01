@@ -76,7 +76,7 @@ namespace Lynicon.Commands
                 fileModel.InsertUniqueLineWithIndent("using Lynicon.Services;");
                 fileModel.InsertUniqueLineWithIndent("using Lynicon.Startup;");
                 fileModel.InsertUniqueLineWithIndent("using Microsoft.AspNetCore.Identity.EntityFrameworkCore;");
-                fileModel.InsertUniqueLineWithIndent("using Microsoft.AspNetCore.Identity;"); // only needed for core 2
+                fileModel.InsertUniqueLineWithIndent("using Microsoft.AspNetCore.Identity"); // only needed for core 2
                 fileModel.InsertLineWithIndent("");
 
                 Console.WriteLine("Added Lynicon namespaces");
@@ -90,23 +90,10 @@ namespace Lynicon.Commands
             // Update constructor
 
             found = fileModel.FindLineContains("Startup(");
-
-            string envVar = "env";
-            if (fileModel.CurrentLine.Contains("IHostingEnvironment"))
-                envVar = fileModel.CurrentLine.After("IHostingEnvironment").UpTo(",").UpTo(")").Trim();
-            else
-            {
-                found = fileModel.ReplaceText(")", ", IHostingEnvironment env)");
-                if (found)
-                    Console.WriteLine("Added IHostingEnvironment parameter to Startup()");
-                else
-                    Console.WriteLine("Failed to add IHostingEnvironment parameter to Startup()");
-            }
-
             found = found && fileModel.FindEndOfMethod();
             if (found)
             {
-                added = fileModel.InsertUniqueLineWithIndent(envVar + ".ConfigureLog4Net(\"log4net.xml\");");
+                added = fileModel.InsertUniqueLineWithIndent("env.ConfigureLog4Net(\"log4net.xml\");");
                 if (added)
                     Console.WriteLine("Added log4net configuration");
             }
@@ -203,7 +190,7 @@ namespace Lynicon.Commands
             }
 
             int currLine = fileModel.LineNum;
-            found = fileModel.FindLineContains(".UseAuthentication()");
+            found = fileModel.FindLineContains(".UseIdentity()");
             if (!found)
                 fileModel.LineNum = currLine;
 
@@ -216,9 +203,9 @@ namespace Lynicon.Commands
             if (!found)
             {
                 fileModel.Jump(-1);
-                fileModel.InsertUniqueLineWithIndent("app.UseAuthentication();");
+                fileModel.InsertUniqueLineWithIndent("app.UseIdentity();");
                 fileModel.InsertLineWithIndent("");
-                Console.WriteLine("Added UseAuthentication()");
+                Console.WriteLine("Added UseIdentity()");
             }
 
             fileModel.InsertUniqueLineWithIndent("app.ConstructLynicon();");
@@ -345,18 +332,8 @@ namespace Lynicon.Commands
             }
             else
             {
-                fileModel.ToTop();
-                found = fileModel.FindLineContains(".UseStartup");
-                if (found)
-                {
-                    fileModel.InsertUniqueLineWithIndent(".UseContentRoot(ContentRootLocator.GetContentRoot(args) ?? Directory.GetCurrentDirectory())");
-                }
-
-                if (!found)
-                {
-                    Console.WriteLine("Failed to add content route redirection to Program.cs");
-                    return false;
-                }
+                Console.WriteLine("Failed to add content route redirection to Program.cs");
+                return false;
             }
 
             return true;

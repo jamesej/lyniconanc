@@ -27,7 +27,10 @@ namespace Lynicon.Utility
                 return;
             }
 
-            var type = Type.GetType(typeValue.FirstValue, true);
+            var type = Type.GetType(
+                (string)typeValue.ConvertTo(typeof(string)),
+                true
+                );
             if (!typeof(T).IsAssignableFrom(type))
             {
                 throw new InvalidOperationException("Bad Type");

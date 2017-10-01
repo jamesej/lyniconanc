@@ -1,8 +1,10 @@
 # Lynicon CMS/DMS
-*For ASP.Net Core (.Net Standard 2.0, .Net 4.6.1 and .Net Standard 1.6, .Net 4.6)*
+*For ASP.Net Core (.Net Standard 1.6, .Net 4.6)*
+*[Note: use .Net Core 1.1 for now, Core 2.0 vsn coming soon]*
 
 ![Lynicon CMS](http://www.lynicon.com/images/lynicon/twitter-logo.png)
 
+Lynicon CMS for ASP.Net Core (.Net Standard 1.6, .Net 4.6).
 Now we believe the most powerful CMS on .Net Core.
 
 *It can be this easy to add content management to your site*
@@ -47,9 +49,6 @@ This is available [here](http://www.lynicon.com/lynicon-base)
 
 ## Setup
 
-Because .net core 2.0 has breaking changes, the repository contains two branches, `Core1.1` for .net core 1.1, and `master` is now .net 2.0. Make
-sure you check out the right branch.
-
 Once you have cloned the repository, you will need to get the test site working on your machine.
 Set the connection string in appsettings.json
 ![Appsettings](http://www.lynicon.com/install/ANC17_ConnectionString.jpg)
@@ -58,8 +57,8 @@ You can now set up the database by running the test site from the command line (
 an ASP.Net Core site!). Open a command window as Administrator and go to the \src\LyniconANC.Release
 directory. Now run `dotnet run -- --lynicon initialize-database`.
 
-Then you can set up the CMS admin user. Run `dotnet run -- --lynicon initialize-admin --password p4ssw0rd`.
-![Initialize](http://www.lynicon.com/install/ANC2_InitializeProject.jpg)
+Then you can set up the CMS admin user. Run `dotnet run -- --lynicon initialize-admin password`.
+![Initialize](http://www.lynicon.com/install/ANCTest_Initialize.jpg)
 
 You can now run the site and login with the password you set up (the email is admin@lynicon-user.com)
 
