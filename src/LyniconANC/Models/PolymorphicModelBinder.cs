@@ -34,10 +34,7 @@ namespace Lynicon.Models
                 return;
             }
 
-            var type = Type.GetType(
-                (string)typeValue.ConvertTo(typeof(string)),
-                true
-            );
+            var type = Type.GetType(typeValue.FirstValue, true);
             await BindChangedType(bindingContext, type);
         }
 

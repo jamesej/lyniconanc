@@ -111,7 +111,9 @@ namespace Lynicon.Membership
             u.Email = iu.Email;
             u.Id = new Guid(iu.Id);
             u.UserName = iu.UserName;
-            u.Roles = new string(iu.Roles.Where(r => r.RoleId.Length == 1).Select(r => r.RoleId[0]).ToArray());
+            var um = userManager();
+            var roles = Task.Run<IList<string>>(() => um.GetRolesAsync(iu)).Result;
+            u.Roles = new string(roles.Where(r => r.Length == 1).Select(r => r[0]).ToArray());
 
             string[] excludeProps = new string[] { "Email", "UserName", "Id", "IdAsString", "Roles" };
             CopyPropertiesForRead(iu, u, propertyInfos.Where(pip => !excludeProps.Contains(pip.Item1.Name)));
@@ -139,6 +141,7 @@ namespace Lynicon.Membership
         private async Task<bool> FixUpRoles(bool wasAdded, TUser current, User data)
         {
             var um = userManager();
+            var roles = await um.GetRolesAsync(current);
 
             // Fix up roles through usermanager
 
@@ -146,13 +149,13 @@ namespace Lynicon.Membership
             {
                 string sLynRole = lynRole.ToString();
 
-                if (wasAdded || !current.Roles.Any(iur => iur.RoleId == sLynRole))
+                if (wasAdded || !roles.Any(iur => iur == sLynRole))
                     await um.AddToRoleAsync(current, sLynRole);
             }
 
             if (!wasAdded)
             {
-                foreach (string idRole in current.Roles.Select(iur => iur.RoleId))
+                foreach (string idRole in roles)
                 {
                     if (!data.Roles.Contains(idRole))
                         await um.RemoveFromRoleAsync(current, idRole);

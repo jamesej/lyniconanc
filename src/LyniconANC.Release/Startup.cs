@@ -15,7 +15,7 @@ using Lynicon.Modules;
 using Lynicon.Routing;
 using Lynicon.Services;
 using Lynicon.Startup;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using LyniconANC.Release.Models;
 
 namespace LyniconANC.Release

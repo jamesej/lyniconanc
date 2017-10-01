@@ -622,7 +622,7 @@ namespace Lynicon.Utility
             return (IQueryable)mi.Invoke(source, null);
         }
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD2_0
         public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource item)
         {
             if (source != null)

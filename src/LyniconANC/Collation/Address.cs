@@ -22,6 +22,7 @@ namespace Lynicon.Collation
     /// Information extracted from a url which maps to one and only one content item
     /// </summary>
     [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
+    [TypeConverter(typeof(AddressTypeConverter))]
     public class Address : ReadOnlyDictionary<string, object>, IEquatable<Address>
     {
         public static explicit operator Address(string s)

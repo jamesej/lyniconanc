@@ -49,7 +49,10 @@ namespace Lynicon.Extensibility
         public async Task<bool> CanDisplay(IAuthorizationService authService, ClaimsPrincipal user, object model)
         {
             if (!string.IsNullOrEmpty(DisplayPolicy))
-                return await authService.AuthorizeAsync(user, model, DisplayPolicy);
+            {
+                var authResult = await authService.AuthorizeAsync(user, model, DisplayPolicy);
+                return authResult.Succeeded;
+            }
             else if (DisplayPermission != null)
                 return DisplayPermission.Permitted(model);
             else

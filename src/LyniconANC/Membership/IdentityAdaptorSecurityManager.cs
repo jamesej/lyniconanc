@@ -62,7 +62,7 @@ namespace Lynicon.AspNetCore.Identity
 
             var efDSFactory = new EFDataSourceFactory<TContext>(sys);
             var appDbRepository = new BasicRepository(sys, efDSFactory);
-            efDSFactory.DbSetSelectors[typeof(TUser)] = db => db.Users.AsNoTracking().Include(u => u.Roles);
+            efDSFactory.DbSetSelectors[typeof(TUser)] = db => db.Users.AsNoTracking();
             efDSFactory.ContextLifetimeMode = ContextLifetimeMode.PerCall;
 
             // We DON'T want to register TUser with CompositeTypeManager
