@@ -16,3 +16,4 @@ packages
 TestResults
 app.config
 web.config
+storage.ide
