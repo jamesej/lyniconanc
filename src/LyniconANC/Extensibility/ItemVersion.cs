@@ -11,6 +11,7 @@ using Lynicon.Collation;
 using Lynicon.Models;
 using System.Collections.ObjectModel;
 using Lynicon.Services;
+using System.ComponentModel;
 
 namespace Lynicon.Extensibility
 {
@@ -24,6 +25,7 @@ namespace Lynicon.Extensibility
     /// specific version values for the null values.
     /// </summary>
     [JsonConverter(typeof(LyniconIdentifierTypeConverter))]
+    [TypeConverter(typeof(ItemVersionTypeConverter))]
     public class ItemVersion : ReadOnlyDictionary<string, object>, IEquatable<ItemVersion>
     {
         public readonly static object Unset = (object)"086e3c0a-b81d-418a-9d95-52929a4e1fe2";
