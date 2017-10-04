@@ -68,7 +68,25 @@ which will create example content for the test site.
 
 ## How Tos
 
-### Add and Edit Content Items
+### Log in as admin
+
+Lynicon configures it's own customised ASP.Net Identity implementation. This means you can log
+in via the (slightly modified) template code login page, using the admin email (admin@lynicon-user)
+and the password you configured above. Alternatively you can use Lynicon's built in
+login page at `/Lynicon/Login`
+
+### Create a content-managed route, controller & view
+
+In Lynicon, you define a route as supporting content management, which then
+passes an instance of a content class into the controller, which
+passes it on to the view to display. This is described further
+in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42598494/Content+Routing).
+
+For examples, look in the [Startup.cs file](blob/master/src/LyniconANC.Release/Startup.cs),
+[TileContent.cs file](blob/master/src/LyniconANC.Release/Models/TileContent.cs) and
+[TileController.cs](blob/master/src/LyniconANC.Release/Controllers/TileController.cs).
+
+### Add and edit content items
 
 Content items are listed and can be added at /lynicon/items.
 Content items can be edited by visiting a url with which the content item
@@ -76,7 +94,23 @@ is associated while logged in with the appropriate rights. The content editor
 panel is shown.
 This is described in detail in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42795022/User+Manual)
 
-### Running the Tests
+### Use HTML snippets, images, links etc in your content class
+
+Since Lynicon uses C# classes to define the content schema, it provides standard classes
+such as HtmlMin, Image, Link for storing data required in content management. This is described
+in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42926142/Predefined+content+subtypes).
+The built-in asset handling system allows upload of images or other assets through a
+Windows Explorer-style popup to a specified folder in the site.
+
+### Use lists and subtypes in your content class
+
+Content classes in Lynicon can have properties of an arbitrary subtype, or List<T> properties
+of arbitrary type T. The content editor manages this automatically. You can create custom editors
+for subtypes using the MVC templating system, by adding to the templates named after various
+content subtypes which already exist in `Areas/Lynicon/Views/Shared/EditorTemplates`.
+This is described in detail in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42795058/Customising+Editors)
+
+### Running the tests
 
 The tests should appear in the Test Explorer as normal in Visual Studio. If they are not
 there this is likely an issue with the XUnit test framework. Sometimes such
