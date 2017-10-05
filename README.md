@@ -30,7 +30,23 @@ public IActionResult Index(<i>ModelType data</i>)
 ## Introduction
 
 In tune with the .Net Core philosophy, Lynicon is a composable and
-unopinionated CMS which is lightweight and low impact yet full featured.
+unopinionated CMS which is lightweight and low impact yet full featured. It supports
+fully structured content defined as C# classes which can have properties which are subtypes
+or lists. Generally it maps one content item to a page. It has no assumed tree structure for
+content, content relationship is defined by foreign key fields as in a relational database,
+with built-in facilities for traversing these relationships in both directions. Content
+navigation is done via a powerful filtering/search system, or via the site itself.
+
+Delivered as a Nuget package or library, it will not get in the way of you using any other technology, or
+force you to use its features, and can even be added into existing projects. It is
+highly extensible with a powerful module system allowing you to remove unneeded features
+to decrease complexity and increase efficiency. It can be used with any data source which
+provides a Linq driver by writing a simple adapter class.
+
+The content editor is shown alongside the page being edited so the effects of content
+changes are immediately visible. The rest of the backend is very straightforward as it
+does not attempt to provide the generally unneeded facilities to change content structure
+or front-end layout, this is done in code.
 
 This CMS project provides the essential CMS functionality for the Lynicon in
 ASP.Net Core, perfectly adequate for a smaller site or application. 
@@ -109,6 +125,23 @@ of arbitrary type T. The content editor manages this automatically. You can crea
 for subtypes using the MVC templating system, by adding to the templates named after various
 content subtypes which already exist in `Areas/Lynicon/Views/Shared/EditorTemplates`.
 This is described in detail in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42795058/Customising+Editors)
+
+### Link to other content items in your content class
+
+Another standard property class in Lynicon is Reference<T>. This stores the id of another content
+item in your content class. It appears in the editor as a drop-down list of content items of
+type T. In code you can retrieve the referenced content item (actually, it's summary, see below)
+as a property on Reference<T> or you can get all content items with a reference to another item.
+Examples can be seen in [Tile.cshtml](blob/master/src/LyniconANC.Release/Views/Tile/Tile.cshtml)
+and [TileMaterialContent.cs](blob/master/src/LyniconANC.Release/Models/TileMaterialContent.cs).
+See the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42598512/Relations) for more depth.
+
+### Filter, search and report on content
+
+Lynicon contains a page with various filters for creating, viewing, locating and reporting
+on content. This is at `/lynicon/items/list` or reached by clicking the Filter button
+on the bottom control bar on CMS pages. You can build custom filters which can be added to
+the list available on this page. See the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/43057157/The+Filter+Page)
 
 ### Running the tests
 
