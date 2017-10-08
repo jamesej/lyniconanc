@@ -98,9 +98,9 @@ passes an instance of a content class into the controller, which
 passes it on to the view to display. This is described further
 in the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42598494/Content+Routing).
 
-For examples, look in the [Startup.cs file](blob/master/src/LyniconANC.Release/Startup.cs),
-[TileContent.cs file](blob/master/src/LyniconANC.Release/Models/TileContent.cs) and
-[TileController.cs](blob/master/src/LyniconANC.Release/Controllers/TileController.cs).
+For examples, look in the [Startup.cs file](src/LyniconANC.Release/Startup.cs),
+[TileContent.cs file](src/LyniconANC.Release/Models/TileContent.cs) and
+[TileController.cs](src/LyniconANC.Release/Controllers/TileController.cs).
 
 ### Add and edit content items
 
@@ -132,8 +132,8 @@ Another standard property class in Lynicon is Reference<T>. This stores the id o
 item in your content class. It appears in the editor as a drop-down list of content items of
 type T. In code you can retrieve the referenced content item (actually, it's summary, see below)
 as a property on Reference<T> or you can get all content items with a reference to another item.
-Examples can be seen in [Tile.cshtml](blob/master/src/LyniconANC.Release/Views/Tile/Tile.cshtml)
-and [TileMaterialContent.cs](blob/master/src/LyniconANC.Release/Models/TileMaterialContent.cs).
+Examples can be seen in [Tile.cshtml](src/LyniconANC.Release/Views/Tile/Tile.cshtml)
+and [TileMaterialContent.cs](src/LyniconANC.Release/Models/TileMaterialContent.cs).
 See the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42598512/Relations) for more depth.
 
 ### Filter, search and report on content
@@ -142,6 +142,30 @@ Lynicon contains a page with various filters for creating, viewing, locating and
 on content. This is at `/lynicon/items/list` or reached by clicking the Filter button
 on the bottom control bar on CMS pages. You can build custom filters which can be added to
 the list available on this page. See the [online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/43057157/The+Filter+Page)
+
+### Use the content API to create a list of items dynamically
+
+Lynicon has a clean and powerful content API you can use in code to retrieve content directly. You can
+see an example in [HomeContent.cs](src/LyniconANC.Release/Models/HomeContent.cs). Generally when working with
+content objects external to building the page that displays them, you use a [Summary Type](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42664002/Summaries)
+which contains the subset of the full content object's properties for efficiency. The content API uses
+linq for filtering, can run queries across multiple data sources and lets you retrieve all content whose content
+type implements an interface or inherits from a base type.
+
+### Use property source redirection to create site-wide fields with values constant across the site
+
+Lynicon has a powerful means of combining content from different sources in order to build a content item. One
+use of this is to have a content item storing site-wide values, and have its fields be mapped into every
+content item on the site, e.g. for the url of the logo on the top banner. This is done in the example site by having a shared base type for all content on the
+site and using this property source redirection method to map fields on the base type to a single shared content
+item.  You can see how the base type is set up at [TilesPageBase.cs](src/LyniconANC.Release/Models/TilesPageBase.cs).
+The shared fields are held in [CommonContent.cs](src/LyniconANC.Release/Models/CommonContent.cs).
+
+### Administer site users
+
+Lynicon has an admin page at `/lynicon/users` which allows you to administer site users if you have admin
+privileges.  See [the online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42827792/The+Users+Page)
+for more on this. 
 
 ### Running the tests
 
