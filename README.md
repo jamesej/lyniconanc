@@ -37,11 +37,13 @@ content, content relationship is defined by foreign key fields as in a relationa
 with built-in facilities for traversing these relationships in both directions. Content
 navigation is done via a powerful filtering/search system, or via the site itself.
 
+Content storage is highly flexible, it can be run without a database, with a SQL or other database,
+or customised to use almost any data source.
+
 Delivered as a Nuget package or library, it will not get in the way of you using any other technology, or
 force you to use its features, and can even be added into existing projects. It is
 highly extensible with a powerful module system allowing you to remove unneeded features
-to decrease complexity and increase efficiency. It can be used with any data source which
-provides a Linq driver by writing a simple adapter class.
+to decrease complexity and increase efficiency.
 
 The content editor is shown alongside the page being edited so the effects of content
 changes are immediately visible. The rest of the backend is very straightforward as it
@@ -165,7 +167,26 @@ The shared fields are held in [CommonContent.cs](src/LyniconANC.Release/Models/C
 
 Lynicon has an admin page at `/lynicon/users` which allows you to administer site users if you have admin
 privileges.  See [the online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/42827792/The+Users+Page)
-for more on this. 
+for more on this.
+
+### Run without a database
+
+The (closed-source but free) Lynicon.Extra package on [Nuget](https://www.nuget.org/packages/LyniconANC.Extra/) provides
+the Storeless module which converts Lynicon to run with CMS data in memory, with backup persistence to a JSON file.
+See [the online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/73957380/Storeless) for how to set this
+up - it's very simple and reduces hosting costs while making Lynicon run super fast for websites up to 500 or 1000 pages.
+
+### Add an API
+
+If you want to get your content as JSON (or any other standard web format), the combination of ASP.Net Core and
+Lynicon makes this very easy and flexible. To do this for content type T:
+
+* Add a data route typed as `List<T>` [(see the Startup.cs file in the test project)](src/LyniconANC.Release/startup.cs)
+* In the controller/action this points to, ensure there's an action parameter `List<T> data`. [(see ApiController)](src/LyniconANC.Release/Controllers/ApiController.cs)
+* In the action method return `Ok(data)` (or the result of any code which processes the data)
+
+In the example you can now call /api/tiles with any standard OData filtering, paging or sorting parameters to receive
+a json array of tile content serialized to JSON.
 
 ### Running the tests
 
