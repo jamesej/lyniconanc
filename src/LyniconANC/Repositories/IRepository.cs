@@ -20,7 +20,7 @@ namespace Lynicon.Repositories
         /// <summary>
         /// The data source factory which the repository uses to get a scoped data source
         /// </summary>
-        IDataSourceFactory DataSourceFactory { get; }
+        IDataSourceFactory DataSourceFactory { get; set; }
         /// <summary>
         /// Create a new instance of a container type
         /// </summary>

@@ -48,7 +48,7 @@ namespace Lynicon.Repositories
 
         #region IRepository Members
 
-        public IDataSourceFactory DataSourceFactory { get { return null; } }
+        public IDataSourceFactory DataSourceFactory { get { return null; } set { } }
 
         public LyniconSystem System { get; set; }
 

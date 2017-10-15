@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Lynicon.DataSources
 {
+    /// <summary>
+    /// An IDataSourceFactory should not connect to any data source in its constructor.
+    /// </summary>
     public interface IDataSourceFactory
     {
         string DataSourceSpecifier { get; }

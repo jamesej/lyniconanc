@@ -23,9 +23,14 @@ namespace Lynicon.DataSources
 
         public LyniconSystem System { get; set; }
 
+        public NullDataSourceFactory(LyniconSystem sys)
+        {
+            System = sys;
+        }
+
         public IDataSource Create(bool forSummaries)
         {
-            return new NullDataSource();
+            return new NullDataSource(System);
         }
     }
 }

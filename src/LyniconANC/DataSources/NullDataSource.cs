@@ -18,6 +18,11 @@ namespace Lynicon.DataSources
 
         public LyniconSystem System { get; set; }
 
+        public NullDataSource(LyniconSystem sys)
+        {
+            System = sys;
+        }
+
         public void Create(object o)
         { }
 
@@ -26,7 +31,8 @@ namespace Lynicon.DataSources
 
         public IQueryable GetSource(Type type)
         {
-            return Array.CreateInstance(type, 0).AsQueryable();
+            var extType = System.Extender[type] ?? type;
+            return Array.CreateInstance(extType, 0).AsQueryable();
         }
 
         public void SaveChanges()
