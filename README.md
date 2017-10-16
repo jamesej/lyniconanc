@@ -63,6 +63,24 @@ url management etc.
 This is available [here](http://www.lynicon.com/lynicon-base)
 (closed source/paid for)
 
+## Table of Contents
+
+1. [Setup](#setup)
+2. [How Tos](#How-Tos)
+    1. [Log in as admin](#Log-in-as-admin)
+    2. [Create a content managed route, controller & view](#Create-a-content-managed-route-controller-view)
+    3. [Add and edit content items](#Add-and-edit-content-items)
+    4. [Use HTML snippets, images, links etc in your content class](#Use-HTML-snippets-images-links-etc-in-your-content-class)
+    5. [Use lists and subtypes in your content class](#Use-lists-and-subtypes-in-your-content-class)
+    6. [Link to other content items in your content class](#Link-to-other-content-items-in-your-content-class)
+    7. [Filter, search and report on content](#Filter-search-and-report-on-content)
+    8. [Use the content API to create a list of items dynamically](#Use-the-content-API-to-create-a-list-of-items-dynamically)
+    9. [Use property source redirection to create site-wide fields with values constant across the site](#Use-property-source-redirection-to-create-site-wide-fields-with-values-constant-across-the-site)
+    10. [Administer site users](#Administer-site-users)
+    11. [Run without a database](#Run-without-a-database)
+    12. [Add a JSON API](#Add-a-JSON-API)
+3. [Running the tests](#Running-the-tests)
+
 ## Setup
 
 Because .net core 2.0 has breaking changes, the repository contains two branches, `Core1.1` for .net core 1.1, and `master` is now .net 2.0. Make
@@ -176,7 +194,7 @@ the Storeless module which converts Lynicon to run with CMS data in memory, with
 See [the online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/73957380/Storeless) for how to set this
 up - it's very simple and reduces hosting costs while making Lynicon run super fast for websites up to 500 or 1000 pages.
 
-### Add an API
+### Add a JSON API
 
 If you want to get your content as JSON (or any other standard web format), the combination of ASP.Net Core and
 Lynicon makes this very easy and flexible. To do this for content type T:
@@ -188,7 +206,7 @@ Lynicon makes this very easy and flexible. To do this for content type T:
 In the example you can now call /api/tiles with any standard OData filtering, paging or sorting parameters to receive
 a json array of tile content serialized to JSON.
 
-### Running the tests
+## Running the tests
 
 The tests should appear in the Test Explorer as normal in Visual Studio. If they are not
 there this is likely an issue with the XUnit test framework. Sometimes such
