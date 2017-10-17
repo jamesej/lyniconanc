@@ -80,6 +80,7 @@ This is available [here](http://www.lynicon.com/lynicon-base)
     11. [Run without a database](#Run-without-a-database)
     12. [Add a JSON API](#Add-a-JSON-API)
 3. [Running the tests](#Running-the-tests)
+4. [Contributing](#Contributing)
 
 ## Setup
 
@@ -216,6 +217,10 @@ and closing and reopening Visual Studio.
 Tests can also be run as normal in .net core on the command line
 by going to the top-level installation directory
 in a command window and running `dotnet test`.
+
+## Contributing
+
+We welcome all pull requests, comments, issues etc. You can also get in touch at [info@lynicon.com](mailto:info@lynicon.com)
 
 
 
