@@ -519,25 +519,10 @@ video.thumb-vid
 {
 	float: left;
 }
-.l24-link-url INPUT
-{
-	width: 130px;
-	margin-left: 24px;
-}
-#editPanel .l24-link-content
-{
-	width: 156px;
-	display: inline-block;
-}
-.l24-link-content INPUT
-{
-	width: 95px;
-}
 
-#editPanel .l24-link-isinternal
+#editPanel .lyn-image-link
 {
-	width: 68px;
-	display: inline-block;
+    padding-left: 15px;
 }
 
 #editPanel .lyn-datetime-now

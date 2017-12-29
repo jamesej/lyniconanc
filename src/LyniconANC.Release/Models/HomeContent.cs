@@ -37,5 +37,7 @@ namespace LyniconANC.Release.Models
 
             return discounted.ToList();
         }
+
+        public ImageLink Test { get; set; }
     }
 }

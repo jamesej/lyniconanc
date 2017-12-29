@@ -105,11 +105,12 @@ namespace Lynicon.Models
                 return (MinHtml)null;
             return new MinHtml(s);
         }
-        public static implicit operator string(MinHtml t)
-        {
-            if (t == null) return (string)null;
-            return t.ToString();
-        }
+        // Removed as it breaks identification of MinHtml as an IHtmlString in Razor rendering
+        //public static implicit operator string(MinHtml t)
+        //{
+        //    if (t == null) return (string)null;
+        //    return t.ToString();
+        //}
 
         /// <summary>
         /// Constant for an empty MinHtml

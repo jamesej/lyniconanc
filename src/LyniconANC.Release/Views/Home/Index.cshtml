@@ -1,5 +1,6 @@
 ﻿@model HomeContent
 @using LyniconANC.Release.Models
+@using Lynicon.Models
 
 <div class="spacer" style="height:100px;">
 
@@ -18,4 +19,11 @@
         <p>@(summ.Discount)% off</p>
     </a>
 }
+
+<div>
+    <img src="@Model.Test.Image.Url" />
+    <a href="@Model.Test.Link.Url">
+        @Model.Test.Link.Content
+    </a>
+</div>
 

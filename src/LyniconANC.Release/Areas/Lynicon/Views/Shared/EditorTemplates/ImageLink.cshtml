@@ -3,37 +3,54 @@
 @using Lynicon.Attributes;
 @if (Model != null)
 {
-    bool showImg = (Model != null && !string.IsNullOrEmpty(Model.Url));
-    var avs = (ViewData.ModelMetadata.AdditionalValues ?? new Dictionary<string, object>()).Merge(ViewData["CollectionAdditionalValues"] as Dictionary<string, object>);
-    string getFileInfo = avs.ContainsKey(RequiredCropsAttribute.CropsKey)
-        ? (string)avs[RequiredCropsAttribute.CropsKey]
-        : null;
-    
-<div class="lyn-image">
-    <div class="lyn-image-content" style="@(showImg ? "" : "display:none")">
-        @if (!showImg)
-        {
-            <span>no image</span>
-        }
-        else
-        {
-            <div class='file-image-thumb' style="background-image:url(@Model.Url)" />
-        }
-    </div>
-    <div class="lyn-image-url" style="@(showImg ? "display:none" : "")">
-        @Html.EditorFor(m => m.Url)
-    </div>
-    <div class='lyn-image-alt' style="@(showImg ? "display:none" : "")">
-        <button class='lyn-image-load' data-get-file-info="@getFileInfo">Find File</button>
-        <span class="editor-label">Alt</span>
-        @Html.EditorFor(m => m.Alt)
-    </div>
-    <div class='lyn-link-url'>
-        <span class="editor-label">Link Url</span>
-        @Html.EditorFor(m => m.LinkUrl)
-    </div>
-</div>
+    @if (Model.Image != null)
+    {
+        bool showImg = (Model != null && !string.IsNullOrEmpty(Model.Image.Url));
+        var avs = ViewData.ModelMetadata.AdditionalValues.Merge(ViewData["CollectionAdditionalValues"] as Dictionary<string, object>);
+        string getFileInfo = avs.ContainsKey(RequiredCropsAttribute.CropsKey)
+            ? (string)avs[RequiredCropsAttribute.CropsKey]
+            : null;
+
+        <div class="lyn-image">
+            <div class="lyn-image-content" style="@(showImg ? "" : "display:none")">
+                @if (!showImg)
+                {
+                    <span>no image</span>
+                }
+                else
+                {
+                    <div class='file-image-thumb' style="background-image:url(@Model.Image.Url)"></div>
+                }
+            </div>
+            <div class="lyn-image-url" style="@(showImg ? "display:none" : "")">
+                @Html.EditorFor(m => m.Image.Url)
+            </div>
+            <div class='lyn-image-alt' style="@(showImg ? "display:none" : "")">
+                <div class='lyn-image-load' data-get-file-info="@getFileInfo">Find</div>
+                <span class="editor-label">Alt</span>
+                @Html.EditorFor(m => m.Image.Alt)
+                @Html.HiddenFor(m => m.Image.BackgroundXPc)
+                @Html.HiddenFor(m => m.Image.BackgroundYPc)
+            </div>
+        </div>
+    }
+    @Html.RegisterLocalStyles("link-local-styles", @"
+#editPanel .lyn-link .text-display, #editPanel .lyn-link .text-box { width: 70%; }
+.lyn-link-url, .lyn-link-content { margin-top: 3px; }
+.lyn-link { margin-bottom: 5px; }
+")
+    @if (Model.Link != null)
+    {
+        <div class='lyn-image-link'>
+            <div class='lyn-link-url'>
+                <span class="editor-label">Url:</span>@Html.EditorFor(l => l.Link.Url)
+            </div>
+            <div class='lyn-link-content'>
+                <span class="editor-label">Content:</span>@Html.EditorFor(l => l.Link.Content)
+            </div>
+        </div>
+    }
+    @Html.Partial("EnsureFileEditor")
+    @Html.RegisterScript("lyn_image_control", "/js/lynicon/LyniconImageEditor.js", new List<string> { "jquery" })
 }
-@Html.Partial("EnsureMediaLibrary")
-@Html.RegisterScript("lyn_image_control", "/Areas/Lynicon/Scripts/LyniconImageEditor.js", new List<string> { "jquery" })
 

@@ -7,6 +7,7 @@ using Lynicon.Extensibility;
 using Lynicon.Models;
 using LyniconANC.Test.Models;
 using Xunit;
+using Microsoft.AspNetCore.Html;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
