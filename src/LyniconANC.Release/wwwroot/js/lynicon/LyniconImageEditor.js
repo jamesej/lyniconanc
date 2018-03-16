@@ -29,7 +29,7 @@
             if (!isMedia) {
                 for (var i = 0; i < files.length; i++) {
                     var suffix = fname.upTo("|").afterLast(".").toLowerCase();
-                    if (suffix && suffix.length && "png|jpg|gif".indexOf(suffix) < 0)
+                    if (suffix && suffix.length && "png|jpg|gif|svg".indexOf(suffix) < 0)
                         return "Please only image files";
                 }
             }
