@@ -14,7 +14,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.2.0.12</Version>
+    <Version>0.2.0.14</Version>
     <RootNamespace>Lynicon</RootNamespace>
     <Authors>James Ellis-Jones</Authors>
     <Copyright>Regulus Systems Ltd</Copyright>

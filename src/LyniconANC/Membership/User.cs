@@ -8,6 +8,7 @@ using Lynicon.Extensibility;
 using Lynicon.Attributes;
 using Lynicon.Models;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 
 namespace Lynicon.Membership
 {
@@ -29,7 +30,7 @@ namespace Lynicon.Membership
         /// </summary>
         public string UserName { get; set; }
 
-        [NotMapped, ScaffoldColumn(false)]
+        [NotMapped, ScaffoldColumn(false), JsonIgnore]
         public string NormalisedUserName
         {
             get { return UserName?.ToUpper(); }
@@ -48,7 +49,7 @@ namespace Lynicon.Membership
         /// <summary>
         /// Conversion of Id to string
         /// </summary>
-        [NotMapped, ScaffoldColumn(false)]
+        [NotMapped, ScaffoldColumn(false), JsonIgnore]
         public string IdAsString
         {
             get { return Id.ToString(); }
@@ -60,7 +61,7 @@ namespace Lynicon.Membership
         /// </summary>
         public string Email { get; set; }
 
-        [NotMapped, ScaffoldColumn(false)]
+        [NotMapped, ScaffoldColumn(false), JsonIgnore]
         public string NormalisedEmail
         {
             get { return Email?.ToUpper(); }
@@ -79,7 +80,7 @@ namespace Lynicon.Membership
         [Editable(false)]
         public DateTime Modified { get; set; }
 
-        [NotMapped, Display(Name = "Set Password")]
+        [NotMapped, Display(Name = "Set Password"), JsonIgnore]
         public string PlaintextPassword
         {
             get { return ""; }
