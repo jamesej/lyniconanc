@@ -9,6 +9,7 @@ using Lynicon.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Lynicon.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Lynicon.Controllers
 {
@@ -45,7 +46,7 @@ namespace Lynicon.Controllers
                 }
                 else
                 {
-                    IUser user = SecurityManager.Current.LoginUser(login.UserName, login.Password, false);
+                    IUser user = SecurityManager.Current.LoginUser(login.UserName, login.Password, true);
                     if (user != null)
                     {
                         //membership.ChangePassword("admin", "init", "adminlocal");
@@ -97,6 +98,13 @@ namespace Lynicon.Controllers
                 return Content("OK");
             else
                 return Content("There was an error");
+        }
+
+        [Authorize(Roles = Membership.User.AdminRole), HttpPost]
+        public IActionResult EncryptPassword([FromBody] User user)
+        {
+            var pwHasher = new PasswordHasher<User>();
+            return Content(pwHasher.HashPassword(user, user.Password));
         }
     }
 }

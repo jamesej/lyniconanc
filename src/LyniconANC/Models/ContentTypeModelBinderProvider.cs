@@ -126,10 +126,11 @@ namespace Lynicon.Models
             }
 
             //Create model first(if necessary) to avoid reporting errors about properties when activation fails.
-            //if (bindingContext.Model == null)
-            //{
-            //    bindingContext.Model = CreateModel(bindingContext);
-            //}
+            if (bindingContext.Model == null)
+            {
+                //bindingContext.Model = CreateModel(bindingContext);
+                bindingContext.Model = Activator.CreateInstance(bindingContext.ModelType);
+            }
 
             foreach (var property in bindingContext.ModelMetadata.Properties)
             {

@@ -46,7 +46,7 @@ namespace Lynicon.Modules
                 "Lynicon/Users",
                 new { controller = "User", action = "List", Area = "Lynicon" },
                 new { },
-                new { listView = "UserList", top = "15" });
+                new { listView = "UserList", top = "15", rowFields = "UserName, Email, Roles" });
             builder.MapRoute("lyniconadmin",
                 "Lynicon/{controller:regex(ajax|admin|filemanager|items|login|nav|ui|upload|urlmanager|version)}/{action}",
                 new { controller = "Ajax", action = "Index", Area = "Lynicon" }

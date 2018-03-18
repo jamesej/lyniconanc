@@ -53,6 +53,9 @@ namespace TestAuth2015.Controllers
             {
                 // change from template because the email is not the username necessarily
                 var user = await _userManager.FindByEmailAsync(model.Email);
+                // allows signin with user name
+                if (user == null)
+                    user = await _userManager.FindByNameAsync(model.Email);
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);

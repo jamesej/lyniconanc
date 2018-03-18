@@ -7,6 +7,7 @@ using System.Text;
 using Lynicon.Extensibility;
 using Lynicon.Attributes;
 using Lynicon.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Lynicon.Membership
 {
@@ -28,10 +29,10 @@ namespace Lynicon.Membership
         /// </summary>
         public string UserName { get; set; }
 
-        [NotMapped]
+        [NotMapped, ScaffoldColumn(false)]
         public string NormalisedUserName
         {
-            get { return UserName.ToUpper(); }
+            get { return UserName?.ToUpper(); }
             set { }
         }
 
@@ -41,7 +42,7 @@ namespace Lynicon.Membership
         /// <summary>
         /// User's primary key id
         /// </summary>
-        [Key, Editable(false)]
+        [Key, Editable(false), AddressComponent("_0")]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -59,10 +60,10 @@ namespace Lynicon.Membership
         /// </summary>
         public string Email { get; set; }
 
-        [NotMapped]
+        [NotMapped, ScaffoldColumn(false)]
         public string NormalisedEmail
         {
-            get { return Email.ToUpper(); }
+            get { return Email?.ToUpper(); }
             set { }
         }
 
@@ -78,10 +79,21 @@ namespace Lynicon.Membership
         [Editable(false)]
         public DateTime Modified { get; set; }
 
+        [NotMapped, Display(Name = "Set Password")]
+        public string PlaintextPassword
+        {
+            get { return ""; }
+            set
+            {
+                var pwHasher = new PasswordHasher<User>();
+                Password = pwHasher.HashPassword(this, value);
+            }
+        }
+
         /// <summary>
         /// Password (as encrypted)
         /// </summary>
-        [UIHint("PasswordWithEncrypter")]
+        [ScaffoldColumn(false)]
         public string Password { get; set; }
 
         /// <summary>

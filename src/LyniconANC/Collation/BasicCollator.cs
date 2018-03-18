@@ -161,6 +161,13 @@ namespace Lynicon.Collation
             // ensure it is created in the current version
             System.Versions.SetVersion(System.Versions.CurrentVersion, newT);
 
+            var idProp = GetIdProperty(typeof(T));
+            if (idProp.PropertyType == typeof(Guid))
+                idProp.SetValue(newT, Guid.NewGuid());
+
+            if (a == null)
+                a = new Address(newT);
+
             return Collate<T>(new object[] { newT }, new Address[] { a }).Single();
         }
 

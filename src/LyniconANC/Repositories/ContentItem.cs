@@ -413,11 +413,11 @@ namespace Lynicon.Repositories
         /// <returns>The contained content item</returns>
         public object GetContent(TypeExtender extender)
         {
-            if (contentObject != null)
-                return contentObject;
-
             Type type = this.ContentType;
             Type extType = extender[type] ?? type;
+
+            if (contentObject != null)
+                return contentObject;
 
             JObject contentJObject = null;
             if (string.IsNullOrEmpty(this.Content))

@@ -85,10 +85,21 @@ namespace Lynicon.Membership
                 ConcurrencyStamp = iu.ConcurrencyStamp
             };
 
-            string[] excludeProps = new string[] { "Email", "UserName", "Id", "IdAsString", "Roles" };
+            if (!string.IsNullOrEmpty(u.Password))
+            {
+                iuOut.PasswordHash = HashPassword(iuOut, u.Password);
+            }
+
+            string[] excludeProps = new string[] { "Email", "UserName", "Id", "IdAsString", "Roles", "Password" };
             CopyPropertiesForWrite(u, iuOut, propertyInfos.Where(pip => !excludeProps.Contains(pip.Item1.Name)));
 
             return iuOut;
+        }
+
+        protected virtual string HashPassword(TUser user, string pw)
+        {
+            var pwHasher = new PasswordHasher<TUser>();
+            return pwHasher.HashPassword(user, pw);
         }
 
         protected virtual void CopyPropertiesForWrite(User outer, TUser inner, IEnumerable<Tuple<PropertyInfo, PropertyInfo>> properties)
@@ -115,7 +126,7 @@ namespace Lynicon.Membership
             var roles = Task.Run<IList<string>>(() => um.GetRolesAsync(iu)).Result;
             u.Roles = new string(roles.Where(r => r.Length == 1).Select(r => r[0]).ToArray());
 
-            string[] excludeProps = new string[] { "Email", "UserName", "Id", "IdAsString", "Roles" };
+            string[] excludeProps = new string[] { "Email", "UserName", "Id", "IdAsString", "Roles", "Password" };
             CopyPropertiesForRead(iu, u, propertyInfos.Where(pip => !excludeProps.Contains(pip.Item1.Name)));
 
             return u;

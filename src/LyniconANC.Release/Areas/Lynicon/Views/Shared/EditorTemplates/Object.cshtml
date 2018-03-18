@@ -39,7 +39,7 @@
         <div class="editor-field indent-@ind">@Html.Editor(prop.PropertyName.ExpandCamelCase())</div>
         } else {
         if (!String.IsNullOrEmpty(Html.Label(prop.PropertyName).ToString())) {
-        <div class="editor-label indent-@ind">@Html.Label(prop.PropertyName.ExpandCamelCase())</div>
+        <div class="editor-label indent-@ind">@Html.Label((prop.DisplayName ?? prop.PropertyName).ExpandCamelCase())</div>
         }
         <div class="editor-field indent-@ind">
             @Html.Editor(prop.PropertyName)
