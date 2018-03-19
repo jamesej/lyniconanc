@@ -62,7 +62,7 @@ namespace Lynicon.Modules
 
         public void Load()
         {
-            FileInfo fi = new FileInfo(hosting.WebRootPath + "\\data\\LastSchema.json");
+            FileInfo fi = new FileInfo(Path.Combine(hosting.WebRootPath, "data", "LastSchema.json"));
 
             if (fi.Exists)
             {
@@ -98,10 +98,10 @@ namespace Lynicon.Modules
                 var schema = this.CurrentSchema.Copy();
                 ContentRepository.ChangeProblems.Do(cp => schema.ApplyProblem(this.LastSchema, cp));
 
-                DirectoryInfo di = new DirectoryInfo(hosting.WebRootPath + "\\data");
+                DirectoryInfo di = new DirectoryInfo(Path.Combine(hosting.WebRootPath, "data"));
                 if (!di.Exists)
                     di.Create();
-                FileInfo fi = new FileInfo(hosting.WebRootPath + "\\data\\LastSchema.json");
+                FileInfo fi = new FileInfo(Path.Combine(hosting.WebRootPath, "data", "LastSchema.json"));
                 var sz = new JsonSerializer();
                 sz.Formatting = Formatting.Indented;
                 using (var stream = fi.OpenWrite())

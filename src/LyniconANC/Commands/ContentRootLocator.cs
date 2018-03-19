@@ -16,8 +16,9 @@ namespace Lynicon.Commands
                 return null;
 
             string curr = Directory.GetCurrentDirectory();
-            if (curr.Contains("\\bin\\"))
-                return curr.UpTo("\\bin\\");
+            string pathSegment = $"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}";
+            if (curr.Contains(pathSegment))
+                return curr.UpTo(pathSegment);
             else
                 return curr;
         }

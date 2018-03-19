@@ -23,15 +23,15 @@ namespace Lynicon.Commands
         }
         public override bool Execute(params string[] args)
         {
-            var fileModel = new FileModel(this.GetProjectBase() + "\\Startup.cs");
+            var fileModel = new FileModel(Path.Combine(this.GetProjectBase(), "Startup.cs"));
             UpdateStartup(fileModel);
             fileModel.Write();
 
-            fileModel = new FileModel(this.GetProjectBase() + "\\appsettings.json", "///*", true);
+            fileModel = new FileModel(Path.Combine(this.GetProjectBase(), "appsettings.json"), "///*", true);
             UpdateAppSettings(fileModel);
             fileModel.Write();
 
-            fileModel = new FileModel(this.GetProjectBase() + "\\Program.cs");
+            fileModel = new FileModel(Path.Combine(this.GetProjectBase(), "Program.cs"));
             UpdateProgram(fileModel);
             fileModel.Write();
 

@@ -139,7 +139,7 @@ namespace Lynicon.Extensibility
             if (hosting.WebRootPath == null)
                 return null;
 
-            FileInfo fi = new FileInfo(hosting.WebRootPath + "\\" + appDataPath);
+            FileInfo fi = new FileInfo(Path.Combine(hosting.WebRootPath, appDataPath));
             T cache = null;
             if (fi.Exists)
             {
@@ -182,10 +182,10 @@ namespace Lynicon.Extensibility
                 if (hosting.WebRootPath == null)
                     return;
 
-                DirectoryInfo di = new DirectoryInfo(hosting.WebRootPath + "\\" + appDataPath.UpToLast("\\"));
+                DirectoryInfo di = new DirectoryInfo(Path.Combine(hosting.WebRootPath, appDataPath.UpToLast(Path.DirectorySeparatorChar.ToString())));
                 if (!di.Exists)
                     di.Create();
-                FileInfo fi = new FileInfo(hosting.WebRootPath + "\\" + appDataPath);
+                FileInfo fi = new FileInfo(Path.Combine(hosting.WebRootPath, appDataPath));
                 switch (SerializationMode)
                 {
                     case CacheSerialization.Json:

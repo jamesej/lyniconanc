@@ -106,9 +106,10 @@ namespace Lynicon.Controllers
                 return new HttpStatusCodeResult(403, "Cannot access this directory");
             try
             {
+                string sep = Path.DirectorySeparatorChar.ToString();
                 string filePath = hosting.WebRootFileProvider.GetFileInfo(path).PhysicalPath;
-                if (filePath.EndsWith("\\")) filePath = filePath.Substring(0, filePath.Length - 1);
-                string newFilePath = filePath.UpToLast("\\") + "\\" + newName;
+                if (filePath.EndsWith(sep)) filePath = filePath.Substring(0, filePath.Length - 1);
+                string newFilePath = Path.Combine(filePath.UpToLast(sep), newName);
                 System.IO.Directory.Move(filePath, newFilePath);
             }
             catch
@@ -132,11 +133,12 @@ namespace Lynicon.Controllers
                 return new HttpStatusCodeResult(403, "Cannot access this directory");
             try
             {
+                string sep = Path.DirectorySeparatorChar.ToString();
                 string filePath = hosting.WebRootFileProvider.GetFileInfo(path).PhysicalPath;
-                if (filePath.EndsWith("\\")) filePath = filePath.Substring(0, filePath.Length - 1);
+                if (filePath.EndsWith(sep)) filePath = filePath.Substring(0, filePath.Length - 1);
                 string newDirPath = hosting.WebRootFileProvider.GetFileInfo(newDir).PhysicalPath;
-                if (newDirPath.EndsWith("\\")) newDirPath = newDirPath.Substring(0, newDirPath.Length - 1);
-                string newFilePath = newDirPath + "\\" + filePath.LastAfter("\\");
+                if (newDirPath.EndsWith(sep)) newDirPath = newDirPath.Substring(0, newDirPath.Length - 1);
+                string newFilePath = Path.Combine(newDirPath, filePath.LastAfter(sep));
                 System.IO.Directory.Move(filePath, newFilePath);
             }
             catch
@@ -159,7 +161,7 @@ namespace Lynicon.Controllers
             try
             {
                 string filePath = hosting.WebRootFileProvider.GetFileInfo(path).PhysicalPath;
-                if (filePath.EndsWith("\\"))
+                if (filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 {
                     filePath = filePath.Substring(0, filePath.Length - 1);
                     DirectoryInfo d = new DirectoryInfo(filePath);
@@ -191,7 +193,7 @@ namespace Lynicon.Controllers
             try
             {
                 string filePath = hosting.WebRootFileProvider.GetFileInfo(path).PhysicalPath;
-                if (filePath.EndsWith("\\"))
+                if (filePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
                 {
                     filePath = filePath.Substring(0, filePath.Length - 1);
                     DirectoryInfo d = new DirectoryInfo(filePath);

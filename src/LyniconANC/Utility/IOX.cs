@@ -21,7 +21,7 @@ namespace Lynicon.Utility
             var partialPath = basePath;
             foreach (string pathEl in pathEls.Take(pathEls.Count - 1))
             {
-                var dirPath = partialPath + "\\" + pathEl;
+                var dirPath = Path.Combine(partialPath, pathEl);
                 if (!Directory.Exists(dirPath))
                     Directory.CreateDirectory(dirPath);
                 partialPath = dirPath;

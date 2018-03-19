@@ -48,7 +48,7 @@ namespace Lynicon.Commands
 
                     using (var strm = entry.Open())
                     {
-                        filePath = partialPath + "\\" + entry.Name;
+                        filePath = Path.Combine(partialPath, entry.Name);
                         bool fileExists = File.Exists(filePath);
 
                         if (fileExists && overwrite)

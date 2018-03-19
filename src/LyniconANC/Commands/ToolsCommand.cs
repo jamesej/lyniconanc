@@ -1,6 +1,7 @@
 ﻿using Lynicon.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -17,7 +18,7 @@ namespace Lynicon.Commands
         public string GetProjectBase()
         {
             var location = Assembly.GetEntryAssembly().Location;
-            return location.UpTo("\\bin");
+            return location.UpTo(Path.DirectorySeparatorChar.ToString() + "bin");
         }
     }
 }
