@@ -11,6 +11,7 @@ using Lynicon.Models;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Encodings.Web;
 
 namespace Lynicon.Utility
 {
@@ -81,6 +82,20 @@ namespace Lynicon.Utility
             return "";
         }
 
+        /// <summary>
+        /// Register an HTML block to be included in the page once
+        /// </summary>
+        /// <param name="html">Html helper</param>
+        /// <param name="id">An id for the HTML block</param>
+        /// <param name="htmlBlock">The HTML block as an MvcHtmlString</param>
+        /// <returns>Empty string</returns>
+        public static string RegisterHtmlBlock(this IHtmlHelper html, string id, IHtmlContent htmlBlock)
+        {
+            var writer = new System.IO.StringWriter();
+            htmlBlock.WriteTo(writer, HtmlEncoder.Default);
+            RegisterInclude(() => IncludesManager.Instance.Htmls, id, writer.ToString(), new List<string>());
+            return "";
+        }
         /// <summary>
         /// Register an HTML block to be included in the page once
         /// </summary>

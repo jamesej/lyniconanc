@@ -3,10 +3,10 @@
 
 @{
     string modelValue = ViewData.TemplateInfo.FormattedModelValue.ToString();
-    if (ViewData.TemplateInfo.FormattedModelValue == ViewData.ModelMetadata.Model)
+    if (ViewData.TemplateInfo.FormattedModelValue == (object)Model)
     {
         modelValue = String.Format(System.Globalization.CultureInfo.CurrentCulture,
-                                "{0:0.00}", ViewData.ModelMetadata.Model);
+                                "{0:0.00}", Model);
     }
     decimal increment = (ViewData["Increment"] as decimal?) ?? 1.0m;
     int precision = (ViewData["Increment"] as int?) ?? 0;
