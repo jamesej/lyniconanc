@@ -1,4 +1,6 @@
 # Lynicon CMS/DMS
+[![nuget](https://img.shields.io/nuget/v/LyniconANC.svg)](https://www.nuget.org/packages/LyniconANC/)
+
 *For ASP.Net Core (.Net Standard 2.0, .Net 4.6.1 and .Net Standard 1.6, .Net 4.6)*
 
 ![Lynicon CMS](http://www.lynicon.com/images/lynicon/twitter-logo.png)
@@ -31,8 +33,8 @@ public IActionResult Index(<i>ModelType data</i>)
 
 In tune with the .Net Core philosophy, Lynicon is a composable and
 unopinionated CMS which is lightweight and low impact yet full featured. It supports
-fully structured content defined as C# classes which can have properties which are subtypes
-or lists. Generally it maps one content item to a page. It has no assumed tree structure for
+fully structured content (i.e. JSON structures) defined as C# classes which can have properties which are subtypes
+or lists. Generally it maps one content item to a page, but it is trivial to set up as headless. It has no assumed tree structure for
 content, content relationship is defined by foreign key fields as in a relational database,
 with built-in facilities for traversing these relationships in both directions. Content
 navigation is done via a powerful filtering/search system, or via the site itself.
@@ -50,7 +52,7 @@ changes are immediately visible. The rest of the backend is very straightforward
 does not attempt to provide the generally unneeded facilities to change content structure
 or front-end layout, this is done in code.
 
-This CMS project provides the essential CMS functionality for the Lynicon in
+This CMS project provides the essential CMS functionality for Lynicon in
 ASP.Net Core, perfectly adequate for a smaller site or application. 
 There is an MVC 5 version [here](https://github.com/jamesej/lynicon). 
 The project site is [here](http://www.lynicon.com), and this project builds a
