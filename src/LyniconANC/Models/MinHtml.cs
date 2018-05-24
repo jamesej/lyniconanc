@@ -10,13 +10,14 @@ using Lynicon.Utility;
 using Microsoft.AspNetCore.Html;
 using System.Runtime.Serialization;
 using System.Reflection;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Models
 {
     /// <summary>
     /// A converter that serializes a MinHtml to/from its html as JSON
     /// </summary>
-    public class HtmlJsonConverter<THtml> : JsonConverter
+    public class HtmlJsonConverter<THtml> : JsonConverter, IJsonConverterSubstitutesType
         where THtml : HtmlString
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -43,6 +44,8 @@ namespace Lynicon.Models
                 return true;
             }
         }
+
+        public Type SubstituteType => typeof(string);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -169,7 +172,7 @@ namespace Lynicon.Models
         /// Create a MinHtmlNoLinks from an HTML string (which is cleaned of illegal tags)
         /// </summary>
         /// <param name="anyHtml">HTML string</param>
-        public MinHtmlNoLinks(string anyHtml) : base(anyHtml)
+        public MinHtmlNoLinks(string anyHtml) : base(HtmlX.MinimalHtml(anyHtml, false), true)
         {
         }
         /// <summary>
@@ -177,7 +180,7 @@ namespace Lynicon.Models
         /// </summary>
         /// <param name="anyHtml">HTML string</param>
         /// <param name="isClean">If true, don't clean</param>
-        public MinHtmlNoLinks(string anyHtml, bool isClean) : base(anyHtml, isClean)
+        public MinHtmlNoLinks(string anyHtml, bool isClean) : base(isClean ? anyHtml : HtmlX.MinimalHtml(anyHtml, false), true)
         {
         }
     }
@@ -194,7 +197,7 @@ namespace Lynicon.Models
         /// Create a MedHtml from an HTML string (which is cleaned of illegal tags)
         /// </summary>
         /// <param name="anyHtml">HTML string</param>
-        public MedHtml(string anyHtml) : base(anyHtml)
+        public MedHtml(string anyHtml) : base(HtmlX.MediumHtml(anyHtml), true)
         {
         }
         /// <summary>
@@ -202,7 +205,7 @@ namespace Lynicon.Models
         /// </summary>
         /// <param name="anyHtml">HTML string</param>
         /// <param name="isClean">If true, don't clean</param>
-        public MedHtml(string anyHtml, bool isClean) : base(anyHtml, isClean)
+        public MedHtml(string anyHtml, bool isClean) : base(isClean ? anyHtml : HtmlX.MediumHtml(anyHtml), true)
         {
         }
 
@@ -223,7 +226,7 @@ namespace Lynicon.Models
         /// Create a MaxHtml from an HTML string (which is cleaned of illegal tags)
         /// </summary>
         /// <param name="anyHtml">HTML string</param>
-        public MaxHtml(string anyHtml) : base(anyHtml, true)
+        public MaxHtml(string anyHtml) : base(HtmlX.MaxHtml(anyHtml), true)
         {
         }
         /// <summary>
@@ -231,7 +234,7 @@ namespace Lynicon.Models
         /// </summary>
         /// <param name="anyHtml">HTML string</param>
         /// <param name="isClean">If true, don't clean</param>
-        public MaxHtml(string anyHtml, bool isClean) : base(anyHtml, true)
+        public MaxHtml(string anyHtml, bool isClean) : base(isClean ? anyHtml : HtmlX.MaxHtml(anyHtml), true)
         {
         }
 

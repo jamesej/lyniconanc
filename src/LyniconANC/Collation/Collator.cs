@@ -144,7 +144,8 @@ namespace Lynicon.Collation
         }
 
         /// <summary>
-        /// Build composite types which have been registered
+        /// Create extension types as specified by their collators for all
+        /// content types registered with that collator
         /// </summary>
         public void BuildRepository()
         {

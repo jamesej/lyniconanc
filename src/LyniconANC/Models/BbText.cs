@@ -8,13 +8,14 @@ using System.ComponentModel;
 using System.Globalization;
 using Microsoft.AspNetCore.Html;
 using System.Reflection;
+using Lynicon.Extensibility;
 
 namespace Lynicon.Models
 {
     /// <summary>
     /// A converter that simply serializes a BbText as its text in JSON
     /// </summary>
-    public class BbTextJsonConverter : JsonConverter
+    public class BbTextJsonConverter : JsonConverter, IJsonConverterSubstitutesType
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -40,6 +41,8 @@ namespace Lynicon.Models
                 return true;
             }
         }
+
+        public Type SubstituteType => typeof(string);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {

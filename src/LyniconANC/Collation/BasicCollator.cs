@@ -161,7 +161,7 @@ namespace Lynicon.Collation
             // ensure it is created in the current version
             System.Versions.SetVersion(System.Versions.CurrentVersion, newT);
 
-            var idProp = GetIdProperty(typeof(T));
+            var idProp = GetIdProperty(newT.GetType());
             if (idProp.PropertyType == typeof(Guid))
                 idProp.SetValue(newT, Guid.NewGuid());
 

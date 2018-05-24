@@ -75,6 +75,11 @@ namespace LyniconANC.Test
             Assert.Equal("p", a3["_0"]);
             Assert.Equal("qr", a3["_1"]);
             Assert.Equal(2, a3.Count);
+
+            var a4 = new Address(typeof(TestData), "abc&def");
+            Assert.Equal("abc", a4["_0"]);
+            Assert.Equal("def", a4["_1"]);
+            Assert.Equal(2, a4.Count);
         }
 
         [Fact]

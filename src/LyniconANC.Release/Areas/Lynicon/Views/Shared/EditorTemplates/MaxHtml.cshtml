@@ -471,6 +471,7 @@
 $(document).ready(function () {
     $('#editPanel form').submit(function () {
         $('#editPanel .lyn-jquery-te').each(function () {
+            var fixSpans = !$(this).hasClass('te-max');
             if (!$(this).val) return;
             var parts = $(this).val().split('<p>');
             if (parts[0].trim().length && parts[0].trim().substr(0,1) != '<')
@@ -484,7 +485,7 @@ $(document).ready(function () {
                 }
             }
             var paraFixed = parts.join('<p>');
-            var spanFixed = paraFixed.replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '');
+            var spanFixed = fixSpans ? paraFixed.replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '') : paraFixed;
             $(this).val(spanFixed);
         });
     });

@@ -38,6 +38,10 @@ namespace Lynicon.Collation
         /// <inheritdoc/>
         public override Type AssociatedContainerType { get { return typeof(ContentItem); } }
 
+        /// <summary>
+        /// Ensure the container type ContentItem can be extended and extend with ICoreMetadata all types registered for use with ContentCollator
+        /// </summary>
+        /// <param name="types">Content types registered for use with ContentCollator</param>
         public override void BuildForTypes(IEnumerable<Type> types)
         {
             System.Extender.RegisterForExtension(typeof(ContentItem));

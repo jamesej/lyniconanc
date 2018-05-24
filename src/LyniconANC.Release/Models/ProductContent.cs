@@ -43,7 +43,7 @@ namespace LyniconANC.Release.Models
         [Summary]
         public string Caption { get; set; }
 
-        public MinHtml Description { get; set; }
+        public MaxHtml Description { get; set; }
 
         public ProductContent()
         {

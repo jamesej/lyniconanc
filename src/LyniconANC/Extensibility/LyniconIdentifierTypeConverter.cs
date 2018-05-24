@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace Lynicon.Extensibility
 {
-    public class LyniconIdentifierTypeConverter : JsonConverter
+    public class LyniconIdentifierTypeConverter : JsonConverter, IJsonConverterSubstitutesType 
     {
+        public Type SubstituteType => typeof(string);
+
         public override bool CanConvert(Type objectType)
         {
             return typeof(ItemId).IsAssignableFrom(objectType)

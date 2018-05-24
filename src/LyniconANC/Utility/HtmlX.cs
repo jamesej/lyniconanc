@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using HtmlAgilityPack;
@@ -23,6 +24,10 @@ namespace Lynicon.Utility
                 html.Append(ex.InnerException.ToHtml());
             return html.ToString();
         }
+
+        public static List<string> MinimalTags = new List<string> { "b", "i", "strong", "em", "p", "sub", "sup", "br", "div", "h1", "h2", "h3", "h4", "h5" };
+        public static List<string> MediumTags = new List<string> { "ul", "ol", "li", "strike" };
+        public static List<string> MaxTags = new List<string> { "pre", "span", "blockquote", "hr" };
         /// <summary>
         /// Cleans up an HTML string and limits HTML to whitelist
         /// </summary>
@@ -30,13 +35,28 @@ namespace Lynicon.Utility
         /// <returns></returns>
         public static string MinimalHtml(string html, bool allowLinks)
         {
-            var acceptedTags = new List<string> { "b", "i", "strong", "em", "p", "sub", "sup", "br", "div", "h1", "h2", "h3", "h4", "h5" };
+            var acceptedTags = MinimalTags;
             if (allowLinks)
                 acceptedTags.Add("a");
             return TagProcess(html, acceptedTags);
         }
 
-        /// <summary>
+        public static string MediumHtml(string html)
+        {
+            var acceptedTags = MinimalTags;
+            acceptedTags.AddRange(MediumTags);
+            return TagProcess(html, acceptedTags, new List<string> { "text-align" });
+        }
+
+        public static string MaxHtml(string html)
+        {
+            var acceptedTags = MinimalTags;
+            acceptedTags.AddRange(MediumTags);
+            acceptedTags.AddRange(MaxTags);
+            return TagProcess(html, acceptedTags, new List<string> { "text-align", "font-size", "margin", "border", "padding", "color" }, false);
+        }
+
+        /// <summary>, "
         /// Turn string with new paragraph indicated by \n into HTML paragraphs
         /// </summary>
         /// <param name="plain">string with \n paragraphs</param>
@@ -54,8 +74,11 @@ namespace Lynicon.Utility
         /// </summary>
         /// <param name="html">The HTML</param>
         /// <returns>The cleaned HTML</returns>
-        public static string TagProcess(string html, List<string> acceptedTags)
+        public static string TagProcess(string html, List<string> acceptedTags, List<string> acceptedStyles = null, bool convertHToP = true)
         {
+            if (string.IsNullOrEmpty(html))
+                return html; 
+
             var doc = new HtmlDocument();
 
             doc.OptionWriteEmptyNodes = true; // self-close tags
@@ -75,14 +98,14 @@ namespace Lynicon.Utility
                         n.Name = "em";
                     else if (n.Name == "u")
                         n.Name = "em";
-                    else if (new List<string> { "div", "h1", "h2", "h3", "h4", "h5" }.Contains(n.Name))
+                    else if (convertHToP && new List<string> { "div", "h1", "h2", "h3", "h4", "h5" }.Contains(n.Name))
                         n.Name = "p";
                     else if (n.Name == "p")
                     {
                         if (string.IsNullOrWhiteSpace(n.InnerText.Replace("&nbsp;", "")))
                             n.Remove();
                     }
-                    Clean(n);
+                    Clean(n, acceptedStyles);
                 }
             });
             var brFix = new Action<HtmlNode>(n =>
@@ -189,17 +212,23 @@ namespace Lynicon.Utility
                     {
                         parentNode.InsertBefore(para, topNode);
                         para = doc.CreateElement("p");
+                        if (topNode.Name == "p" && topNode.Attributes.Contains("style"))
+                        {
+                            para.Attributes.Add(topNode.Attributes["style"]);
+                        }
                         if (removeAfterInsertPara)
                             topNode.Remove();
                     }
 
                     if (topNode.Name == "p" && node == null) // recurse into top level p to see if it has br's to split it
                     {
-                        PutTextInParas(doc, topNode);
+                        PutTextInParas(doc, topNode); // recurse on CONTENTS of p, we now have an outer p to discard with nested inner p or p's
                         HtmlNode childNode = topNode.FirstChild;
                         while (childNode != null)
                         {
                             HtmlNode nextChildNode = childNode.NextSibling;
+                            if (childNode.Name == "p" && topNode.Attributes.Contains("style")) // propagate original p style to all generated p's
+                                childNode.Attributes.Add(topNode.Attributes["style"]);
                             childNode.Remove();
                             parentNode.InsertBefore(childNode, topNode);
                             childNode = nextChildNode;
@@ -241,8 +270,10 @@ namespace Lynicon.Utility
         /// hrefs starting '~'
         /// </summary>
         /// <param name="node">The HtmlNode to clean</param>
-        public static void Clean(HtmlNode node)
+        public static void Clean(HtmlNode node, List<string> acceptedStyles = null)
         {
+            acceptedStyles = acceptedStyles ?? new List<string>();
+
             // remove CSS Expressions and embedded script links
             if (node.Name == "style")
             {
@@ -269,14 +300,14 @@ namespace Lynicon.Utility
 
                     // remove script links
                     else if (
-                        //(attr == "href" || attr== "src" || attr == "dynsrc" || attr == "lowsrc") &&
+                             //(attr == "href" || attr== "src" || attr == "dynsrc" || attr == "lowsrc") &&
                              val != null &&
                              val.Contains("javascript:"))
                         node.Attributes.Remove(currentAttribute);
-
+                    else if (attr == "style" && val != null)
+                        node.Attributes[currentAttribute.Name].Value = CleanStyles(currentAttribute.Value, acceptedStyles);
                     // Remove CSS Styles and classes
-                    else if ((attr == "style" || attr == "class") &&
-                             val != null)
+                    else if (attr == "class" && val != null)
                         node.Attributes.Remove(currentAttribute);
 
                     // Fix hrefs
@@ -284,6 +315,14 @@ namespace Lynicon.Utility
                         currentAttribute.Value = currentAttribute.Value.Substring(1);
                 }
             }
+        }
+
+        public static string CleanStyles(string styles, List<string> acceptedStyles)
+        {
+            return styles.Split(';')
+                .Select(s => s.Trim())
+                .Where(s => s != "" && acceptedStyles.Contains(s.UpTo(":").Trim()))
+                .Join(";");
         }
 
         /// <summary>

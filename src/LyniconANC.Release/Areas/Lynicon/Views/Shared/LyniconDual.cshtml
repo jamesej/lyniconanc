@@ -23,6 +23,12 @@
                 var href = $(this).attr('href');
                 if (href && (href.split('://').length == 1 || href.split('://')[1].split('/')[0] == location.href.split('://')[1].split('/')[0]))
                     $(this).attr('target', '_top');
+                if (href.trim().charAt(0) == '#' && location.search.length > 1) {
+                    var query = location.search.substr(1).split('&')
+                        .filter(function (v) { return v.charAt(0) != '$'; })
+                        .join('&');
+                    $(this).attr('href', '?' + query + href);
+                }
             });
         });
     </script>

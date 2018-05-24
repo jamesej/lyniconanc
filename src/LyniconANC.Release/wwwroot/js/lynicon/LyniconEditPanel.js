@@ -274,7 +274,7 @@ function notifyChanged() {
                     alert('Your login seems to have expired, try logging in again in another window, then click SAVE here again');
                 }
             }).fail(function () {
-                alert('There is a problem with your internet connection, try and fix this then click SAVE again');
+                alert('Your login has timed out or there is a problem with your internet connection, try and fix this (e.g. log back in in another window) then click SAVE again');
             });
         }).delegate('.add-button', 'click', function () {
             addItem($(this));
