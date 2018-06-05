@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lynicon.Editors;
 
 namespace Lynicon.Collation
 {
@@ -25,7 +26,7 @@ namespace Lynicon.Collation
         /// <param name="coll">the collator</param>
         /// <param name="repo">the repository</param>
         /// <param name="redir">the editor redirect</param>
-        void SetupType(Type t, ICollator coll, IRepository repo, Func<IRouter, RouteContext, object, IRouter> redir);
+        void SetupType(Type t, ICollator coll, IRepository repo, DiversionStrategy redir);
     }
 
     public static class ITypeSystemRegistrarX
@@ -37,7 +38,7 @@ namespace Lynicon.Collation
         /// <param name="coll">the collator</param>
         /// <param name="repo">the repository</param>
         /// <param name="redir">the editor redirect</param>
-        public static void SetupType<T>(this ITypeSystemRegistrar regr, ICollator coll, IRepository repo, Func<IRouter, RouteContext, object, IRouter> redir)
+        public static void SetupType<T>(this ITypeSystemRegistrar regr, ICollator coll, IRepository repo, DiversionStrategy redir)
         {
             regr.SetupType(typeof(T), coll, repo, redir);
         }

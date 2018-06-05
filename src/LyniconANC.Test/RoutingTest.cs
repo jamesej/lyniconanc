@@ -3,7 +3,9 @@ using Lynicon.Map;
 using Lynicon.Routing;
 using Lynicon.Utility;
 using LyniconANC.Test.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +77,45 @@ namespace LyniconANC.Test
             rc = new RouteContext(new MockHttpContext("http://www.test.com/header2/dd"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             Assert.Equal(0, rc.RouteData.Routers.Count);
+        }
+
+        [Fact]
+        public void ApiRouting()
+        {
+            var hc = Collator.Instance.GetNew<HeaderContent>(new Address(typeof(HeaderContent), "api-item"));
+            hc.Title = "Api";
+            Collator.Instance.Set(hc);
+            var ctx = new MockHttpContext("http://www.test.com/header/api-item");
+            var headers = new HeaderDictionary();
+            headers.Add("Accept", new StringValues("application/json"));
+            ((MockHttpRequest)ctx.Request).SetHeaders(headers);
+            var rc = new RouteContext(ctx);
+            ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
+            Route r0 = rc.RouteData.Routers[0] as Route;
+            Assert.NotNull(rc.Handler);
+            Assert.Equal("header/{_0}", r0.RouteTemplate);
+            Assert.Equal("api-item", rc.RouteData.Values["_0"]);
+            Assert.Equal(typeof(HeaderContent), rc.RouteData.Values["data"].GetType().UnextendedType());
+            Assert.Equal("Api", rc.RouteData.Values["controller"]);
+
+            ctx.Request.Method = "POST";
+            rc = new RouteContext(ctx);
+            ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
+            Assert.Equal("Api", rc.RouteData.Values["controller"]);
+            Assert.Equal("Unauthorized", rc.RouteData.Values["action"]);
+
+            ctx = new MockHttpContext("http://www.test.com/header-write/api-item");
+            ctx.Request.Method = "POST";
+            rc = new RouteContext(ctx);
+            ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
+            Assert.Equal("DualFrameEditor", rc.RouteData.Values["controller"]);
+            Assert.Equal("Index", rc.RouteData.Values["action"]);
+
+            ((MockHttpRequest)ctx.Request).SetHeaders(headers);
+            rc = new RouteContext(ctx);
+            ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
+            Assert.Equal("Api", rc.RouteData.Values["controller"]);
+            Assert.Equal("Index", rc.RouteData.Values["action"]);
         }
     }
 }

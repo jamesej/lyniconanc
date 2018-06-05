@@ -26,17 +26,15 @@ namespace Lynicon.Routing
     {
         IRouter target;
         public bool LazyData { get; set; }
-        public Func<IRouter, RouteContext, object, IRouter> DivertOverride { get; set; }
+        ContentPermission writePermission;
+        public DiversionStrategy DivertOverride { get; set; }
 
-        public DataFetchingRouter(IRouter target)
+        public DataFetchingRouter(IRouter target, bool lazyData = false, ContentPermission writePermission = null, DiversionStrategy divertOverride = null)
         {
             this.target = target;
-            this.DivertOverride = null;
-        }
-        public DataFetchingRouter(IRouter target, bool lazyData, Func<IRouter, RouteContext, object, IRouter> divertOverride) : this(target)
-        {
             this.LazyData = lazyData;
             this.DivertOverride = divertOverride;
+            this.writePermission = writePermission;
         }
 
         public override VirtualPathData GetVirtualPath(VirtualPathContext context)
@@ -102,8 +100,8 @@ namespace Lynicon.Routing
                 return;
             }
 
-            var divert = this.DivertOverride ?? DataDiverter.Instance.Registered<T>();
-            var divertRouter = divert(target, context, data);
+            var divertStrategy = this.DivertOverride ?? DataDiverter.Instance.Registered<T>();
+            (var divertRouter, bool dropThrough) = divertStrategy.GetDiversion(target, context, data, writePermission);
 
             if (data == null)
             {
@@ -114,7 +112,7 @@ namespace Lynicon.Routing
                     data = Collator.Instance.GetNew<T>(context.RouteData);
                     context.RouteData.DataTokens.Add("LynNewItem", true);
                 }
-                else
+                else if (divertRouter == null) // no data and no diversion: drop through
                     return;
             }
 
@@ -122,6 +120,8 @@ namespace Lynicon.Routing
 
             if (divertRouter != null)
                 await divertRouter.RouteAsync(context);
+            else if (dropThrough)
+                return;
             else
                 await target.RouteAsync(context);
         }

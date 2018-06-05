@@ -286,6 +286,16 @@ namespace Lynicon.Commands
                 return false;
         }
 
+        public bool AppendText(string text)
+        {
+            if (LineNum < 0 || LineNum >= lines.Count)
+                return false;
+
+            lines[LineNum] += text;
+            searchLines[LineNum] += text;
+            return true;
+        }
+
         public List<string> GetLines()
         {
             return lines.ToList();

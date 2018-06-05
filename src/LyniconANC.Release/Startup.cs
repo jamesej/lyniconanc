@@ -82,7 +82,6 @@ app.ConstructLynicon();
                 routes.MapDataRoute<EquipmentContent>("equipment", "equipment/{_0}", new { controller = "Equipment", action = "Equipment" });
                 routes.MapDataRoute<MaterialsLandingContent>("material-landing", "materials", new { controller = "Tile", action = "MaterialsLanding" });
                 routes.MapDataRoute<TileMaterialContent>("materials", "materials/{_0}", new { controller = "Tile", action = "TileMaterial" });
-                routes.MapDataRoute<List<TileContent>>("tiles-api", "api/tiles", new { controller = "Api", action = "Tiles" });
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

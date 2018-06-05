@@ -295,7 +295,7 @@ namespace Lynicon.Commands
             if (found)
             {
                 fileModel.Jump(-1);
-                fileModel.ReplaceText("}", "},");
+                fileModel.AppendText(",");
                 fileModel.InsertUniqueLineWithIndent("\"Lynicon\": {", backIndent: 2);
                 fileModel.InsertUniqueLineWithIndent("  \"Core\": {");
                 fileModel.InsertUniqueLineWithIndent("  \"FileManagerRoot\": \"/Uploads/\",");
@@ -349,6 +349,7 @@ namespace Lynicon.Commands
                 found = fileModel.FindLineContains(".UseStartup");
                 if (found)
                 {
+                    fileModel.Jump(-1);
                     fileModel.InsertUniqueLineWithIndent(".UseContentRoot(ContentRootLocator.GetContentRoot(args) ?? Directory.GetCurrentDirectory())");
                 }
 

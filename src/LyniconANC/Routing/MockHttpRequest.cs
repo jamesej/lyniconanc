@@ -52,7 +52,7 @@ namespace Lynicon.Routing
             }
         }
 
-        protected IHeaderDictionary headers;
+        protected IHeaderDictionary headers = new HeaderDictionary();
         public override IHeaderDictionary Headers { get { return headers; } }
 
         public override HostString Host { get; set; }
@@ -117,6 +117,11 @@ namespace Lynicon.Routing
         public void SetHttpContext(HttpContext httpContext)
         {
             this.httpContext = httpContext;
+        }
+
+        public void SetHeaders(HeaderDictionary headers)
+        {
+            this.headers = headers;
         }
     }
 }

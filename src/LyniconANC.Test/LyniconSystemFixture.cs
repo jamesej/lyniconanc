@@ -69,6 +69,7 @@ namespace LyniconANC.Test
             testingRoutes.AddTestDataRoute<ChefContent>("chef", "header/{_0}", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<HeaderContent2>("hc2", "header2", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<RefContent>("ref", "ref/{_0}/{_1}", new { controller = "mock", action = "mock" });
+            testingRoutes.AddTestDataRoute<HeaderContent>("header-write", "header-write/{_0}", new { controller = "mock", action = "mock" }, new ContentPermission((roles, data) => true));
             ContentMap.Instance.RouteCollection = testingRoutes;
 
             VersionManager.Instance.RegisterVersion(new PublishingVersioner(LyniconSystem, t => t == typeof(HeaderContent)));

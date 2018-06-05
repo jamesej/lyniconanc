@@ -1,4 +1,5 @@
 ﻿using Lynicon.AspNetCore.Identity;
+using Lynicon.Editors;
 using Lynicon.Membership;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -61,6 +62,17 @@ namespace Lynicon.Services
             services.AddScoped<IRoleStore<IdentityRole>, LyniconRoleStore>();
 
             services.AddSingleton<ISecurityManager, LyniconIdentitySecurityManager>();
+            return this;
+        }
+
+        /// <summary>
+        /// Replace the DataDiverter singleton with an instance of a class inheriting from it
+        /// </summary>
+        /// <param name="diverter">Replacement data diverter</param>
+        /// <returns>Modified builder for a Lynicon system</returns>
+        public LyniconSystemBuilder SetDiverter(DataDiverter diverter)
+        {
+            DataDiverter.Instance = diverter;
             return this;
         }
     }

@@ -157,25 +157,25 @@ namespace Lynicon.Map
 
             // Action & controller
 
-            if (!(keyOutputs.ContainsKey("controller") && keyOutputs.ContainsKey("action")))
-                throw new Exception("Route " + route.RouteTemplate + " fails to define controller and action");
-
-            if (keyOutputs["controller"].StartsWith("?"))
-                throw new Exception("Route " + route.RouteTemplate + " is a data route which lacks but must have a specified controller");
-
-            if (!ContentTypeHierarchy.ControllerActions.ContainsKey(keyOutputs["controller"]))
-                return new List<string>();  // Controller doesn't exist therefore no urls
-
-            // copy list so we can change 'actions'
-            var actions = ContentTypeHierarchy.ControllerActions[keyOutputs["controller"]].ToList();
-            if (keyOutputs["action"].StartsWith("?"))
+            if (keyOutputs.ContainsKey("controller") && keyOutputs.ContainsKey("action"))
             {
-                if (keyOutputs["action"].Length > 1 && actions.Contains(keyOutputs["action"].Substring(1).ToLower()))
-                    actions.Add("??");
-                UrlX.PermuteReplace(urls, "{action}", actions);
+                if (keyOutputs["controller"].StartsWith("?"))
+                    throw new Exception("Route " + route.RouteTemplate + " is a data route which lacks but must have a specified controller");
+
+                if (!ContentTypeHierarchy.ControllerActions.ContainsKey(keyOutputs["controller"]))
+                    return new List<string>();  // Controller doesn't exist therefore no urls
+
+                // copy list so we can change 'actions'
+                var actions = ContentTypeHierarchy.ControllerActions[keyOutputs["controller"]].ToList();
+                if (keyOutputs["action"].StartsWith("?"))
+                {
+                    if (keyOutputs["action"].Length > 1 && actions.Contains(keyOutputs["action"].Substring(1).ToLower()))
+                        actions.Add("??");
+                    UrlX.PermuteReplace(urls, "{action}", actions);
+                }
+                else if (!actions.Contains(keyOutputs["action"]))
+                    return new List<string>(); // Fixed action doesn't exist therefore no urls
             }
-            else if (!actions.Contains(keyOutputs["action"]))
-                return new List<string>(); // Fixed action doesn't exist therefore no urls
 
             // Route vars addressing the content item
 
@@ -278,31 +278,31 @@ namespace Lynicon.Map
 
             // Action & controller
 
-            if (!(keyOutputs.ContainsKey("controller") && keyOutputs.ContainsKey("action")))
-                throw new Exception("Route " + route.RouteTemplate + " fails to define controller and action");
-
-            if (keyOutputs["controller"].StartsWith("?"))
-                throw new Exception("Route " + route.RouteTemplate + " is a data route which lacks but must have a specified controller");
-
-            if (!ContentTypeHierarchy.ControllerActions.ContainsKey(keyOutputs["controller"]))
-                return new List<RouteData>();  // Controller doesn't exist therefore no rvds
-
-            rvd.Add("controller", keyOutputs["controller"]);
-
-            rvds.Add(rvd);
-
-            // copy list so we can change 'actions'
-            var actions = ContentTypeHierarchy.ControllerActions[keyOutputs["controller"]].ToList();
-            if (keyOutputs["action"].StartsWith("?"))
+            if (keyOutputs.ContainsKey("controller") && keyOutputs.ContainsKey("action"))
             {
-                if (keyOutputs["action"].Length > 1 && actions.Contains(keyOutputs["action"].Substring(1).ToLower()))
-                    actions.Add("??");
-                rvds = PermuteAdd(rvds, "action", actions);
+                if (keyOutputs["controller"].StartsWith("?"))
+                    throw new Exception("Route " + route.RouteTemplate + " is a data route which lacks but must have a specified controller");
+
+                if (!ContentTypeHierarchy.ControllerActions.ContainsKey(keyOutputs["controller"]))
+                    return new List<RouteData>();  // Controller doesn't exist therefore no rvds
+
+                rvd.Add("controller", keyOutputs["controller"]);
+
+                rvds.Add(rvd);
+
+                // copy list so we can change 'actions'
+                var actions = ContentTypeHierarchy.ControllerActions[keyOutputs["controller"]].ToList();
+                if (keyOutputs["action"].StartsWith("?"))
+                {
+                    if (keyOutputs["action"].Length > 1 && actions.Contains(keyOutputs["action"].Substring(1).ToLower()))
+                        actions.Add("??");
+                    rvds = PermuteAdd(rvds, "action", actions);
+                }
+                else if (!actions.Contains(keyOutputs["action"]))
+                    return new List<RouteData>(); // Fixed action doesn't exist therefore no urls
+                else
+                    rvd.Add("action", keyOutputs["action"]);
             }
-            else if (!actions.Contains(keyOutputs["action"]))
-                return new List<RouteData>(); // Fixed action doesn't exist therefore no urls
-            else
-                rvd.Add("action", keyOutputs["action"]);
 
             // Route vars addressing the content item
 

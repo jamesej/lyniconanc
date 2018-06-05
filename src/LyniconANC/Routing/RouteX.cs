@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Routing.Template;
 using Lynicon.Map;
 using Microsoft.AspNetCore.Http;
 using System.Reflection;
+using Lynicon.Editors;
 
 namespace Lynicon.Routing
 {
@@ -154,37 +155,8 @@ namespace Lynicon.Routing
         /// An object that contains data tokens for the route. The object's properties represent the names and values
         /// of the data tokens.
         /// </param>
-        /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IRouteBuilder MapDataRoute<T>(
-            this IRouteBuilder routeBuilder,
-            string name,
-            string template,
-            object defaults,
-            object constraints,
-            object dataTokens)
-            where T : class, new()
-        {
-            return routeBuilder.MapDataRoute<T>(name, template, defaults, constraints, dataTokens, null);
-        }
-
-        /// <summary>
-        /// Adds a route to the <see cref="IRouteBuilder"/> configured for data fetching, with the specified name, template, default values, and
-        /// data tokens.
-        /// </summary>
-        /// <param name="routeBuilder">The <see cref="IRouteBuilder"/> to add the route to.</param>
-        /// <param name="name">The name of the route.</param>
-        /// <param name="template">The URL pattern of the route.</param>
-        /// <param name="defaults">
-        /// An object that contains default values for route parameters. The object's properties represent the names
-        /// and values of the default values.
-        /// </param>
-        /// <param name="constraints">
-        /// An object that contains constraints for the route. The object's properties represent the names and values
-        /// of the constraints.
-        /// </param>
-        /// <param name="dataTokens">
-        /// An object that contains data tokens for the route. The object's properties represent the names and values
-        /// of the data tokens.
+        /// <param name="writePermission">
+        /// A permission object which specifies who can create or edit the content item via this route
         /// </param>
         /// <param name="divertOverride">
         /// A function which checks whether to switch out the default inner router with one which diverts the user
@@ -195,10 +167,11 @@ namespace Lynicon.Routing
             this IRouteBuilder routeBuilder,
             string name,
             string template,
-            object defaults,
-            object constraints,
-            object dataTokens,
-            Func<IRouter, RouteContext, object, IRouter> divertOverride)
+            object defaults = null,
+            object constraints = null,
+            object dataTokens = null,
+            ContentPermission writePermission = null,
+            DiversionStrategy divertOverride = null)
             where T : class, new()
         {
             if (routeBuilder.DefaultHandler == null)
@@ -212,7 +185,7 @@ namespace Lynicon.Routing
 
             // Interpose a DataFetchingRouter between the classic Route and the DefaultHandler, which
             // tries to fetch the data for the route
-            var dataFetchingRouter = new DataFetchingRouter<T>(routeBuilder.DefaultHandler, false, divertOverride);
+            var dataFetchingRouter = new DataFetchingRouter<T>(routeBuilder.DefaultHandler, false, writePermission, divertOverride);
 
             var dataRoute = new DataRoute(
                 dataFetchingRouter,
@@ -233,70 +206,6 @@ namespace Lynicon.Routing
 
             return routeBuilder;
         }
-        /// <summary>
-        /// Adds a route to the <see cref="IRouteBuilder"/> configured for data fetching, with the specified name and template.
-        /// </summary>
-        /// <param name="routeBuilder">The <see cref="IRouteBuilder"/> to add the route to.</param>
-        /// <param name="name">The name of the route.</param>
-        /// <param name="template">The URL pattern of the route.</param>
-        /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IRouteBuilder MapDataRoute<T>(
-            this IRouteBuilder routeBuilder,
-            string name,
-            string template)
-            where T : class, new()
-        {
-            MapDataRoute<T>(routeBuilder, name, template, defaults: null);
-            return routeBuilder;
-        }
-
-        /// <summary>
-        /// Adds a route to the <see cref="IRouteBuilder"/> configured for data fetching, with the specified name, template, and default values.
-        /// </summary>
-        /// <param name="routeBuilder">The <see cref="IRouteBuilder"/> to add the route to.</param>
-        /// <param name="name">The name of the route.</param>
-        /// <param name="template">The URL pattern of the route.</param>
-        /// <param name="defaults">
-        /// An object that contains default values for route parameters. The object's properties represent the names 
-        /// and values of the default values.
-        /// </param>
-        /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IRouteBuilder MapDataRoute<T>(
-            this IRouteBuilder routeBuilder,
-            string name,
-            string template,
-            object defaults)
-            where T : class, new()
-        {
-            return MapDataRoute<T>(routeBuilder, name, template, defaults, constraints: null);
-        }
-
-        /// <summary>
-        /// Adds a route to the <see cref="IRouteBuilder"/> configured for data fetching, with the specified name, template, default values, and
-        /// constraints.
-        /// </summary>
-        /// <param name="routeBuilder">The <see cref="IRouteBuilder"/> to add the route to.</param>
-        /// <param name="name">The name of the route.</param>
-        /// <param name="template">The URL pattern of the route.</param>
-        /// <param name="defaults">
-        /// An object that contains default values for route parameters. The object's properties represent the names
-        /// and values of the default values.
-        /// </param>
-        /// <param name="constraints">
-        /// An object that contains constraints for the route. The object's properties represent the names and values
-        /// of the constraints.
-        /// </param>
-        /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IRouteBuilder MapDataRoute<T>(
-            this IRouteBuilder routeBuilder,
-            string name,
-            string template,
-            object defaults,
-            object constraints)
-            where T : class, new()
-        {
-            return MapDataRoute<T>(routeBuilder, name, template, defaults, constraints, dataTokens: null);
-        }
 
             /* TMP
             /// <summary>
@@ -315,69 +224,6 @@ namespace Lynicon.Routing
                 ValidateRouteSpec(name, typeof(TData), url, defaults);
                 var route = new DataRoute<TData>(url, new RouteValueDictionary(defaults), new MvcRouteHandler());
                 route.LazyData = true;
-                routes.Add(name, route);
-                return route;
-            }
-
-            /// <summary>
-            /// Adds a PageRoute with DataRoute functionality for providing data to routes in a classic ASP.Net application
-            /// </summary>
-            /// <typeparam name="TData">The type of the content data attached by the PageDataRoute</typeparam>
-            /// <param name="routes">The route collection</param>
-            /// <param name="name">Name of the route table entry</param>
-            /// <param name="url">The url matching pattern</param>
-            /// <param name="pageUrl">The url of the .aspx page template</param>
-            /// <returns>The PageDataRoute that was created and registered</returns>
-            static public DataRoute<TData> AddPageDataRoute<TData>(this RouteCollection routes, string name, string url, string pageUrl)
-                where TData : class, new()
-            {
-                var route = new DataRoute<TData>(url, new RouteValueDictionary(), new PageRouteHandler(pageUrl));
-                routes.Add(name, route);
-                return route;
-            }
-
-            /// <summary>
-            /// Add a route which generates an http redirect to another url
-            /// </summary>
-            /// <param name="routes">The route collection</param>
-            /// <param name="name">Name of the route table entry</param>
-            /// <param name="url">The url matching pattern</param>
-            /// <param name="mapUrl">The url to redirect to including matched elements from the url matching pattern</param>
-            /// <returns>The RedirectRoute that was created and registered</returns>
-            static public RedirectRoute Redirect(this RouteCollection routes, string name, string url, string mapUrl)
-            {
-                var route = new RedirectRoute(url, mapUrl, new MvcRouteHandler());
-                routes.Add(name, route);
-                return route;
-            }
-            /// <summary>
-            /// Add a route which generates an http redirect to another url
-            /// </summary>
-            /// <param name="routes">The route collection</param>
-            /// <param name="name">Name of the route table entry</param>
-            /// <param name="url">The url matching pattern</param>
-            /// <param name="mapUrl">The url to redirect to including matched elements from the url matching pattern</param>
-            /// <param name="defaults">Default values for matched elements</param>
-            /// <returns>The RedirectRoute that was created and registered</returns>
-            static public RedirectRoute Redirect(this RouteCollection routes, string name, string url, string mapUrl, object defaults)
-            {
-                var route = new RedirectRoute(url, mapUrl, new RouteValueDictionary(defaults), new MvcRouteHandler());
-                routes.Add(name, route);
-                return route;
-            }
-            /// <summary>
-            /// Add a route which generates an http redirect to another url
-            /// </summary>
-            /// <param name="routes">The route collection</param>
-            /// <param name="name">Name of the route table entry</param>
-            /// <param name="url">The url matching pattern</param>
-            /// <param name="mapUrl">The url to redirect to including matched elements from the url matching pattern</param>
-            /// <param name="defaults">Default values for matched elements</param>
-            /// <param name="constraints">Constraints for when the route should match</param>
-            /// <returns>The RedirectRoute that was created and registered</returns>
-            static public RedirectRoute Redirect(this RouteCollection routes, string name, string url, string mapUrl, object defaults, object constraints)
-            {
-                var route = new RedirectRoute(url, mapUrl, new RouteValueDictionary(defaults), new RouteValueDictionary(constraints), new MvcRouteHandler());
                 routes.Add(name, route);
                 return route;
             }

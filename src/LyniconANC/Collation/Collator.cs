@@ -122,7 +122,7 @@ namespace Lynicon.Collation
         /// <param name="coll">the collator</param>
         /// <param name="repo">the repository</param>
         /// <param name="redir">the editor redirect</param>
-        public void SetupType(Type t, ICollator coll, IRepository repo, Func<IRouter, RouteContext, object, IRouter> divert)
+        public void SetupType(Type t, ICollator coll, IRepository repo, DiversionStrategy divert)
         {
             if ((coll ?? this.Registered(null)).ContainerType(t) == t) // type t is its own container, so it may be extended
                 System.Extender.RegisterForExtension(t);
