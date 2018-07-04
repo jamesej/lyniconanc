@@ -32,7 +32,7 @@ namespace Lynicon.Editors
             bool canWrite = actualWritePermission.Permitted(data);
 
             if (isPost && !canWrite)
-                return (new DivertRouter(innerRouter, "Api", "Unauthorized"), false);
+                return (new DivertRouter(innerRouter, "Lynicon", "Api", "ErrorUnauthorized"), false);
 
             if (!acceptsHtml)
                 return (new DivertRouter(innerRouter, "Lynicon", "Api", "Index"), false);

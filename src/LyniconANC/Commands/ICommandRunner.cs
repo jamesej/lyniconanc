@@ -5,5 +5,7 @@
         bool InterceptAndRunCommands(string[] args);
 
         bool RegisterCommand(ToolsCommandBase toolsCommand);
+
+        bool WillRunCommand(string[] args);
     }
 }

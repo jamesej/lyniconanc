@@ -17,6 +17,7 @@ using Lynicon.Services;
 using Lynicon.Startup;
 using Microsoft.AspNetCore.Identity;
 using LyniconANC.Release.Models;
+using Lynicon.Editors;
 
 namespace LyniconANC.Release
 {
@@ -67,7 +68,7 @@ namespace LyniconANC.Release
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            
             app.UseStaticFiles();
 
 app.UseAuthentication();

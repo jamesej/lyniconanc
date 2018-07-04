@@ -75,12 +75,12 @@ namespace Lynicon.Editors
             return Ok(data);
         }
 
-        public IActionResult Unauthorized()
+        public IActionResult ErrorUnauthorized()
         {
             return Unauthorized();
         }
 
-        public IActionResult NotFound()
+        public IActionResult ErrorNotFound()
         {
             return NotFound();
         }

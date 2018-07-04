@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Extensions;
 using Lynicon.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Lynicon.Editors
 {
@@ -62,11 +63,11 @@ namespace Lynicon.Editors
 
                 SetViewBag(data, updatedCheck);
 
-                if (ModelState.IsValid)
+                if (ModelState.ValidationState != ModelValidationState.Invalid)
                 {
                     var redirectUrl = base.SaveWithRedirect(data);
 
-                    if (ModelState.IsValid)
+                    if (ModelState.ValidationState != ModelValidationState.Invalid)
                     {
                         // set UpdatedCheck if its an auditable item
                         var container = Collator.Instance.GetContainer(data);

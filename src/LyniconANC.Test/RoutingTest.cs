@@ -102,7 +102,7 @@ namespace LyniconANC.Test
             rc = new RouteContext(ctx);
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             Assert.Equal("Api", rc.RouteData.Values["controller"]);
-            Assert.Equal("Unauthorized", rc.RouteData.Values["action"]);
+            Assert.Equal("ErrorUnauthorized", rc.RouteData.Values["action"]);
 
             ctx = new MockHttpContext("http://www.test.com/header-write/api-item");
             ctx.Request.Method = "POST";

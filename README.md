@@ -1,7 +1,7 @@
 # Lynicon CMS/DMS
 [![nuget](https://img.shields.io/nuget/v/LyniconANC.svg)](https://www.nuget.org/packages/LyniconANC/)
 
-*For ASP.Net Core (.Net Standard 2.0, .Net 4.6.1 and .Net Standard 1.6, .Net 4.6)*
+*For ASP.Net Core 2.0/2.1 (.Net Standard 2.0, .Net 4.6.1 and .Net Standard 1.6, .Net 4.6)*
 
 ![Lynicon CMS](http://www.lynicon.com/images/lynicon/twitter-logo.png)
 

@@ -112,7 +112,7 @@ namespace Lynicon.Routing
                     data = Collator.Instance.GetNew<T>(context.RouteData);
                     context.RouteData.DataTokens.Add("LynNewItem", true);
                 }
-                else if (divertRouter == null) // no data and no diversion: drop through
+                else if (divertRouter == null || dropThrough) // no data and no diversion: drop through
                     return;
             }
 
