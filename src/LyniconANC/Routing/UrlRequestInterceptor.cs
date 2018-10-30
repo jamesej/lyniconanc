@@ -29,7 +29,6 @@ namespace Lynicon.Routing
         {
             var ed = (DataRouteInterceptEventData)ehd.Data;
             if (ed.WasHandled) return ed;
-            var route = ed.RouteData.Routers.OfType<Route>().First();
 
             if (ed.QueryStringParams.ContainsKey("$urlget"))
             {
@@ -37,6 +36,7 @@ namespace Lynicon.Routing
                     return ed;
                 else
                 {
+                    var route = ed.RouteData.Routers.OfType<Route>().First();
                     ed.RouteData.RedirectAction("Lynicon", "UrlManager", "Index");
                     ed.RouteData.DataTokens.Add("$urlget", route.GetUrlPattern(ed.RouteData));
                     ed.WasHandled = true;

@@ -44,6 +44,7 @@ namespace LyniconANC.Test
                     col.SetupType<PropertyRedirectContent>();
                     col.SetupTypeForBasic<RedirectData>();
                     col.SetupType<RedirectTargetContent>();
+                    col.SetupType<SingleContent>();
                     col.System.Repository.Register(null, new ContentRepository(col.System, new MockDataSourceFactory(col.System)));
                     col.System.Repository.Register(typeof(TestData), new BasicRepository(col.System, new MockDataSourceFactory(col.System)));
                     col.System.Repository.Register(typeof(RedirectData), new BasicRepository(col.System, new MockDataSourceFactory(col.System)));
@@ -68,7 +69,9 @@ namespace LyniconANC.Test
             testingRoutes.AddTestDataRoute<TestData>("test-data", "testd/{_0}", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<ChefContent>("chef", "header/{_0}", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<HeaderContent2>("hc2", "header2", new { controller = "mock", action = "mock" });
+            testingRoutes.AddTestDataRoute<SingleContent>("single", "single/{abc}", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<RefContent>("ref", "ref/{_0}/{_1}", new { controller = "mock", action = "mock" });
+            testingRoutes.AddTestDataRoute<RestaurantContent>("rest", "restaurant/{abc}", new { controller = "mock", action = "mock" });
             testingRoutes.AddTestDataRoute<HeaderContent>("header-write", "header-write/{_0}", new { controller = "mock", action = "mock" }, new ContentPermission((roles, data) => true));
             ContentMap.Instance.RouteCollection = testingRoutes;
 

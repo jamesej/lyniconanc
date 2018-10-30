@@ -11,6 +11,14 @@ namespace Lynicon.Editors
 {
     public abstract class DiversionStrategy
     {
+        /// <summary>
+        /// Work out whether and how a request should be diverted to an editor
+        /// </summary>
+        /// <param name="innerRouter">next inner router, probably MVC handler or something containing one</param>
+        /// <param name="context">the route context</param>
+        /// <param name="data">the fetched data (or null)</param>
+        /// <param name="writePermission">whether the user can write</param>
+        /// <returns>pair of router to use for diversion, and whether the calling router should drop through (true) or fail</returns>
         public abstract (IRouter, bool) GetDiversion(IRouter innerRouter, RouteContext context, object data, ContentPermission writePermission);
 
         public bool AcceptsHtml(HttpRequest request)

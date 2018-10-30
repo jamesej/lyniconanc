@@ -70,6 +70,16 @@ namespace LyniconANC.Test
             Assert.Equal("ref/{_0}/{_1}", r0.RouteTemplate);
             Assert.Equal(typeof(RefContent), rc.RouteData.Values["data"].GetType().UnextendedType());
 
+            var sc = Collator.Instance.GetNew<SingleContent>(new Address(typeof(SingleContent), ""));
+            sc.Line1 = "single";
+            Collator.Instance.Set(sc);
+            rc = new RouteContext(new MockHttpContext("http://www.test.com/single/something"));
+            ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
+            r0 = rc.RouteData.Routers[0] as Route;
+            Assert.NotNull(rc.Handler);
+            Assert.Equal("single/{abc}", r0.RouteTemplate);
+            Assert.Equal(typeof(SingleContent), rc.RouteData.Values["data"].GetType().UnextendedType());
+
             rc = new RouteContext(new MockHttpContext("http://www.test.com/ref/ab/dd"));
             ContentMap.Instance.RouteCollection.RouteAsync(rc).Wait();
             Assert.Equal(0, rc.RouteData.Routers.Count);

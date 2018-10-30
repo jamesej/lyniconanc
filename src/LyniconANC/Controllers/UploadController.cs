@@ -25,6 +25,7 @@ namespace Lynicon.Controllers
         /// </summary>
         /// <param name="dir">Folder into which to load the file</param>
         /// <returns>Status of operation</returns>
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> Index(string dir, ICollection<IFormFile> files)
         {
             string status = "No file sent";

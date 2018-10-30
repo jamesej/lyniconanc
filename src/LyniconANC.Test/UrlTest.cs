@@ -8,6 +8,7 @@ using Lynicon.Relations;
 using LyniconANC.Test.Models;
 using Lynicon.Exceptions;
 using Xunit;
+using Lynicon.Map;
 
 // Initialise database with test data
 //  use ef directly, use appropriate schema for modules in use
@@ -68,6 +69,22 @@ namespace LyniconANC.Test
             //    ex = appEx;
             //}
             //Assert.NotNull(ex, "Failed to block move to an existing standard url");
+        }
+
+        [Fact]
+        public void AddressOccupied()
+        {
+            Address r1addr = new Address(typeof(RestaurantContent), "");
+            bool occupied = ContentMap.Instance.AddressOccupied(r1addr);
+            Assert.False(occupied);
+
+            var r1 = Collator.Instance.GetNew<RestaurantContent>(r1addr);
+
+            r1.Title = "r1";
+            Collator.Instance.Set(r1);
+
+            occupied = ContentMap.Instance.AddressOccupied(r1addr);
+            Assert.True(occupied);
         }
     }
 }

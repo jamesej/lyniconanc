@@ -40,7 +40,7 @@ namespace Lynicon.Editors
             string action = ActionByModeFlag(context, data, canWrite) ?? "Index";
             if (action == "")
                 return (null, false);
-            return (new DivertRouter(innerRouter, editorArea, editorController, action), false);
+            return (new DivertRouter(innerRouter, editorArea, editorController, action), true);
         }
     }
 }

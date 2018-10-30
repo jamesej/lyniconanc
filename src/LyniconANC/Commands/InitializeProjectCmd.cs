@@ -46,7 +46,7 @@ namespace Lynicon.Commands
             var downloader = new ZipDownloader();
             var version = this.GetType().GetTypeInfo().Assembly.GetName().Version;
             string vsn = string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
-            Uri lynSite = new Uri("http://www.lynicon.com", UriKind.Absolute);
+            Uri lynSite = new Uri("https://www.lynicon.com", UriKind.Absolute);
             string url = "install/lyniconanc." + vsn + ".zip";
             await downloader.Download(new Uri(lynSite, url), this.GetProjectBase(), true);
         }

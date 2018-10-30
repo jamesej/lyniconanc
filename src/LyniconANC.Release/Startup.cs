@@ -44,13 +44,18 @@ namespace LyniconANC.Release
             services.AddIdentity<User, IdentityRole>()
             	.AddDefaultTokenProviders();
             	
-            	services.AddAuthorization(options => options.AddLyniconAuthorization());
+            services.AddAuthorization(options => options.AddLyniconAuthorization());
             	
-            	services.AddLynicon(options =>
-            		options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
-            			.UseModule<CoreModule>()
-						.UseModule<ContentSchemaModule>())
-            	.AddLyniconIdentity();
+            services.AddLynicon(options =>
+            	options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
+            		.UseModule<CoreModule>()
+					.UseModule<ContentSchemaModule>())
+            .AddLyniconIdentity();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

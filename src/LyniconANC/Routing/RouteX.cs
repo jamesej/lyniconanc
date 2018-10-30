@@ -372,7 +372,7 @@ namespace Lynicon.Routing
 
                     }
                     else
-                        sbPatt.Append(keyVal);
+                        sbPatt.Append(keyVal == "" ? "_" + key + "_" : keyVal); // if no value supplied, use key as a dummy url element
                 }
                 sbPatt.Append(remaining);
             }

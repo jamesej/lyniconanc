@@ -14,18 +14,18 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.2.2.19</Version>
+    <Version>0.2.2.25</Version>
     <RootNamespace>Lynicon</RootNamespace>
     <Authors>James Ellis-Jones</Authors>
     <Copyright>Regulus Systems Ltd</Copyright>
-    <PackageProjectUrl>http://www.lynicon.com</PackageProjectUrl>
+    <PackageProjectUrl>https://www.lynicon.com</PackageProjectUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageTags>CMS Core</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageIconUrl>http://www.lynicon.com/images/lynicon/nuget-logo.png</PackageIconUrl>
-    <PackageLicenseUrl>http://www.lynicon.com/corelicense.txt</PackageLicenseUrl>
+    <PackageIconUrl>https://www.lynicon.com/images/lynicon/nuget-logo.png</PackageIconUrl>
+    <PackageLicenseUrl>https://www.lynicon.com/corelicense.txt</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/jamesej/lyniconanc</RepositoryUrl>
-    <Description>Lynicon CMS is a modern, extensible, hypermodular CMS which provides CMS facilities to ASP.Net Core on .Net Core (.Net Standard 2.0) or .Net 4.6.1+. This package is the core system which contains all the essential functions required for CMS, sufficient to build a small site or application.
+    <Description>Lynicon CMS is a modern, extensible, hypermodular CMS which provides CMS facilities to ASP.Net Core on .Net Core 2.0/2.1 (.Net Standard 2.0) or .Net 4.6.1+. This package is the core system which contains all the essential functions required for CMS, sufficient to build a small site or application.
 
 This project is open source and can be found at https://github.com/jamesej/lyniconanc. We welcome feedback to info@lynicon.com. The project manual is at https://lynicon.atlassian.net/wiki/display/LAC/Lynicon+CMS+Documentation, for setup and differences with the standard MVC version consult the ASP.Net Core Version section.
 
@@ -35,8 +35,8 @@ A package providing features required for larger sites such as caching, search, 
 
 To install LyniconANC, run the following command in the Package Manager Console</Description>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <AssemblyVersion>0.2.2.16</AssemblyVersion>
-    <FileVersion>0.2.2.16</FileVersion>
+    <AssemblyVersion>0.2.2.24</AssemblyVersion>
+    <FileVersion>0.2.2.24</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

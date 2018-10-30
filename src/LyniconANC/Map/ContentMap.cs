@@ -403,6 +403,7 @@ namespace Lynicon.Map
             var urls = ContentMap.Instance
                 .GetUrls(address);
             RouteData existingRd = urls
+                .Select(url => url.Replace("??", "_").Replace("?", "_"))
                 .Select(url => RouteX.GetRouteDataByUrl(url + "?$mode=bypass")) // $mode=bypass means the request is never diverted to an editor
                 .FirstOrDefault(rd => !RouteIsNotOccupied(rd));
             return existingRd != null && existingRd.Routers.Count > 0;
