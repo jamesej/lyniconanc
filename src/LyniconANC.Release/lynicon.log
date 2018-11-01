@@ -271,3 +271,14 @@ WARN  10:39:56 Unused summary type: Lynicon.Models.Summary
 INFO  10:43:05 Starting Core Module
 INFO  10:43:05 Core Module Initialised
 WARN  10:43:07 Unused summary type: Lynicon.Models.Summary
+INFO  11:08:33 Starting Core Module
+INFO  11:08:33 Core Module Initialised
+INFO  11:10:16 Starting Core Module
+INFO  11:10:16 Core Module Initialised
+WARN  11:10:17 Unused summary type: Lynicon.Models.Summary
+INFO  11:20:08 Starting Core Module
+INFO  11:20:08 Core Module Initialised
+WARN  11:20:10 Unused summary type: Lynicon.Models.Summary
+INFO  11:22:01 Starting Core Module
+INFO  11:22:01 Core Module Initialised
+WARN  11:22:02 Unused summary type: Lynicon.Models.Summary

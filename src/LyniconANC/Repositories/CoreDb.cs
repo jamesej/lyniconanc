@@ -24,24 +24,27 @@ namespace Lynicon.Repositories
     /// </summary>
     public class CoreDb : DbContext
     {
-        protected static IModel CoreModel { get; set; }
+        public CoreDb()
+            : base(
+                  new DbContextOptionsBuilder<CoreDb>()
+                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
+                  .Options)
+        { }
+        public CoreDb(string connectionString)
+            : base(
+                  new DbContextOptionsBuilder<CoreDb>()
+                  .UseSqlServer(connectionString)
+                  .Options)
+        { }
 
-        protected static void BuildModel()
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            //if (!Collator.Instance.RepositoryBuilt)
-            //    throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
-
-            Debug.WriteLine("Building CoreDb");
-
             var requiredTypes = ContentTypeHierarchy.AllContentTypes
                 .Select(ct => Collator.Instance.ContainerType(ct))
                 .Distinct()
                 .Where(crt => Repository.Instance.Registered(crt).DataSourceFactory is CoreDataSourceFactory)
                 .ToList();
 
-            var builder = new ModelBuilder(SqlServerConventionSetBuilder.Build());
-
-            // temp, breaks separability of Lynicon systems
             var sys = LyniconSystem.Instance;
 
             foreach (Type baseType in sys.Extender.BaseTypes.Where(t => requiredTypes.Contains(sys.Extender[t])))
@@ -49,28 +52,8 @@ namespace Lynicon.Repositories
                 builder.Entity(sys.Extender[baseType]).ToTable(LinqX.GetTableName(baseType));
             }
 
-            CoreModel = builder.Model;
+            base.OnModelCreating(builder);
         }
-
-        static CoreDb()
-        {
-            BuildModel();
-        }
-
-        public CoreDb()
-            : base(
-                  new DbContextOptionsBuilder<CoreDb>()
-                  .UseModel(CoreModel)
-                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
-                  .Options)
-        { }
-        public CoreDb(string connectionString)
-            : base(
-                  new DbContextOptionsBuilder<CoreDb>()
-                  .UseModel(CoreModel)
-                  .UseSqlServer(connectionString)
-                  .Options)
-        { }
 
         public IQueryable InnerCompositeSet<T>(bool useIncludes) where T : class
         {
