@@ -12,12 +12,7 @@
 @if (req.Query.ContainsKey("search-value") || (paging != null && paging.NeedsPager))
 {
     <div class="lyn-item-filter-bar">
-        @Html.Raw(
-        Html.Partial("FilterPanel", new Dictionary<string, List<string>> { { "Title", new List<string> { "Title" } } })
-        .ToString()
-        .Replace(">Title", "><i class='fa fa-search'></i>")
-        .Replace("Clear", "<i class='fa fa-times'></i>")
-        )
+        @Html.Partial("ItemsFilterPanel")
     </div>
 }
 

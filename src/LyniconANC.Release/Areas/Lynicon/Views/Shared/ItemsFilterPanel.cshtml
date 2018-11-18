@@ -1,0 +1,50 @@
+﻿@using Lynicon.Utility
+
+@{
+    bool caseSensitive = (bool?)ViewData["caseSensitive"] ?? false;
+}
+<div class="lynicon-filter-textbox clearfix">
+    <input type="text" value="@ViewContext.HttpContext.Request.Query["search-value"]"/>
+    <a class="lynicon-ctl-button" data-filter="Title"><i class='fa fa-search'></i></a>
+    <a class="Title filter-clear lynicon-ctl-button"><i class='fa fa-times'></i></a>
+</div>
+
+@{
+    Html.RegisterScript("lynicon-filter-textbox", @"javascript:
+    var filterFields = {'Title': ['Title'] };
+    function navigate($button, url) {
+        location.href = url;
+    }
+    function thisUrl() {
+        return location.href;
+    }
+    $(document).ready(function () {
+        function doFilter(ev) {
+            ev.preventDefault();
+            var url = thisUrl($(this));
+            if ($(this).hasClass('filter-clear')) {
+                url = ensureKeyValue(url, '$filter', null);
+                url = ensureKeyValue(url, 'search-value', null);
+                navigate($(this), url);
+                return false;
+            }
+            var val = $(this).closest('.lynicon-filter-textbox').find('input').val();
+            if (val) {
+                var fields = filterFields[$(this).data('filter')];
+                var filt = '';
+                for (var i = 0; i < fields.length; i++) {"
+                + (caseSensitive
+                  ? @"filt += (filt ? ' or ' : '') + fields[i] + "" ne null and substringof('"" + val.replace(""'"", ""''"") + ""',"" + fields[i] + "")"";"
+                  : @"filt += (filt ? ' or ' : '') + fields[i] + "" ne null and substringof('"" + val.toUpperCase().replace(""'"", ""''"") + ""',toupper("" + fields[i] + ""))"";")
+                + @"}
+                url = ensureKeyValue(url, '$filter', filt);
+                url = ensureKeyValue(url, '$skip', 0);
+                url = ensureKeyValue(url, 'search-value', val);
+                navigate($(this), url);
+            }
+            return false;
+        }
+        $('.lynicon-filter-textbox a').click(doFilter);
+        $('.lynicon-filter-textbox input').bind('keypress', function(ev) { if (ev.which == 13) { $(this).next().trigger('click'); } });
+    });", new List<string> { "jquery" });
+}

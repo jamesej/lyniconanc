@@ -1,0 +1,4 @@
+﻿@model object
+@using Lynicon.Utility
+@await Html.PartialAsync((string)ViewData["ViewName"], Model, ViewData)
+@Html.InsertIncludesBody()

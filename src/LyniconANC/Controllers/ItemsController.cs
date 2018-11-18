@@ -85,7 +85,8 @@ namespace Lynicon.Controllers
             // invoke Collator.Instance.GetList<Summary, type>(new Type[] { type }, RouteData).ToArray();
             var summs = (IEnumerable<Summary>)ReflectionX.InvokeGenericMethod(Collator.Instance, "GetList", new Type[] { typeof(Summary), containerType }, new Type[] { type }, RouteData);
             var data = summs.ToArray();
-            return PartialView("ItemPage", data);
+            ViewData["ViewName"] = "ItemPage";
+            return PartialView("PartialViewContainer", data);
         }
 
         /// <summary>
