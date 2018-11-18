@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 
 namespace Lynicon.Utility
 {
@@ -366,9 +367,9 @@ namespace Lynicon.Utility
         /// </summary>
         /// <param name="html">Html helper</param>
         /// <returns>Markup for list pager</returns>
-        public static IHtmlContent ListPager(this IHtmlHelper html)
+        public static async Task<IHtmlContent> ListPager(this IHtmlHelper html)
         {
-            return html.ListPager(null);
+            return await html.ListPager(null);
         }
         /// <summary>
         /// Include markup for a list pager based on the PagingSpec stored in the DataToken whose key is @Paging
@@ -376,9 +377,9 @@ namespace Lynicon.Utility
         /// <param name="html">Html helper</param>
         /// <param name="clientReload">Client function name to call to reload the list to which the pager is attached</param>
         /// <returns>Markup for list pager</returns>
-        public static IHtmlContent ListPager(this IHtmlHelper html, string clientReload)
+        public static async Task<IHtmlContent> ListPager(this IHtmlHelper html, string clientReload)
         {
-            return html.ListPager(clientReload, "~/Areas/Lynicon/Views/Shared/PagingSpec.cshtml");
+            return await html.ListPager(clientReload, "~/Areas/Lynicon/Views/Shared/PagingSpec.cshtml");
         }
         /// <summary>
         /// Include markup for a list pager based on the PagingSpec stored in the DataToken whose key is @Paging
@@ -387,13 +388,13 @@ namespace Lynicon.Utility
         /// <param name="clientReload">Client function name to call to reload the list to which the pager is attached</param>
         /// <param name="viewName">View name which which to render the pager</param>
         /// <returns>Markup for list pager</returns>
-        public static IHtmlContent ListPager(this IHtmlHelper html, string clientReload, string viewName)
+        public static async Task<IHtmlContent> ListPager(this IHtmlHelper html, string clientReload, string viewName)
         {
             if (html.ViewContext.RouteData.DataTokens.ContainsKey("@Paging"))
             {
                 var paging = (PagingSpec)html.ViewContext.RouteData.DataTokens["@Paging"];
                 paging.ClientReload = clientReload;
-                return html.Partial(viewName, paging);
+                return await html.PartialAsync(viewName, paging);
             }
 
             return new HtmlString("");

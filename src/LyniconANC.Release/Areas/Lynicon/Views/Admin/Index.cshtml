@@ -29,7 +29,7 @@
                 <span class="title">@mavm.Title</span>
                 @if (mavm.ViewName != null)
                 {
-                    @Html.Partial(mavm.ViewName, mavm)
+                    @await Html.PartialAsync(mavm.ViewName, mavm)
                 }
             </fieldset>
         }

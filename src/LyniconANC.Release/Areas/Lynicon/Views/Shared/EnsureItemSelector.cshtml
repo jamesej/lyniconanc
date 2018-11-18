@@ -4,7 +4,7 @@
    
     if (!Html.HtmlBlockIsRegistered("lyn_itemselector"))
     {
-        Html.RegisterHtmlBlock("lyn_itemselector", Html.Partial("LyniconItems", ViewData));
+        Html.RegisterHtmlBlock("lyn_itemselector", await Html.PartialAsync("LyniconItems", ViewData));
     }
     Html.RegisterScript("lyn_itemselector_script",
 @"javascript:function getItem(current, updateItem) {

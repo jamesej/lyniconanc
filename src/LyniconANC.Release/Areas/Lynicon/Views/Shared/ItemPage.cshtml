@@ -12,7 +12,7 @@
 @if (req.Query.ContainsKey("search-value") || (paging != null && paging.NeedsPager))
 {
     <div class="lyn-item-filter-bar">
-        @Html.Partial("ItemsFilterPanel")
+        @await Html.PartialAsync("ItemsFilterPanel")
     </div>
 }
 
@@ -35,7 +35,7 @@
 }
 @if (paging != null)
 {
-    <div class="lyn-item-paging-container">@Html.Partial("PagingSpec", this.ViewContext.RouteData.DataTokens["@Paging"])</div>
+    <div class="lyn-item-paging-container">@await Html.PartialAsync("PagingSpec", this.ViewContext.RouteData.DataTokens["@Paging"])</div>
 }
 @Html.RegisterScript("override-filter-action", @"javascript:
             function navigate($button, url) {

@@ -3,7 +3,7 @@
 
 <div id='editPanel'>
     <form method="post" action="@ViewBag.Url">
-        @Html.Partial("~/Areas/Lynicon/Views/Shared/EditorTemplates/EditorObject.cshtml")
+        @await Html.PartialAsync("~/Areas/Lynicon/Views/Shared/EditorTemplates/EditorObject.cshtml")
         @Html.Hidden("formState")
         @if (ViewBag.UpdatedCheck != null && (long)ViewBag.UpdatedCheck != long.MaxValue)
         {

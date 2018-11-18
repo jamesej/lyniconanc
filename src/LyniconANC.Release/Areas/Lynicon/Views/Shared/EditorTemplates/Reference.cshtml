@@ -24,7 +24,7 @@
             @Html.HiddenFor(m => refType, new { @class = "lyn-reference-typearg" })
         }
     </div>
-    @Html.Partial("EnsureItemSelector")
+    @await Html.PartialAsync("EnsureItemSelector")
     }
 }
 else

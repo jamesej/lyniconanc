@@ -118,7 +118,7 @@
                 <div class="editor-label indent-0 parent child-closed">@Html.Label(editorPanel.Title)</div>
                 <div class="editor-field indent-0">
                     <div class="object level-1">
-                        @Html.Partial(editorPanel.ViewName, Model)
+                        @await Html.PartialAsync(editorPanel.ViewName, Model)
                     </div>
                 </div>
             </div>

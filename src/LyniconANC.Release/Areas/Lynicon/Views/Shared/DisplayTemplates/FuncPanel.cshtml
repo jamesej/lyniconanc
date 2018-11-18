@@ -22,7 +22,7 @@
         @foreach (var viewKvp in ui.RevealPanelViews)
         {
             <div class="reveal-panel-view @(isAlt ? " alt" : "")">
-                @Html.Partial(viewKvp.Value)
+                @await Html.PartialAsync(viewKvp.Value)
                 <div style="clear:both"></div>
             </div>
             isAlt = !isAlt;
@@ -90,7 +90,7 @@
         }
         else
         {
-            @Html.Partial(btn.ViewName)
+            @await Html.PartialAsync(btn.ViewName)
         }
     }
 </div>

@@ -26,5 +26,5 @@
 }
 @if (filterFields != null)
 {
-    @Html.Partial("FilterPanel", new Dictionary<string, List<string>> { { "Filter", filterFields } }, new ViewDataDictionary(ViewData) { { "caseSensitive", true } })
+    @await Html.PartialAsync("FilterPanel", new Dictionary<string, List<string>> { { "Filter", filterFields } }, new ViewDataDictionary(ViewData) { { "caseSensitive", true } })
 }

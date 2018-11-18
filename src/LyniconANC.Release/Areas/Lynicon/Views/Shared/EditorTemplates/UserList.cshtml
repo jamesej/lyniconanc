@@ -23,4 +23,4 @@
     </tr>
     }
 </table>
-@Html.Partial("FilterPanel", new Dictionary<string, List<string>> { { "Filter", new List<string> { "UserName", "Email" } } }, new ViewDataDictionary(ViewData) { { "caseSensitive", true } })
+@await Html.PartialAsync("FilterPanel", new Dictionary<string, List<string>> { { "Filter", new List<string> { "UserName", "Email" } } }, new ViewDataDictionary(ViewData) { { "caseSensitive", true } })

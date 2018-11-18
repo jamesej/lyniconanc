@@ -50,7 +50,7 @@
             </div>
         </div>
     }
-    @Html.Partial("EnsureFileEditor")
+    @await Html.PartialAsync("EnsureFileEditor")
     @Html.RegisterScript("lyn_image_control", "/js/lynicon/LyniconImageEditor.js", new List<string> { "jquery" })
 }
 

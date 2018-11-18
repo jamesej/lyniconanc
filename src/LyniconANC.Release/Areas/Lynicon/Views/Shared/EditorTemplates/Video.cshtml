@@ -38,5 +38,5 @@
 }
 
 
-@Html.Partial("EnsureMediaLibrary")
+@await Html.PartialAsync("EnsureMediaLibrary")
 @Html.RegisterScript("lyn_vid_control", @"/Areas/Lynicon/Scripts/LyniconVideoEditor.js", new List<string> { "jquery" })
