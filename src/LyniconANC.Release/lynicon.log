@@ -546,3 +546,5 @@ WARN  01:05:30 Reading content from contentitem d1b09c52-aa0e-4d91-b3e9-7d3d288e
    at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure.LoggingThreadPool.<RunAction>b__3_0(Object o)
    at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
    at System.Threading.ThreadPoolWorkQueue.Dispatch()
+INFO  03:04:31 Starting Core Module
+INFO  03:04:31 Core Module Initialised

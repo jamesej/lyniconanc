@@ -80,7 +80,7 @@ This is available [here](http://www.lynicon.com/lynicon-base)
     9. [Use property source redirection to create site-wide fields with values constant across the site](#use-property-source-redirection-to-create-site-wide-fields-with-values-constant-across-the-site)
     10. [Administer site users](#administer-site-users)
     11. [Run without a database](#run-without-a-database)
-    12. [Add a JSON API](#add-a-json-api)
+    12. [Use as a JSON API](#use-as-a-json-api)
 3. [Running the tests](#running-the-tests)
 4. [Contributing](#contributing)
 
@@ -197,10 +197,15 @@ the Storeless module which converts Lynicon to run with CMS data in memory, with
 See [the online manual](https://lynicon.atlassian.net/wiki/spaces/LAC/pages/73957380/Storeless) for how to set this
 up - it's very simple and reduces hosting costs while making Lynicon run super fast for websites up to 500 or 1000 pages.
 
-### Add a JSON API
+### Use as a JSON API
 
 If you want to get your content as JSON (or any other standard web format), the combination of ASP.Net Core and
-Lynicon makes this very easy and flexible. To do this for content type T:
+Lynicon makes this very easy and flexible.
+
+For any content-routed page, you can simply request it with Accept header set to application/json and you will
+get the content as JSON.
+
+You can also query across all content items of content type T:
 
 * Add a data route typed as `List<T>` [(see the Startup.cs file in the test project)](src/LyniconANC.Release/startup.cs)
 * In the controller/action this points to, ensure there's an action parameter `List<T> data`. [(see ApiController)](src/LyniconANC.Release/Controllers/ApiController.cs)

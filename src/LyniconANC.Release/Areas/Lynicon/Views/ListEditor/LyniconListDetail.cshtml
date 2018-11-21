@@ -34,9 +34,9 @@
                 ViewData["addDepth"] = 1;
             }
 
-            @await Html.PartialAsync("EditorTemplates/LyniconEditPanel", item)
+            @Html.Partial("EditorTemplates/LyniconEditPanel", item)
         </div>
-        @await Html.PartialAsync("DisplayTemplates/FuncPanel", item, new ViewDataDictionary(ViewData) { { "Sections", "Record,Opener" } })
+        @Html.Partial("DisplayTemplates/FuncPanel", item, new ViewDataDictionary(ViewData) { { "Sections", "Record,Opener" } })
     </div>
 </div>
 
