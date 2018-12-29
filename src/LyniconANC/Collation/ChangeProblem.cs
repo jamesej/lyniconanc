@@ -16,7 +16,8 @@ namespace Lynicon.Collation
         NullObjectValue,
         PropertyDroppedFromSummary,
         PropertyDropped,
-        PropertyAddedToSummary
+        PropertyAddedToSummary,
+        AddressComponentAttributePropertyChanged
     }
 
     /// <summary>
@@ -54,6 +55,7 @@ namespace Lynicon.Collation
                     case ChangeProblemType.PropertyDroppedFromSummary:
                     case ChangeProblemType.PropertyDropped:
                     case ChangeProblemType.PropertyAddedToSummary:
+                    case ChangeProblemType.AddressComponentAttributePropertyChanged:
                         return true;
                     default:
                         return false;

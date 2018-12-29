@@ -11,6 +11,7 @@ using Lynicon.Utility;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Routing;
 
 namespace Lynicon.Extensibility
 {
@@ -219,7 +220,7 @@ namespace Lynicon.Extensibility
                             ? new List<object> { versioner.PublicVersionValue }
                             : versioner.GetAllowedVersions(u);
                         var overVal = over[versioner.VersionKey];
-                        if (legalVals.Any(lVal => lVal.Equals(overVal)))
+                        if (legalVals.Any(lVal => lVal == null || lVal.Equals(overVal)))
                         {
                             if (!v.ContainsKey(versioner.VersionKey)
                                 || (v[versioner.VersionKey] == null && overVal != null)
@@ -249,41 +250,70 @@ namespace Lynicon.Extensibility
         {
             get
             {
-                if (Mode != VersioningMode.Current
-                    || currentVersionInvalidated
-                    || !RequestThreadCache.Current.ContainsKey(CurrentVersionKey + UniqueId))
+                return GetCurrentVersion(null);
+            }
+        }
+
+        public ItemVersion GetCurrentVersionForRoute(RouteData rd)
+        {
+            return GetCurrentVersion(rd);
+        }
+
+        private ItemVersion GetCurrentVersion(RouteData rd)
+        {
+            if (Mode != VersioningMode.Current
+                || currentVersionInvalidated
+                || !RequestThreadCache.Current.ContainsKey(CurrentVersionKey + UniqueId))
+            {
+                ItemVersion iv = null;
+                if (Mode == VersioningMode.All)
+                    iv = new ItemVersion();
+                else if (Mode == VersioningMode.Specific)
+                    iv = SpecificVersion;
+                else if (Mode == VersioningMode.Public)
                 {
-                    ItemVersion iv = null;
-                    if (Mode == VersioningMode.All)
-                        iv = new ItemVersion();
-                    else if (Mode == VersioningMode.Specific)
-                        iv = SpecificVersion;
-                    else if (Mode == VersioningMode.Public)
+                    iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.PublicVersionValue));
+                }
+                else
+                {
+                    iv = DefaultCurrentVersion(rd);
+
+                    var vOver = this.ClientVersionOverride;
+                    if (vOver != null && vOver != iv)
                     {
-                        iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.PublicVersionValue));
+                        var overridden = OverrideVersion(iv, vOver);
+                        currentVersionIsOverridden = overridden != null;
+                        iv = overridden ?? iv;
                     }
                     else
-                    {
-                        iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.CurrentValue(Mode)));
-
-                        var vOver = this.ClientVersionOverride;
-                        if (vOver != null && vOver != iv)
-                        {
-                            var overridden = OverrideVersion(iv, vOver);
-                            currentVersionIsOverridden = overridden != null;
-                            iv = overridden ?? iv;
-                        } 
-                        else
-                            currentVersionIsOverridden = false;
-                    }
-
-                    if (Mode == VersioningMode.Current)
-                        RequestThreadCache.Current[CurrentVersionKey + UniqueId] = new ItemVersion(iv);
-
-                    return iv;
+                        currentVersionIsOverridden = false;
                 }
-                return new ItemVersion((ItemVersion)RequestThreadCache.Current[CurrentVersionKey + UniqueId]);
+
+                if (Mode == VersioningMode.Current)
+                    RequestThreadCache.Current[CurrentVersionKey + UniqueId] = new ItemVersion(iv);
+
+                return iv;
             }
+            return new ItemVersion((ItemVersion)RequestThreadCache.Current[CurrentVersionKey + UniqueId]);
+        }
+
+        /// <summary>
+        /// Invalidate cached current version
+        /// </summary>
+        public void InvalidateCurrentVersion()
+        {
+            this.currentVersionInvalidated = true;
+        }
+
+        /// <summary>
+        /// The current version before any override
+        /// </summary>
+        /// <returns>Current version before override</returns>
+        public ItemVersion DefaultCurrentVersion(RouteData rd = null)
+        {
+            if (rd == null)
+                rd = RequestContextManager.Instance.CurrentContext?.GetRouteData();
+            return new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.CurrentValue(VersioningMode.Current, rd)));
         }
 
         bool currentVersionIsOverridden = false;
@@ -409,6 +439,15 @@ namespace Lynicon.Extensibility
             return PushState(mode, null);
         }
         /// <summary>
+        /// Push a versioning state with a specific ItemVersion (making it active)
+        /// </summary>
+        /// <param name="specificVersion">The SpecificVersion to push</param>
+        /// <returns>A versioning context which ensures this pushed changed is removed</returns>
+        public VersioningContext PushState(ItemVersion specificVersion)
+        {
+            return PushState(VersioningMode.Specific, specificVersion);
+        }
+        /// <summary>
         /// Push a versioning state with a VersioningMode and a specific ItemVersion (making it active)
         /// </summary>
         /// <param name="mode">The VersioningMode to push</param>
@@ -511,7 +550,9 @@ namespace Lynicon.Extensibility
         /// <returns>ItemVersion with null values for all the keys applicable</returns>
         public ItemVersion VersionForType(Type type)
         {
-            var iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => (object)null));
+            var iv = new ItemVersion(Versioners
+                .Where(v => v.Versionable(type))
+                .ToDictionary(vnr => vnr.VersionKey, vnr => (object)null));
             return iv;
         }
 
@@ -528,6 +569,56 @@ namespace Lynicon.Extensibility
                     return false;
 
             return true;
+        }
+
+        public ItemVersion RulesMask(ItemVersion version)
+        {
+            var iv = new ItemVersion(Versioners.ToDictionary(vnr => vnr.VersionKey, vnr => vnr.NoRules ? version[vnr.VersionKey] : null));
+            return iv;
+        }
+
+        public VersionAction[] ApplyVersionAction(IEnumerable<ItemVersion> versions, VersionAction action, int depth = 0)
+        {
+            if (depth > 15)
+                throw new Exception("ApplyVersionAction expansion too deep");
+
+            var result = ApplyVersionActionStep(versions, action);
+            if (result.ToString() == action.ToString())
+                return result;
+
+            return result.SelectMany(va => ApplyVersionAction(versions, va, depth + 1)).ToArray();
+        }
+
+        private string AsString(VersionAction[] versionActions)
+        {
+            return versionActions.Join("&");
+        }
+
+        private VersionAction[] ApplyVersionActionStep(IEnumerable<ItemVersion> versions, VersionAction action)
+        {
+            var versionActions = new List<VersionAction>();
+            foreach (var versioner in Versioners)
+            {
+                if (!action.Version.ContainsKey(versioner.VersionKey))
+                    continue;
+
+                // get all versions which only differ in the version key of this versioner from the version we are operating on
+                var match = new ItemVersion(action.Version.ToDictionary(v => v.Key, v => v.Key == versioner.VersionKey ? null : v.Value));
+                var inSpace = versions.Where(v => v.ContainedBy(match)).Select(v => v[versioner.VersionKey]).ToArray();
+
+                var keyActions = versioner.ApplyVersionAction(inSpace, new VersionKeyAction { Op = action.Op, Value = action.Version[versioner.VersionKey] });
+
+                // promote keyActions to actions, add to versionActions
+                var actions = keyActions.Select(ka => new VersionAction(action.Version, versioner.VersionKey, ka));
+                versionActions.AddRange(actions);
+            }
+
+            versionActions = versionActions.Distinct().OrderBy(va => va.ToString()).ToList();
+
+            if (versionActions.Any(va => va.Op == DataOp.Delete && versionActions.Any(va2 => va2.Op == DataOp.Create && va2.Version == va.Version)))
+                throw new Exception("Cannot perform version operation as it requires both adding and deleting a version");
+
+            return versionActions.ToArray();
         }
 
         /// <summary>
@@ -592,6 +683,15 @@ namespace Lynicon.Extensibility
                 url = versioner.GetVersionUrl(url, version);
             }
             return url;
+        }
+
+        public Address GetVersionAddress(Address a, ItemVersion version)
+        {
+            foreach (var versioner in Versioners)
+            {
+                a = versioner.GetVersionAddress(a, version);
+            }
+            return a;
         }
         
         /// <summary>

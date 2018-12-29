@@ -35,7 +35,20 @@ namespace Lynicon.Editors
         public IActionResult Index(object data)
         {
             string rowFields = (string)RouteData.DataTokens["rowFields"];
-            SetViewBag(data, 0, rowFields);
+            int itemIndex = 0;
+            bool newItem = false;
+            if (((IList)data).Count == 0)
+            {
+                Type type = data.GetType().GetGenericArguments()[0];
+                var item = Collator.Instance.GetNew(type, null);
+                ((IList)data).Add(item);
+                RouteData.DataTokens.Add("LynNewItem", true);
+                newItem = true;
+            }
+            SetViewBag(data, itemIndex, rowFields);
+            if (newItem)
+                ViewData["ItemIndex"] = -1;
+
             return View((string)RouteData.DataTokens["view"] ?? "LyniconListDetail", data);
         }
 

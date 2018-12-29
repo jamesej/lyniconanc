@@ -24,11 +24,14 @@ namespace Lynicon.Controllers
         /// <param name="version">The new version</param>
         /// <returns>Status of operation</returns>
         [Area("Lynicon")]
-        public IActionResult ChangeVersion(Dictionary<string, string[]> version)
+        public IActionResult ChangeVersion(Dictionary<string, string[]> version, string url)
         {
-            ItemVersion iv = new ItemVersion(version.ToDictionary(kvp => kvp.Key, kvp => JsonConvert.DeserializeObject(kvp.Value[0])));
-            sys.Versions.ClientVersionOverride = iv;
-            return Content("OK");
+            ItemVersion unaddressableMask = new ItemVersion(VersionManager.Instance.UnaddressableVersionKeys.ToDictionary(k => k, k => (object)null));
+            ItemVersion iv = new ItemVersion(version
+                .ToDictionary(kvp => kvp.Key, kvp => JsonConvert.DeserializeObject(kvp.Value[0])));
+            sys.Versions.ClientVersionOverride = iv.Mask(unaddressableMask);
+            string newUrl = VersionManager.Instance.GetVersionUrl(url, iv);
+            return Content(newUrl);
         }
 
         /// <summary>

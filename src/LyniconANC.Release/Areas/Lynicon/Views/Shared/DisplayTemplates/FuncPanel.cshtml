@@ -138,8 +138,8 @@
             $('#version-unit .lyn-vd-val').each(function () {
                 versions[$(this).data('vsn-key')] = $(this).val();
             });
-            $.post('/lynicon/version/changeversion', { version: versions }, function () {
-                location.replace(location.href);
+            $.post('/lynicon/version/changeversion', { url: location.href, version: versions }, function (d) {
+                location.replace(d);
             });
         });
     });

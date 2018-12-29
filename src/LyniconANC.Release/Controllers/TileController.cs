@@ -24,6 +24,11 @@ namespace Lynicon.Test.Controllers
             return View(data);
         }
 
+        public IActionResult List(List<TileContent> data)
+        {
+            return null;
+        }
+
         public IActionResult TileMaterial(TileMaterialContent data)
         {
             // property injection of the full LyniconSystem so that

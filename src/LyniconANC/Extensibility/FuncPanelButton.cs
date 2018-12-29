@@ -31,5 +31,10 @@ namespace Lynicon.Extensibility
         /// Url button links to when clicked
         /// </summary>
         public string Url { get; set; }
+
+        public string GetUrl(string currentUrl)
+        {
+            return Url.Replace("|url|", currentUrl);
+        }
     }
 }

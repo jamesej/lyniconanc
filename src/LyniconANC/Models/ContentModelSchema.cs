@@ -34,7 +34,7 @@ namespace Lynicon.Models
             return schema;
         }
 
-        Dictionary<string, Dictionary<string, string>> typeProperties = new Dictionary<string,Dictionary<string,string>>();
+        Dictionary<string, Dictionary<string, string>> typeProperties = new Dictionary<string, Dictionary<string, string>>();
         /// <summary>
         /// Dictionary where the key is the assembly qualified type name and the value is a dictionary of property name keys with type name values
         /// </summary>
@@ -76,6 +76,18 @@ namespace Lynicon.Models
             set { summaryMap = value; }
         }
 
+        Dictionary<string, Dictionary<string, Dictionary<string, string>>> attributeMap = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+        /// <summary>
+        /// Dictionary where key is a content type name and the value is a dictionary where the key is a property
+        /// name and the value the list of serialized relevant attributes on that property. A property is not listed if
+        /// it has no attributes.
+        /// </summary>
+        public Dictionary<string, Dictionary<string, Dictionary<string, string>>> AttributeMap
+        {
+            get { return attributeMap; }
+            set { attributeMap = value; }
+        }
+
         /// <summary>
         /// Add all the details for a content type to this
         /// </summary>
@@ -84,7 +96,7 @@ namespace Lynicon.Models
         {
             ContentTypes.Add(t.FullName);
             AddTypeInner(t);
-            
+            AddAttributeMap(t);
         }
 
         /// <summary>
@@ -141,6 +153,26 @@ namespace Lynicon.Models
             }
         }
 
+        private void AddAttributeMap(Type t)
+        {
+            var map = new Dictionary<string, Dictionary<string, string>>();
+            foreach (var prop in t.GetPersistedProperties())
+            {
+                var attrs = new Dictionary<string, string>();
+                foreach (var attr in prop.GetCustomAttributes())
+                {
+                    if (attr is IStoredSchemaAttribute storedAttribute)
+                    {
+                        attrs.Add(storedAttribute.GetType().FullName, storedAttribute.Serialize());
+                    }
+                }
+                if (attrs.Count > 0)
+                    map.Add(prop.Name, attrs);
+            }
+            if (map.Count > 0)
+                AttributeMap.Add(t.FullName, map);
+        }
+
         public ContentModelSchema Copy()
         {
             var copy = new ContentModelSchema
@@ -186,6 +218,24 @@ namespace Lynicon.Models
             {
                 // Check it doesn't initialise with a null value for an object or list property
                 Type type = ContentTypeHierarchy.GetAnyType(typeName);
+
+                if (type != null && codeSchema.AttributeMap.ContainsKey(type.FullName))
+                {
+                    var map = codeSchema.AttributeMap[type.FullName];
+                    string attrIdx = typeof(AddressComponentAttribute).FullName;
+                    foreach (var prop in map.Keys)
+                    {
+                        if (map[prop].ContainsKey(attrIdx)
+                            && ((!(AttributeMap.ContainsKey(type.FullName)
+                                 && AttributeMap[type.FullName].ContainsKey(prop)
+                                 && AttributeMap[type.FullName][prop].ContainsKey(attrIdx)))
+                                || AttributeMap[type.FullName][prop][attrIdx] != map[prop][attrIdx]))
+                        {
+                            changeProblems.Add(new ChangeProblem(type.FullName, prop, ChangeProblemType.AddressComponentAttributePropertyChanged));
+                        }
+                    }
+                }
+
                 if (type == null)
                     type = otherTypes[typeName];
                 PropertyInfo nullProperty = new NoNullObjectCheck().Run(type);

@@ -7,6 +7,7 @@ using Lynicon.Collation;
 using Lynicon.Membership;
 using Lynicon.Models;
 using Lynicon.Services;
+using Microsoft.AspNetCore.Routing;
 
 namespace Lynicon.Extensibility
 {
@@ -41,6 +42,8 @@ namespace Lynicon.Extensibility
         /// </summary>
         public abstract bool IsAddressable { get; }
 
+        public bool NoRules { get; protected set; }
+
         /// <summary>
         /// The Lynicon system in which the versioner runs
         /// </summary>
@@ -53,6 +56,7 @@ namespace Lynicon.Extensibility
         {
             this.IsVersionable = null;
             this.System = sys;
+            this.NoRules = true; // default
         }
 
         /// <summary>
@@ -89,8 +93,9 @@ namespace Lynicon.Extensibility
         /// Get the current value for this versioning system using supplied mode
         /// </summary>
         /// <param name="mode">The mode to use</param>
+        /// <param name="rd">The route data to use for addressable versioning</param>
         /// <returns>The current value for this versioning system</returns>
-        public abstract object CurrentValue(VersioningMode mode);
+        public abstract object CurrentValue(VersioningMode mode, RouteData rd);
         /// <summary>
         /// Get the versioning system value from a container
         /// </summary>
@@ -128,12 +133,37 @@ namespace Lynicon.Extensibility
         {
             return url;
         }
+
+        /// <summary>
+        /// Given an address add any keys required for it to refer to a content item with the versioning value
+        /// contained in the supplied ItemVersion for this versioning system. This will leave the
+        /// address unchanged for 'unaddressable' version keys
+        /// </summary>
+        /// <param name="a">The address to modify</param>
+        /// <param name="version">The version to which to modify the address</param>
+        /// <returns>Modified address</returns>
+        public virtual Address GetVersionAddress(Address a, ItemVersion version)
+        {
+            return a;
+        }
         /// <summary>
         /// Get the version values which can be viewed by the supplied user for this version key
         /// </summary>
         /// <param name="u">The user</param>
         /// <returns>List of version values which the user can view</returns>
         public abstract List<object> GetAllowedVersions(IUser u);
+
+        /// <summary>
+        /// Given an action to perform in the version space, transform that action in accordance with the
+        /// rules of the space. For a space with no rules (NoRules = true) the action is unchanged.
+        /// </summary>
+        /// <param name="existingValues">Existing values within version space</param>
+        /// <param name="action">Action to perform on version space</param>
+        /// <returns>Action transformed into series of actions to conform to version space rules, or null if illegal operation</returns>
+        public virtual VersionKeyAction[] ApplyVersionAction(IEnumerable<object> existingValues, VersionKeyAction action)
+        {
+            return new VersionKeyAction[] { action };
+        }
 
     }
 }

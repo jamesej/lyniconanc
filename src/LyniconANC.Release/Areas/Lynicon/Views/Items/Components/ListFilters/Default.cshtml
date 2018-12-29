@@ -35,6 +35,8 @@ h2 { color: #aaa; padding: 4px; font-size: 20px; background-color: #F1F1F1; marg
     var filters = LyniconUi.Instance.Filters;
     var versSelector = (List<VersionSelectionViewModel>)ViewData["VersionSelector"];
     int vIdx = 0;
+    var buttonVersions = new List<ItemVersion>();
+    int buttonIdx = 0;
 }
 <div id="left-panel">
     <form id="filter-section" action="/Lynicon/Items/FilterItems?$top=25">
@@ -80,13 +82,21 @@ h2 { color: #aaa; padding: 4px; font-size: 20px; background-color: #F1F1F1; marg
     <div id="buttons">
         @foreach (var ilb in LyniconUi.Instance.CurrentItemsListButtons())
         {
-            <button class="items-list-button" data-url="/@ilb.Url" data-confirm="@ilb.ConfirmMessage">@ilb.Caption</button>
+            buttonVersions.Add(ilb.VisibilityVersionMask == null ? null : ilb.VisibilityVersionMask());
+            <div class="button-container button-@buttonIdx">
+                @if (ilb.DropDown != null)
+                {
+                    @Html.DropDownList("button-ddl-" + buttonIdx, ilb.DropDown, ilb.DropDownPlaceholder, new { @class = "locale-select" })
+                }
+                <button class="items-list-button" data-url="/@ilb.Url" data-confirm="@ilb.ConfirmMessage">@ilb.Caption</button>
+            </div>
+            buttonIdx++;
         }
     </div>
     <div id="result"></div>
 </div>
 
-
+@Html.ClientScriptAssign("buttonVersions", buttonVersions);
 <script type="text/javascript">
     //$.ajax({ traditional: true });
     $('#filter-section').find(".chosen-select").chosen({ search_contains: true });
@@ -226,15 +236,41 @@ h2 { color: #aaa; padding: 4px; font-size: 20px; background-color: #F1F1F1; marg
     });
 
     // functions
+    function setVisibleByVersion() {
+        var vsns = getVersions();
+        for (var i = 0; i < $('#buttons').children().length; i++) {
+            if (buttonVersions[i] === null)
+                continue;
+            var buttonVersion = JSON.parse(buttonVersions[i]);
+            show = true;
+            for (var key in buttonVersion) {
+                if (buttonVersion.hasOwnProperty(key) && vsns.hasOwnProperty(key) && buttonVersion[key] != null && JSON.parse(vsns[key]) != buttonVersion[key]) {
+                    show = false;
+                    break;
+                }
+            }
+            $(".button-" + i).toggle(show);
+        }
+    }
+    setVisibleByVersion();
+    $('#version-filter').on('change', '.version-select', setVisibleByVersion);
+
     $('#buttons').on('click', '.items-list-button', function (ev) {
         ev.preventDefault();
         var $this = $(this);
+        var $select = $this.siblings('select');
+        if ($select.length) {
+            if (!$select.val()) {
+                alert('Please select an item');
+                return;
+            }
+        }
         if ($this.data('confirm') && !confirm($this.data('confirm')))
             return;
         var url = $this.data('url');
         var origText = $this.text();
         $this.text('Working...');
-        $.post(url, { itemIds: getChecks(), version: getVersions() }, function (html) {
+        $.post(url, { itemIds: getChecks(), version: getVersions(), selected: $select.val() }, function (html) {
             if (html) $('#result').html(html);
         }).always(function () {
             $this.text(origText);

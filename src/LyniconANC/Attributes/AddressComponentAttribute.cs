@@ -11,7 +11,7 @@ namespace Lynicon.Attributes
     /// Indicates a property of a content container is used as part of its address
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class AddressComponentAttribute : Attribute
+    public class AddressComponentAttribute : Attribute, IStoredSchemaAttribute
     {
         /// <summary>
         /// The route key (e.g. for "{_0}" in the route's url pattern the route key is "_0") to which the property maps
@@ -35,6 +35,19 @@ namespace Lynicon.Attributes
         {
             this.RouteKey = routeKey;
             this.UsePath = false;
+        }
+
+        public string Serialize()
+        {
+            return $"{RouteKey}|{ConversionFormat}|{UsePath}";
+        }
+
+        public void Deserialize(string serialized)
+        {
+            var parts = serialized.Split('|');
+            RouteKey = parts[0];
+            ConversionFormat = parts[1];
+            UsePath = (parts[2] == true.ToString());
         }
     }
 }

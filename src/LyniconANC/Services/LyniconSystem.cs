@@ -149,5 +149,34 @@ namespace Lynicon.Services
         {
             return "~" + Settings.LyniconAreaBaseUrl + "Views/Shared/" + name;
         }
+
+        /// <summary>
+        /// Not complete
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="superimposition"></param>
+        /// <returns></returns>
+        public string CopyVersion(object container, ItemVersion superimposition)
+        {
+            var summ = this.Collator.GetSummary<Summary>(container);
+            var newVersion = summ.Version.Superimpose(superimposition);
+            if (newVersion == summ.Version)
+                return null;
+
+            var rulesMask = this.Versions.RulesMask(newVersion);
+
+            if (!rulesMask.Any(kvp => kvp.Value == null)) // 
+                return null;
+
+            // Get summaries of all versions of item
+            Guid identity = (Guid)summ.Id;
+            using (var ctx = Versions.PushState(VersioningMode.Specific, rulesMask))
+            {
+                var versionSumms = this.Collator.Get<Summary, ICoreMetadata>(iq => iq.Where(cm => cm.Identity == identity));
+                //var actions =
+            }
+
+            return null;
+        }
     }
 }

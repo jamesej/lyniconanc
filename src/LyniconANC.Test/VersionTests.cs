@@ -125,7 +125,7 @@ namespace LyniconANC.Test
             return typeof(IPublishable).IsAssignableFrom(containerType);
         }
 
-        public override object CurrentValue(VersioningMode mode)
+        public override object CurrentValue(VersioningMode mode, RouteData rd)
         {
             bool isEditor = false;
             try
@@ -191,6 +191,17 @@ namespace LyniconANC.Test
             else
                 return new List<object> { true };
         }
+
+        public override VersionKeyAction[] ApplyVersionAction(IEnumerable<object> existingValues, VersionKeyAction action)
+        {
+            // Cannot create a published item without an unpublished item
+            if (existingValues.Count() == 0 && (bool)action.Value == true && action.Op == DataOp.Create)
+            {
+                return new VersionKeyAction[] { action, new VersionKeyAction { Op = DataOp.Create, Value = false } };
+            }
+
+            return base.ApplyVersionAction(existingValues, action);
+        }
     }
 
     public class I18nVersioner : Versioner
@@ -240,9 +251,8 @@ namespace LyniconANC.Test
             return typeof(IInternational).IsAssignableFrom(containerType);
         }
 
-        public override object CurrentValue(VersioningMode mode)
+        public override object CurrentValue(VersioningMode mode, RouteData rd)
         {
-            var rd = RouteX.CurrentRouteData();
             string locale;
             if (rd == null || rd.Values[localeRouteKey] == null)
                 locale = defaultLocale;

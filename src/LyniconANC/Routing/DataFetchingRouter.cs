@@ -10,6 +10,7 @@ using Lynicon.Utility;
 using Lynicon.Collation;
 using Lynicon.Extensibility;
 using Lynicon.Editors;
+using System.Collections;
 
 namespace Lynicon.Routing
 {
@@ -55,14 +56,19 @@ namespace Lynicon.Routing
             {
                 string typeSpec = qsParams.ContainsKey("$type") ? qsParams["$type"][0] : qsParams["$create"][0];
                 typeSpec = typeSpec.ToLower();
+                Type type = typeof(T);
+                if (typeof(IList).IsAssignableFrom(type) && type.IsGenericType)
+                {
+                    type = type.GetGenericArguments()[0];
+                }
                 if (typeSpec.Contains("."))
                 {
-                    if (typeof(T).FullName.ToLower() != typeSpec)
+                    if (type.FullName.ToLower() != typeSpec)
                         return;
                 }
                 else
                 {
-                    string typeName = typeof(T).Name.ToLower();
+                    string typeName = type.Name.ToLower();
                     if (typeName.EndsWith("content"))
                         typeName = typeName.UpToLast("content");
                     if (typeName != typeSpec && typeName + "content" != typeSpec)
@@ -78,8 +84,8 @@ namespace Lynicon.Routing
                 .Where(kvp => specialQueryParams.Contains(kvp.Key))
                 .Do(kvp => context.RouteData.DataTokens.Add(kvp.Key, kvp.Value[0]));
 
-            // May be pointless
-            context.HttpContext.Items[RouteX.CurrentRouteDataKey] = context.RouteData;
+            // current version may be based on route data if it has addressable elements
+            VersionManager.Instance.InvalidateCurrentVersion();
 
             var data = GetData(context.RouteData);
 
@@ -128,20 +134,26 @@ namespace Lynicon.Routing
 
         protected virtual object GetData(RouteData rd)
         {
-            if (DataFetchingRouter.TypeCheckExistenceBySummary(typeof(T)))
+            // versioning may depend on route (for addressable versions) so we need to ensure the current
+            // version is the one for the route we are currently on
+            var currentForRoute = VersionManager.Instance.GetCurrentVersionForRoute(rd);
+            using (var ctx = VersionManager.Instance.PushState(currentForRoute))
             {
-                bool isList = typeof(T).IsGenericType() && typeof(T).GetGenericTypeDefinition() == typeof(List<>);
-                if (!isList)
+                if (DataFetchingRouter.TypeCheckExistenceBySummary(typeof(T)))
                 {
-                    Summary summ = Collator.Instance.Get<Summary>(typeof(T), rd);
-                    if (summ == null)
-                        return null;
+                    bool isList = typeof(T).IsGenericType() && typeof(T).GetGenericTypeDefinition() == typeof(List<>);
+                    if (!isList)
+                    {
+                        Summary summ = Collator.Instance.Get<Summary>(typeof(T), rd);
+                        if (summ == null)
+                            return null;
+                    }
                 }
+                if (LazyData)
+                    return new Lazy<T>(() => Collator.Instance.Get<T>(rd));
+                else
+                    return Collator.Instance.Get<T>(rd);
             }
-            if (LazyData)
-                return new Lazy<T>(() => Collator.Instance.Get<T>(rd));
-            else
-                return Collator.Instance.Get<T>(rd);
         }
     }
 }

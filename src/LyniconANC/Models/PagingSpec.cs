@@ -61,10 +61,16 @@ namespace Lynicon.Models
         /// How many items to take from the data list after skipping
         /// </summary>
         public int Take { get; set; }
+
+        int total = 0;
         /// <summary>
         /// The total number of items in the data list
         /// </summary>
-        public int Total { get; set; }
+        public int Total
+        {
+            get { return Math.Max(total, Skip); } // we want to be able to control return from a skip beyond the end of the items
+            set { total = value; }
+        }
         /// <summary>
         /// The field by which to sort the data list
         /// </summary>

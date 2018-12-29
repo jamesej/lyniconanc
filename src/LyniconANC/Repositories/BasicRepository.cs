@@ -294,6 +294,7 @@ namespace Lynicon.Repositories
 
         protected virtual void DoAdd(IDataSource dataSource, object item, PropertyInfo idProp, bool wasHandled)
         {
+            // Only creates new guid if no guid set: allows client code to preset the id
             if (idProp.PropertyType == typeof(Guid) && (Guid)idProp.GetValue(item) == Guid.Empty)
                 idProp.SetValue(item, Guid.NewGuid());
             if (item is IBasicAuditable)

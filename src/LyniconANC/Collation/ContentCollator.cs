@@ -272,18 +272,17 @@ namespace Lynicon.Collation
 
             string path = dataPath ?? routePath;
 
-            // if we have an extended content object, we can use the OriginalRecord if must as we have no path, or if the path is the same
-            if (data is ICoreMetadata)
+            // if our data is ICoreMetadata, we can copy it's metadata onto a content item
+            if (data is ICoreMetadata && ((ICoreMetadata)data).HasMetadata())
             {
                 contentItem = (ContentItem)Activator.CreateInstance(System.Extender[typeof(ContentItem)] ?? typeof(ContentItem));
                 TypeExtender.CopyExtensionData(data, contentItem);
                 contentItem.DataType = data.GetType().UnextendedType().FullName;
                 
-                if (path == null || path == contentItem.Path)
-                {
-                    contentItem.SetContent(System, data);
-                    return contentItem;
-                }
+                contentItem.SetContent(System, data);
+                if (path != null)
+                    contentItem.Path = path;
+                return contentItem;
             }
 
             // If we get to here, we can't find the path

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Lynicon.Membership;
 using Lynicon.Services;
+using Microsoft.AspNetCore.Routing;
 
 namespace LyniconANC.Test
 {
@@ -67,7 +68,7 @@ namespace LyniconANC.Test
             return "en-GB";
         }
 
-        public override object CurrentValue(VersioningMode mode)
+        public override object CurrentValue(VersioningMode mode, RouteData rd)
         {
             return "en-GB";
         }

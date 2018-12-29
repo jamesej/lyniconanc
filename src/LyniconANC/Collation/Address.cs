@@ -54,17 +54,26 @@ namespace Lynicon.Collation
         {
 
             var addressProps = cont.GetType().GetProperties()
-                .Select(pi => new { pi, attr = pi.GetCustomAttribute<AddressComponentAttribute>() })
+                .Select(pi => new
+                {
+                    pi,
+                    attr = pi.GetCustomAttribute<AddressComponentAttribute>(),
+                    preference = (pi.GetCustomAttribute<ScaffoldColumnAttribute>()?.Scaffold ?? true) ? 1 : 0 // prefer attributes that can be edited by the user: these should override others
+                })
                 .Where(pii => pii.attr != null)
+                .OrderByDescending(pii => pii.preference)
                 .ToList();
             if (addressProps.Any(ap => ap.attr.UsePath))
                 return FromPath((string)addressProps.First(ap => ap.attr.UsePath).pi.GetValue(cont));
             else
             {
                 var dict = new Dictionary<string, object>();
-                addressProps.Do(pii => dict.Add(
-                    pii.attr.RouteKey ?? ("_" + pii.pi.Name),
-                    pii.pi.GetValue(cont)));
+                addressProps.Do(pii =>
+                {
+                    string key = pii.attr.RouteKey ?? ("_" + pii.pi.Name);
+                    if (!dict.ContainsKey(key))
+                        dict.Add(key, pii.pi.GetValue(cont));
+                });
 
                 if (dict.Count == 0)
                 {
@@ -114,7 +123,7 @@ namespace Lynicon.Collation
             {
                 Type unexType = value.UnextendedType();
                 if (!ContentTypeHierarchy.AllContentTypes.Contains(unexType))
-                    throw new ArgumentException("Can't set address type to non-content type " + value.FullName);
+                    throw new ArgumentException("Can't set address type to non-content type " + value.FullName + ". You may want to register this type using UseTypeSetup().");
                 type = unexType;
             }
         }
@@ -265,40 +274,53 @@ namespace Lynicon.Collation
                 .GetProperties()
                 .Select(pi => new { Prop = pi, Attr = pi.GetCustomAttribute<AddressComponentAttribute>() })
                 .Where(pii => pii.Attr != null)
-                .ToDictionary(pii => pii.Attr.RouteKey ?? "|PATH|", pii => pii.Prop);
+                .ToLookup(pii => pii.Attr.RouteKey ?? "|PATH|", pii => pii.Prop);
 
             foreach (var kvp in this)
             {
-                PropertyInfo pi = null;
-                if (propMap.ContainsKey(kvp.Key))
-                    pi = propMap[kvp.Key];
+                List<PropertyInfo> pis = new List<PropertyInfo>();
+                if (propMap.Contains(kvp.Key))
+                    pis = propMap[kvp.Key].ToList();
                 else
-                    pi = item.GetType().GetProperty(kvp.Key);
+                    pis = new List<PropertyInfo> { item.GetType().GetProperty(kvp.Key) };
 
-                if (pi == null) continue;
+                if (pis.Count == 0) continue;
 
                 object val = kvp.Value;
-                if (val is string && pi.PropertyType != typeof(string))
-                {
-                    TypeConverter typeConverter = TypeDescriptor.GetConverter(pi.PropertyType);
-                    val = typeConverter.ConvertFromString(val as string);
-                }
 
-                pi.SetValue(item, val);
+                foreach (var pi in pis)
+                {
+                    if (pi == null)
+                        continue;
+
+                    if (val is string && pi.PropertyType != typeof(string))
+                    {
+                        TypeConverter typeConverter = TypeDescriptor.GetConverter(pi.PropertyType);
+                        val = typeConverter.ConvertFromString(val as string);
+                    }
+
+                    pi.SetValue(item, val);
+                }
             }
 
             // Clear properties on item with no matching entry in the Address to default values
-            foreach (var key in propMap.Keys.Except(this.Keys))
+            foreach (var key in propMap.Select(il => il.Key).Except(this.Keys))
             {
                 if (key == "|PATH|")
-                    propMap["|PATH|"].SetValue(item, this.GetAsContentPath());
+                {
+                    foreach (var pi in propMap["|PATH|"])
+                        pi.SetValue(item, this.GetAsContentPath());
+                }
                 else
                 {
-                    Type propType = propMap[key].PropertyType;
-                    if (propType.IsValueType())
-                        propMap[key].SetValue(item, Activator.CreateInstance(propType));
-                    else
-                        propMap[key].SetValue(item, null);
+                    foreach (var pi in propMap[key])
+                    {
+                        Type propType = pi.PropertyType;
+                        if (propType.IsValueType())
+                            pi.SetValue(item, Activator.CreateInstance(propType));
+                        else
+                            pi.SetValue(item, null);
+                    }
                 }
             }
         }

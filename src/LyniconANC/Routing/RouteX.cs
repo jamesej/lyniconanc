@@ -16,6 +16,7 @@ using Lynicon.Map;
 using Microsoft.AspNetCore.Http;
 using System.Reflection;
 using Lynicon.Editors;
+using Lynicon.Services;
 
 namespace Lynicon.Routing
 {
@@ -25,22 +26,6 @@ namespace Lynicon.Routing
     public static class RouteX
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(typeof(RouteX));
-
-        public const string CurrentRouteDataKey = "LynCurrRD";
-
-        /// <summary>
-        /// Get the current route data from the request cache for places where the route data is not otherwise
-        /// available
-        /// </summary>
-        /// <returns></returns>
-        static public RouteData CurrentRouteData()
-        {
-            if (RequestContextManager.Instance.CurrentContext == null
-                || RequestContextManager.Instance.CurrentContext.Items[RouteX.CurrentRouteDataKey] == null)
-                return null;
-            var rd = (RouteData)RequestContextManager.Instance.CurrentContext.Items[RouteX.CurrentRouteDataKey];
-            return rd;
-        }
 
         /// <summary>
         /// Redirect the indicated area, controller and action in a RouteData elsewhere
@@ -202,7 +187,11 @@ namespace Lynicon.Routing
                 ContentMap.Instance.RouteCollection = new RouteCollection();
             ContentMap.Instance.RouteCollection.Add(dataRoute);
 
-            ContentTypeHierarchy.RegisterType(typeof(T));
+            Type registerType = typeof(T);
+            if (registerType.IsGenericType() && registerType.GetGenericTypeDefinition() == typeof(List<>))
+                registerType = registerType.GetGenericArguments()[0];
+
+            ContentTypeHierarchy.RegisterType(registerType);
 
             return routeBuilder;
         }
@@ -314,6 +303,23 @@ namespace Lynicon.Routing
 
         public static IEnumerable<string> GetTemplatePatterns(this IRouter router, Type contentType, RouteData rd)
         {
+            // Get route data value keys implied by addressable elements of current version
+            var versionManager = LyniconSystem.Instance.Versions;
+            var emptyAddress = new Address(contentType, "");
+            var versionAddress = versionManager.GetVersionAddress(emptyAddress, versionManager.CurrentVersion);
+            if (versionAddress.Count > 0)
+            {
+                if (rd == null)
+                    rd = new RouteData();
+                else
+                    rd = rd.Copy(); // don't mutate the passed in rd
+                foreach (var kvp in versionAddress)
+                {
+                    if (!rd.Values.ContainsKey(kvp.Key))
+                        rd.Values.Add(kvp.Key, kvp.Value);
+                }
+            }
+
             if (router is DataRoute && ((DataRoute)router).DataType == contentType)
                 foreach (string tp in ((DataRoute)router).GetTemplatePatterns(rd))
                     yield return tp;
@@ -359,7 +365,7 @@ namespace Lynicon.Routing
                 else
                 {
                     string keyVal = "";
-                    if (rd != null && rd.Values.ContainsKey(keyVal))
+                    if (rd != null && rd.Values.ContainsKey(key))
                         keyVal = rd.Values[key].ToString();
                     if (key.StartsWith("_"))
                     {
@@ -506,7 +512,7 @@ namespace Lynicon.Routing
 
         public static string CreateUrlFromRouteValues(RouteValueDictionary routeValues)
         {
-            var vpc = new VirtualPathContext(new MockHttpContext(""), new RouteValueDictionary(), routeValues);
+            var vpc = new VirtualPathContext(new MockHttpContext("http://dummy.com"), new RouteValueDictionary(), routeValues);
             var virtualPathData = ContentMap.Instance.RouteCollection.GetVirtualPath(vpc);
             if (virtualPathData == null)
             {

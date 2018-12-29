@@ -32,6 +32,7 @@
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
     },
     "LyniconANC.Release.Models.TileContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
+      "UrlSlug": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Material": "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
       "AvailableColours": "System.Collections.Generic.List`1[[LyniconANC.Release.Models.TileColour, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Widthmm": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
@@ -128,13 +129,13 @@
     "LyniconANC.Release.Models.TileMaterialContent"
   ],
   "SummaryTypes": {
+    "Lynicon.Membership.User": "Lynicon.Models.Summary",
     "LyniconANC.Release.Models.HomeContent": "Lynicon.Models.Summary",
     "LyniconANC.Release.Models.CommonContent": "Lynicon.Models.Summary",
     "LyniconANC.Release.Models.TileContent": "LyniconANC.Release.Models.TileSummary",
     "LyniconANC.Release.Models.EquipmentContent": "LyniconANC.Release.Models.EquipmentSummary",
     "LyniconANC.Release.Models.MaterialsLandingContent": "Lynicon.Models.Summary",
-    "LyniconANC.Release.Models.TileMaterialContent": "Lynicon.Models.Summary",
-    "Lynicon.Membership.User": "Lynicon.Models.Summary"
+    "LyniconANC.Release.Models.TileMaterialContent": "Lynicon.Models.Summary"
   },
   "SummaryMap": {
     "LyniconANC.Release.Models.TileSummary": {
@@ -157,12 +158,6 @@
       "Discount": "Discount",
       "Caption": "Caption"
     }
-  }
-}ion": "Caption"
-    }
-  }
-}scount": "Discount",
-      "Caption": "Caption"
-    }
-  }
+  },
+  "AttributeMap": {}
 }

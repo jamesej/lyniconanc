@@ -16,7 +16,6 @@ CREATE TABLE [dbo].[ContentItems](
 	[Identity] [uniqueidentifier] NOT NULL,
 	[DataType] [varchar](250) NOT NULL,
 	[Path] [nvarchar](250) NULL,
-	[Locale] [varchar](10) NULL,
 	[Summary] [nvarchar](max) NULL,
 	[Content] [nvarchar](max) NULL,
 	[Title] [nvarchar](250) NULL,

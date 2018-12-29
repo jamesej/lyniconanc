@@ -74,7 +74,7 @@ namespace Lynicon.Modules
                 Id = "fpbMainLogin",
                 Caption = "Log In",
                 DisplayPermission = new ContentPermission { TestPermitted = (roles, data) => !roles.Contains("E") },
-                Url = "/Lynicon/Login",
+                Url = "/Lynicon/Login?returnUrl=$$CurrentUrl$$",
                 Section = "Global"
             });
             LyniconUi.Instance.FuncPanelButtons.Add(new FuncPanelButton

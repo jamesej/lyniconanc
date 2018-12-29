@@ -174,8 +174,7 @@ namespace Lynicon.Repositories
         /// <summary>
         /// Get some items by their ids
         /// </summary>
-        /// <typeparam name="T">type of items returned by repository</typeparam>
-        /// <param name="targetType">type of items these will produce (can be a summary type)</param>
+        /// <typeparam name="T">type of items returned by repository (note can't be a Summary type)</typeparam>
         /// <param name="ids">ids of items</param>
         /// <returns>items in containers or the items themselves</returns>
         public IEnumerable<T> Get<T>(IEnumerable<ItemId> ids) where T : class
@@ -185,7 +184,7 @@ namespace Lynicon.Repositories
         /// <summary>
         /// Get some items by their ids
         /// </summary>
-        /// <typeparam name="T">type of items returned by repository</typeparam>
+        /// <typeparam name="T">type of items returned by repository (note can't be a Summary type)</typeparam>
         /// <param name="targetType">type of items these will produce</param>
         /// <param name="ids">ids of items</param>
         /// <returns>items in containers or the items themselves</returns>

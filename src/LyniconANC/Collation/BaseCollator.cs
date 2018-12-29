@@ -99,23 +99,23 @@ namespace Lynicon.Collation
             var parms = new NameValueCollection();
             RequestContextManager.Instance.CurrentContext.Request.Query
                 .Do(kvp => parms.Add(kvp.Key, kvp.Value.FirstOrDefault()));
-            if (rd.DataTokens.ContainsKey("top") && parms["$top"] == null)
+            if (rd.DataTokens.ContainsKey("$top") && parms["$top"] == null)
             {
-                parms["$top"] = new StringValues((string)rd.DataTokens["top"]);
+                parms["$top"] = new StringValues((string)rd.DataTokens["$top"]);
             }
-            if (rd.DataTokens.ContainsKey("orderBy") && parms["$orderBy"] == null)
+            if (rd.DataTokens.ContainsKey("$orderby") && parms["$orderby"] == null)
             {
-                parms["$orderBy"] = (string)rd.DataTokens["orderBy"];
+                parms["$orderby"] = (string)rd.DataTokens["$orderby"];
             }
 
-            if (parms["$orderBy"] != null && typeof(TQuery).GetProperty(parms["$orderBy"]) == null)
-                parms.Remove("$orderBy");
+            if (parms["$orderby"] != null && typeof(TQuery).GetProperty(parms["$orderby"]) == null)
+                parms.Remove("$orderby");
 
             Func<IQueryable<TQuery>, IQueryable<TQuery>> queryBody = (iq => iq.Filter(parms).AsFacade<TQuery>());
             var parmsCount = new NameValueCollection(parms);
             parmsCount.Remove("$skip");
             parmsCount.Remove("$top");
-            parmsCount.Remove("$orderBy");
+            parmsCount.Remove("$orderby");
             Func<IQueryable<TQuery>, IQueryable<TQuery>> queryBodyCount = (iq => iq.Filter(parmsCount).AsFacade<TQuery>());
             var qry = new List<TQuery>().Filter(parmsCount);
 

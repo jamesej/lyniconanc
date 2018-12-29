@@ -36,7 +36,7 @@ namespace Lynicon.Models
     {
         public static bool HasMetadata(this ICoreMetadata data)
         {
-            return data.Id != Guid.Empty;
+            return data.Identity != Guid.Empty;
         }
 
         public static void CopyPropertiesTo(this ICoreMetadata data, ICoreMetadata copiedTo)

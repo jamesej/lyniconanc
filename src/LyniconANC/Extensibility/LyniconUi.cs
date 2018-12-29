@@ -248,6 +248,12 @@ namespace Lynicon.Extensibility
              .Replace("$$BaseUrl$$", viewBag._Lyn_BaseUrl)
              .Replace("$$OriginalQuery$$", viewBag.OriginalQuery);
 
+            var currIv = VersionManager.Instance.CurrentVersion;
+            foreach (var kvp in currIv)
+            {
+                subs = subs.Replace($"$$Vers-{kvp.Key}$$", kvp.Value.ToString());
+            }
+
             if (viewContext.ViewData.Model != null)
             {
                 var type = viewContext.ViewData.Model.GetType().UnextendedType();

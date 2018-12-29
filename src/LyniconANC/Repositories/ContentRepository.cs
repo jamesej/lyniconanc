@@ -266,6 +266,7 @@ namespace Lynicon.Repositories
 
         private void DoAdd(IDataSource dataSource, ContentItem item, bool wasHandled)
         {
+            // Only creates new guid if no guid set: allows client code to preset the id
             if (item.Id == Guid.Empty)
                 item.Id = Guid.NewGuid();
 

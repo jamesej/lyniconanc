@@ -69,12 +69,15 @@ namespace Lynicon.Map
             ICollator collator = Collator.Instance.Registered(type);
             var address = collator.GetAddress(o);
 
+            var container = Collator.Instance.GetContainer(o);
+            ItemVersion iv = new ItemVersion(LyniconSystem.Instance, container);
+
+            address = VersionManager.Instance.GetVersionAddress(address, iv);
+
             var urls = GetUrls(address);
 
             if (transform)
             {
-                var container = Collator.Instance.GetContainer(o);
-                ItemVersion iv = new ItemVersion(LyniconSystem.Instance, container);
                 urls = urls.Select(url => transform ? UrlTransform(url, iv) : url);
             }
 

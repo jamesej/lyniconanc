@@ -140,7 +140,7 @@ function reindexClass($container, classPrefix, offset) {
 }
 
 function createGeneralContainer() {
-    var $outer = $('#editPanel form .object.level-0');
+    var $outer = $('#editPanel form > .object.level-0');
     var $generalLabel = $("<div class='editor-label indent-0 parent child-closed' style='cursor:pointer'><label>General</label></div>");
     var $general = $("<div class='editor-field indent-0'></div>");
     var $generalFields = $outer.children().not('.parent-unit');
