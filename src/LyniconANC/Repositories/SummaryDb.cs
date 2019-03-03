@@ -31,36 +31,6 @@ namespace Lynicon.Repositories
     /// </summary>
     public class SummaryDb : DbContext
     {
-        protected static IModel SummaryModel { get; set; }
-
-        public static void BuildModel(LyniconSystem sys)
-        {
-            //if (!Collator.Instance.RepositoryBuilt)
-            //    throw new Exception("In CoreDb.OnModelCreating because there was a use of CoreDb before repository was built");
-
-            Debug.WriteLine("Building SummaryDb");
-
-            var requiredBaseTypes = ContentTypeHierarchy.AllContentTypes
-                .Select(ct => Collator.Instance.ContainerType(ct))
-                .Select(crt => sys.Extender.ExtensionTypes().Contains(crt)
-                               ? sys.Extender.Base(crt)
-                               : crt)
-                .Distinct()
-                .Where(crt => Repository.Instance.Registered(crt).DataSourceFactory is CoreDataSourceFactory)
-                .ToList();
-
-            var builder = new ModelBuilder(SqlServerConventionSetBuilder.Build());
-
-            sys.Extender.BaseTypes.Do(t => builder.Ignore(t));
-
-            foreach (var sumsType in sys.Extender.BaseTypes.Where(bt => requiredBaseTypes.Contains(bt)))
-            {
-                builder.Entity(sys.Extender.Summarised(sumsType)).ToTable(LinqX.GetTableName(sumsType));
-            }
-
-            SummaryModel = builder.Model;
-        }
-
         private static ConcurrentDictionary<Type, LambdaExpression> projectors = null;
         private static ConcurrentDictionary<Type, MethodInfo> selectors = null;
         private static ConcurrentDictionary<Type, List<string>> alwaysIncludes = null;
@@ -78,24 +48,34 @@ namespace Lynicon.Repositories
                 selectors.TryAdd(summType, GetSelectMethodInfo(summType));
                 alwaysIncludes.TryAdd(extender.Summarised(summType), GetAlwaysIncludes(summType));
             }
-
-            BuildModel(LyniconSystem.Instance);
         }
 
-        public SummaryDb()
-            : base(
-                  new DbContextOptionsBuilder<SummaryDb>()
-                  .UseModel(SummaryModel)
-                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
-                  .Options)
+        public SummaryDb(DbContextOptionsBuilder builder)
+            : base(builder.Options)
         { }
-        public SummaryDb(string connectionString)
-            : base(
-                  new DbContextOptionsBuilder<SummaryDb>()
-                  .UseModel(SummaryModel)
-                  .UseSqlServer(connectionString)
-                  .Options)
-        { }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            Debug.WriteLine("Building SummaryDb");
+
+            var sys = LyniconSystem.Instance;
+
+            var requiredBaseTypes = ContentTypeHierarchy.AllContentTypes
+                .Select(ct => Collator.Instance.ContainerType(ct))
+                .Select(crt => sys.Extender.ExtensionTypes().Contains(crt)
+                               ? sys.Extender.Base(crt)
+                               : crt)
+                .Distinct()
+                .Where(crt => Repository.Instance.Registered(crt).DataSourceFactory is CoreDataSourceFactory)
+                .ToList();
+
+            sys.Extender.BaseTypes.Do(t => builder.Ignore(t));
+
+            foreach (var sumsType in sys.Extender.BaseTypes.Where(bt => requiredBaseTypes.Contains(bt)))
+            {
+                builder.Entity(sys.Extender.Summarised(sumsType)).ToTable(LinqX.GetTableName(sumsType));
+            }
+        }
 
         private static LambdaExpression GetProjector(Type tBase)
         {

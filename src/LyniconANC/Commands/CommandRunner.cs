@@ -107,12 +107,9 @@ namespace Lynicon.Commands
 
         private Action GetCommand(string[] args)
         {
-            if (args.Length < 1)
-                return null;
+            var lynArgs = GetLynArgs(args);
 
-            var lynArgs = args.SkipWhile(a => a != "--lynicon").ToArray();
-
-            if (lynArgs.Length < 2)
+            if (lynArgs == null)
                 return null;
 
             if (!commands.ContainsKey(lynArgs[1].ToLower()))
@@ -123,9 +120,24 @@ namespace Lynicon.Commands
             return () => cmd.Execute(lynArgs.Skip(2).ToArray());
         }
 
+        private string[] GetLynArgs(string[] args)
+        {
+            if (args.Length < 1)
+                return null;
+
+            var lynArgs = args.SkipWhile(a => a != "--lynicon").ToArray();
+
+            if (lynArgs.Length < 2)
+                return null;
+
+            return lynArgs;
+        }
+
         public bool WillRunCommand(string[] args)
         {
-            return GetCommand(args) != null;
+            // Don't check for existence of the actual command as we won't have registered commands
+            // at this point
+            return GetLynArgs(args) != null;
         }
     }
 }

@@ -20,15 +20,8 @@ namespace Lynicon.Repositories
     /// </summary>
     public class PreloadDb : DbContext
     {
-        public PreloadDb()
-            : base(new DbContextOptionsBuilder<PreloadDb>()
-                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
-                  .Options)
-        { }
-        public PreloadDb(string connectionString)
-            : base(new DbContextOptionsBuilder<PreloadDb>()
-          .UseSqlServer(connectionString)
-          .Options)
+        public PreloadDb(DbContextOptionsBuilder builder)
+            : base(builder.Options)
         { }
 
         /// <summary>

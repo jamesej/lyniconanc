@@ -1,100 +1,100 @@
 {
   "TypeProperties": {
     "LyniconANC.Release.Models.HomeContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
-      "Intro": "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
-      "Test": "Lynicon.Models.ImageLink, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Intro": "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
+      "Test": "Lynicon.Models.ImageLink, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "PageTitle": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PageDescription": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
-    "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {},
-    "Lynicon.Models.ImageLink, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {
-      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
-      "Link": "Lynicon.Models.Link, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null"
+    "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {},
+    "Lynicon.Models.ImageLink, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {
+      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
+      "Link": "Lynicon.Models.Link, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null"
     },
-    "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {
       "Url": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Alt": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "BackgroundXPc": "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "BackgroundYPc": "System.Nullable`1[[System.Int32, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
-    "Lynicon.Models.Link, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.Link, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {
       "Url": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Content": "Lynicon.Models.BbText, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null"
+      "Content": "Lynicon.Models.BbText, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null"
     },
-    "Lynicon.Models.BbText, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.BbText, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {
       "Text": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
     "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
-      "Logo": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null"
+      "Logo": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null"
     },
     "LyniconANC.Release.Models.CommonContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
     },
     "LyniconANC.Release.Models.TileContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
       "UrlSlug": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Material": "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Material": "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "AvailableColours": "System.Collections.Generic.List`1[[LyniconANC.Release.Models.TileColour, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Widthmm": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Heightmm": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Title": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
-      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
+      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Price": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PriceUnit": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Discount": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Caption": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Description": "Lynicon.Models.MaxHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Description": "Lynicon.Models.MaxHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "PageTitle": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PageDescription": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
-    "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {
       "DataType": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Id": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
-    "Lynicon.Models.MaxHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {},
+    "Lynicon.Models.MaxHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {},
     "LyniconANC.Release.Models.EquipmentContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
       "Title": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
-      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
+      "Image": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Price": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PriceUnit": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Discount": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Caption": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Description": "Lynicon.Models.MaxHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Description": "Lynicon.Models.MaxHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "PageTitle": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PageDescription": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
     "LyniconANC.Release.Models.MaterialsLandingContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
-      "Intro": "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Intro": "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "PageTitle": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PageDescription": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
     "LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
       "Title": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Description": "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Description": "Lynicon.Models.MinHtml, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Shared": "LyniconANC.Release.Models.SharedContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "PageTitle": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PageDescription": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e"
     },
-    "Lynicon.Models.Summary, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {
+    "Lynicon.Models.Summary, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {
       "Title": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "UniqueId": "System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Id": "System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Url": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Type": "System.Type, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null"
+      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null"
     },
-    "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null": {},
+    "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null": {},
     "LyniconANC.Release.Models.TileSummary, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
-      "Material": "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Material": "Lynicon.Relations.Reference`1[[LyniconANC.Release.Models.TileMaterialContent, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Widthmm": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Heightmm": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "AvailableColours": "System.Collections.Generic.List`1[[LyniconANC.Release.Models.TileColour, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Price": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Discount": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PriceUnit": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
@@ -104,10 +104,10 @@
       "Id": "System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Url": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Type": "System.Type, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null"
+      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null"
     },
     "LyniconANC.Release.Models.EquipmentSummary, LyniconANC.Release, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": {
-      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null",
+      "Thumbnail": "Lynicon.Models.Image, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null",
       "Price": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Discount": "System.Decimal, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "PriceUnit": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
@@ -117,7 +117,7 @@
       "Id": "System.Object, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Url": "System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
       "Type": "System.Type, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
-      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.3.0, Culture=neutral, PublicKeyToken=null"
+      "Version": "Lynicon.Extensibility.ItemVersion, LyniconANC, Version=0.2.4.1, Culture=neutral, PublicKeyToken=null"
     }
   },
   "ContentTypes": [

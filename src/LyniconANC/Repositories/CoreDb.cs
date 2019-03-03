@@ -24,17 +24,8 @@ namespace Lynicon.Repositories
     /// </summary>
     public class CoreDb : DbContext
     {
-        public CoreDb()
-            : base(
-                  new DbContextOptionsBuilder<CoreDb>()
-                  .UseSqlServer(LyniconSystem.Instance.Settings.SqlConnectionString)
-                  .Options)
-        { }
-        public CoreDb(string connectionString)
-            : base(
-                  new DbContextOptionsBuilder<CoreDb>()
-                  .UseSqlServer(connectionString)
-                  .Options)
+        public CoreDb(DbContextOptionsBuilder builder)
+            : base(builder.Options)
         { }
 
         protected override void OnModelCreating(ModelBuilder builder)

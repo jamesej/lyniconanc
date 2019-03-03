@@ -17,6 +17,7 @@ using Lynicon.Repositories;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Lynicon.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lynicon.Services
 {
@@ -132,6 +133,8 @@ namespace Lynicon.Services
             Modules.ValidateModules();
 
             Settings.RunTypeSetup?.Invoke(Collator);
+            if (Settings.CreateDbContextBuilder == null) // use SqlServer setup by default
+                Settings = Settings.UseDefaultDbContextBuilder(conn => new DbContextOptionsBuilder().UseSqlServer(conn));
 
             Collator.BuildRepository();
             Modules.Initialise(this);

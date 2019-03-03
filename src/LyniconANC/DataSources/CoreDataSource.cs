@@ -27,24 +27,21 @@ namespace Lynicon.DataSources
         {
             this.contextLifetimeMode = contextLifetimeMode;
             System = sys;
-            Db = GetDb(forSummaries);
+            DataSourceSpecifier = sys.Settings.SqlConnectionString;
+            Db = GetDb(sys.Settings.CreateDbContextBuilder(DataSourceSpecifier), forSummaries);
         }
 
-        protected DbContext GetDb(bool forSummaries)
+        protected DbContext GetDb(DbContextOptionsBuilder builder, bool forSummaries)
         {
             if (forSummaries)
-                return new SummaryDb();
+                return new SummaryDb(builder);
 
             if (this.contextLifetimeMode == ContextLifetimeMode.PerRequest
                 && RequestContextManager.Instance.CurrentContext.Items != null
                 && RequestContextManager.Instance.CurrentContext.Items.ContainsKey("_lynicon_request_context"))
                 return (CoreDb)RequestContextManager.Instance.CurrentContext.Items["_lynicon_request_context"];
 
-            CoreDb db;
-            if (DataSourceSpecifier == null)
-                db = new CoreDb();
-            else
-                db = new CoreDb(DataSourceSpecifier);
+            CoreDb db = new CoreDb(builder);
 
             if (this.contextLifetimeMode == ContextLifetimeMode.PerRequest
                 && RequestContextManager.Instance.CurrentContext.Items != null)

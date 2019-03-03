@@ -9,6 +9,7 @@ using Lynicon.Utility;
 using Microsoft.Extensions.Configuration;
 using Lynicon.Collation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lynicon.Services
 {
@@ -56,6 +57,11 @@ namespace Lynicon.Services
         /// </summary>
         public Action<ITypeSystemRegistrar> RunTypeSetup { get; private set; }
 
+        /// <summary>
+        /// Function to build from a connection string an EF context builder with default options for interior db contexts
+        /// </summary>
+        public Func<string, DbContextOptionsBuilder> CreateDbContextBuilder { get; private set; }
+
         public LyniconSystemOptions()
         {
             ModuleSpecs = new List<ModuleSpec>();
@@ -75,7 +81,7 @@ namespace Lynicon.Services
         /// <summary>
         /// Specify the connection string used for SQL access for this Lynicon data system
         /// </summary>
-        /// <param name="connectionString">The connection string to use</param>
+        /// <param name="connectionString">The connection string to use.</param>
         /// <returns>Modified set of Lynicon options</returns>
         public LyniconSystemOptions UseConnectionString(string connectionString)
         {
@@ -105,6 +111,18 @@ namespace Lynicon.Services
         public LyniconSystemOptions UseTypeSetup(Action<ITypeSystemRegistrar> setupTypes)
         {
             RunTypeSetup = setupTypes;
+            return this;
+        }
+
+        /// <summary>
+        /// Supply a default EF db context builder for internal db contexts allowing setup for any data source
+        /// EF can connect to and configuration of this.
+        /// </summary>
+        /// <param name="createDbContextBuilder">A function to create from a connection string a generic db context builder with options set up</param>
+        /// <returns>Modified set of Lynicon options</returns>
+        public LyniconSystemOptions UseDefaultDbContextBuilder(Func<string, DbContextOptionsBuilder> createDbContextBuilder)
+        {
+            CreateDbContextBuilder = createDbContextBuilder;
             return this;
         }
     }
