@@ -57,7 +57,7 @@ ASP.Net Core, perfectly adequate for a smaller site or application.
 There is an MVC 5 version [here](https://github.com/jamesej/lynicon). 
 The project site is [here](http://www.lynicon.com), and this project builds a
 NuGet package whose page on Nuget is [here](https://www.nuget.org/packages/LyniconANC).
-Documentation on Confluence is [here](https://lynicon.atlassian.net/wiki/display/DOC/ASP.Net+Core+Version).  We welcome feedback to info@lynicon.com, and you can sign up for news and the Slack support channel on [this page](http://www.lynicon.com/get-lynicon).
+Documentation on Confluence is [here](https://lynicon.atlassian.net/wiki/display/DOC/ASP.Net+Core+Version).  We welcome feedback to info@lynicon.com.
 
 We have now released a module package supplying the major features needed
 for a larger-scale CMS including caching, search, publishing,
@@ -67,22 +67,25 @@ This is available [here](http://www.lynicon.com/lynicon-base)
 
 ## Table of Contents
 
-1. [Setup](#setup)
-2. [How Tos](#how-tos)
-    1. [Log in as admin](#log-in-as-admin)
-    2. [Create a content managed route, controller & view](#create-a-content-managed-route-controller-view)
-    3. [Add and edit content items](#add-and-edit-content-items)
-    4. [Use HTML snippets, images, links etc in your content class](#use-html-snippets-images-links-etc-in-your-content-class)
-    5. [Use lists and subtypes in your content class](#use-lists-and-subtypes-in-your-content-class)
-    6. [Link to other content items in your content class](#link-to-other-content-items-in-your-content-class)
-    7. [Filter, search and report on content](#filter-search-and-report-on-content)
-    8. [Use the content API to create a list of items dynamically](#use-the-content-api-to-create-a-list-of-items-dynamically)
-    9. [Use property source redirection to create site-wide fields with values constant across the site](#use-property-source-redirection-to-create-site-wide-fields-with-values-constant-across-the-site)
-    10. [Administer site users](#administer-site-users)
-    11. [Run without a database](#run-without-a-database)
-    12. [Use as a JSON API](#use-as-a-json-api)
-3. [Running the tests](#running-the-tests)
-4. [Contributing](#contributing)
+- [Lynicon CMS/DMS](#lynicon-cmsdms)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+  - [Setup](#setup)
+  - [How Tos](#how-tos)
+    - [Log in as admin](#log-in-as-admin)
+    - [Create a content-managed route, controller & view](#create-a-content-managed-route-controller--view)
+    - [Add and edit content items](#add-and-edit-content-items)
+    - [Use HTML snippets, images, links etc in your content class](#use-html-snippets-images-links-etc-in-your-content-class)
+    - [Use lists and subtypes in your content class](#use-lists-and-subtypes-in-your-content-class)
+    - [Link to other content items in your content class](#link-to-other-content-items-in-your-content-class)
+    - [Filter, search and report on content](#filter-search-and-report-on-content)
+    - [Use the content API to create a list of items dynamically](#use-the-content-api-to-create-a-list-of-items-dynamically)
+    - [Use property source redirection to create site-wide fields with values constant across the site](#use-property-source-redirection-to-create-site-wide-fields-with-values-constant-across-the-site)
+    - [Administer site users](#administer-site-users)
+    - [Run without a database](#run-without-a-database)
+    - [Use as a JSON API](#use-as-a-json-api)
+  - [Running the tests](#running-the-tests)
+  - [Contributing](#contributing)
 
 ## Setup
 
