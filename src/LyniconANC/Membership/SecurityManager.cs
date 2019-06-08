@@ -33,7 +33,8 @@ namespace Lynicon.Membership
             if (adminUser == null)
             {
                 Guid adminUserId = Guid.NewGuid();
-                adminUser = Collator.Instance.GetNew<User>(new Address(typeof(User), adminUserId.ToString()));
+                //adminUser = Collator.Instance.GetNew<User>(new Address(typeof(User), adminUserId.ToString()));
+                adminUser = Collator.Instance.GetNew<User>((Address)null);
                 adminUser.Email = "admin@lynicon-user.com";
                 adminUser.Id = adminUserId;
                 adminUser.Roles = "AEU";

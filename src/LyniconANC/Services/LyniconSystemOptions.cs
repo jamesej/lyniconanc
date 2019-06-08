@@ -60,7 +60,7 @@ namespace Lynicon.Services
         /// <summary>
         /// Function to build from a connection string an EF context builder with default options for interior db contexts
         /// </summary>
-        public Func<string, DbContextOptionsBuilder> CreateDbContextBuilder { get; private set; }
+        public Func<DbContextOptionsBuilder, string, DbContextOptionsBuilder> ApplyDbContext { get; private set; }
 
         public LyniconSystemOptions()
         {
@@ -120,9 +120,9 @@ namespace Lynicon.Services
         /// </summary>
         /// <param name="createDbContextBuilder">A function to create from a connection string a generic db context builder with options set up</param>
         /// <returns>Modified set of Lynicon options</returns>
-        public LyniconSystemOptions UseDefaultDbContextBuilder(Func<string, DbContextOptionsBuilder> createDbContextBuilder)
+        public LyniconSystemOptions UseDefaultDbContextBuilder(Func<DbContextOptionsBuilder, string, DbContextOptionsBuilder> applyDbContext)
         {
-            CreateDbContextBuilder = createDbContextBuilder;
+            ApplyDbContext = applyDbContext;
             return this;
         }
     }

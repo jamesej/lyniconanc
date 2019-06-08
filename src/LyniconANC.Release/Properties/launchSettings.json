@@ -4,12 +4,13 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:57053",
-      "sslPort": 0
+      "sslPort": 44339
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "commandLineArgs": "--lynicon initialize-admin --password g.rde77O",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -17,6 +18,7 @@
     },
     "LyniconANC.Release": {
       "commandName": "Project",
+      "commandLineArgs": "--lynicon initialize-admin --password g.rde77O",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

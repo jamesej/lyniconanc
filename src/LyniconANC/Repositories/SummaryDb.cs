@@ -34,6 +34,9 @@ namespace Lynicon.Repositories
         private static ConcurrentDictionary<Type, LambdaExpression> projectors = null;
         private static ConcurrentDictionary<Type, MethodInfo> selectors = null;
         private static ConcurrentDictionary<Type, List<string>> alwaysIncludes = null;
+
+        readonly Func<DbContextOptionsBuilder, DbContextOptionsBuilder> optionsApplier;
+
         static SummaryDb()
         {
             projectors = new ConcurrentDictionary<Type, LambdaExpression>();
@@ -50,9 +53,16 @@ namespace Lynicon.Repositories
             }
         }
 
-        public SummaryDb(DbContextOptionsBuilder builder)
-            : base(builder.Options)
-        { }
+        public SummaryDb(Func<DbContextOptionsBuilder, DbContextOptionsBuilder> optionsApplier)
+            : base()
+        {
+            this.optionsApplier = optionsApplier;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder = this.optionsApplier(optionsBuilder);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -16,6 +16,7 @@ using Lynicon.DataSources;
 using Lynicon.Utility;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.Extensions.Logging;
 
 namespace Lynicon.Repositories
 {
@@ -24,9 +25,23 @@ namespace Lynicon.Repositories
     /// </summary>
     public class CoreDb : DbContext
     {
-        public CoreDb(DbContextOptionsBuilder builder)
-            : base(builder.Options)
-        { }
+        private static readonly LoggerFactory debugLoggerFactory =
+            new LoggerFactory(new[] {
+            new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider()
+            });
+
+        readonly Func<DbContextOptionsBuilder, DbContextOptionsBuilder> optionsApplier;
+
+        public CoreDb(Func<DbContextOptionsBuilder, DbContextOptionsBuilder> optionsApplier)
+            : base()
+        {
+            this.optionsApplier = optionsApplier;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder = this.optionsApplier(optionsBuilder).UseLoggerFactory(debugLoggerFactory);
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

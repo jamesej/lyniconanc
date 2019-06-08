@@ -18,6 +18,7 @@ using Lynicon.Startup;
 using Microsoft.AspNetCore.Identity;
 using LyniconANC.Release.Models;
 using Lynicon.Editors;
+using Microsoft.EntityFrameworkCore;
 
 namespace LyniconANC.Release
 {
@@ -50,6 +51,8 @@ namespace LyniconANC.Release
             	options.UseConfiguration(Configuration.GetSection("Lynicon:Core"))
             		.UseModule<CoreModule>()
 					.UseModule<ContentSchemaModule>())
+                    // add this line to e.g. use a MySQL database
+                    //.UseDefaultDbContextBuilder((builder, conn) => builder.UseMySql(conn)))
             .AddLyniconIdentity();
 
             services.ConfigureApplicationCookie(options =>

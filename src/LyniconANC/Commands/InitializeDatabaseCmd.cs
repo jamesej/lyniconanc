@@ -39,7 +39,7 @@ namespace Lynicon.Commands
                 
             try
             {
-                var pdb = new PreloadDb(sys.Settings.CreateDbContextBuilder(sys.Settings.SqlConnectionString));
+                var pdb = new PreloadDb(builder => sys.Settings.ApplyDbContext(builder, sys.Settings.SqlConnectionString));
                 actionsList = (string)pdb.EnsureCoreDb();
             }
             catch (Exception ex)

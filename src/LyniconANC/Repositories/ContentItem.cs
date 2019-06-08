@@ -208,6 +208,7 @@ namespace Lynicon.Repositories
         /// <summary>
         /// The data type of the content item
         /// </summary>
+        [Required]
         public virtual string DataType { get; set; }
 
         string path;

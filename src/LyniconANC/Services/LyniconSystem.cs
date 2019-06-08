@@ -133,8 +133,8 @@ namespace Lynicon.Services
             Modules.ValidateModules();
 
             Settings.RunTypeSetup?.Invoke(Collator);
-            if (Settings.CreateDbContextBuilder == null) // use SqlServer setup by default
-                Settings = Settings.UseDefaultDbContextBuilder(conn => new DbContextOptionsBuilder().UseSqlServer(conn));
+            if (Settings.ApplyDbContext == null) // use SqlServer setup by default
+                Settings = Settings.UseDefaultDbContextBuilder((builder, conn) => builder.UseSqlServer(conn));
 
             Collator.BuildRepository();
             Modules.Initialise(this);

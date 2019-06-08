@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LyniconANC": {
+      "commandName": "Project",
+      "commandLineArgs": "-- --lynicon initialize-database"
+    }
+  }
+}
